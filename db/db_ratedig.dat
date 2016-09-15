@@ -1,0 +1,33 @@
+950101
+# Gas parameters:
+ratedig.gasionwidth = 26.  # eV
+ratedig.gasdiffusion = 120000.  # mm2/s
+ratedig.gasdriftvelocity = 5.5e7 # mm/s
+ratedig.avalanchefiducialband = 10.0 # n sigma
+ratedig.avalanchechargestatistics = 0 # 0 Furry, 1 Gaussian
+ratedig.gainmean = 4000.0
+ratedig.gain0 = 20.0
+ratedig.avalateraluncertainty = 0. #mm
+# Electronics parameters:
+ratedig.triggeroffset = 125. # ns #original 125
+ratedig.triggerjitter = 1.  # ns
+ratedig.elesamplingpoints = 10
+ratedig.elesamplingperiod = 25.
+ratedig.adcoffset = 0.
+ratedig.adcgain = 1.
+ratedig.adcbits = 12
+ratedig.gatewidth = 200.
+
+# GEM pedestal noise
+ratedig.pulsenoisesigma = 20.
+ratedig.pulsenoiseperiod = 200. #ns
+ratedig.pulsenoiseampconst = 30. #ADC values
+ratedig.pulsenoiseampsigma = 30. #ADC values
+
+# Pulse shaping parameters:
+ratedig.pulseshapetau0 = 38.3  # ns
+ratedig.pulseshapetau1 = 129.  # ns
+# Geometry
+ratedig.zrout = 9.19   # mm
+ratedig.use_tracker_frame = 0
+ratedig.entrance_ref = -4.687
