@@ -62,6 +62,8 @@ class TSolROOTFile {
   Int_t GetNSignal() const { return fSignalInfo.size(); }
   Int_t GetSigECBit(Int_t i) const { return fSignalInfo.at(i).fillBitsEC; }
   Double_t GetSigECEDep(Int_t i) const { return fSignalInfo.at(i).ECEDep; }
+  Double_t GetSigMomentum(Int_t i) const { return fSignalInfo.at(i).momentum; }
+  Double_t GetSigR(Int_t i) const { return fSignalInfo.at(i).R; }
 
   private:
   char  fFilename[255];

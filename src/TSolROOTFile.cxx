@@ -199,6 +199,8 @@ Int_t TSolROOTFile::ReadNextEvent(){
     fSignalInfo.at(i).fillBitsGEM = 0;
     fSignalInfo.at(i).fillBitsEC = 0;
     fSignalInfo.at(i).ECEDep = 0.;
+    fSignalInfo.at(i).momentum = 0.;
+    fSignalInfo.at(i).R = 0.;
   }
  
   //this is trying to completely rotate the entire background event by a random phi angle, we should not do this for
@@ -220,6 +222,8 @@ Int_t TSolROOTFile::ReadNextEvent(){
 void TSolROOTFile::BuildGenerated()
 {
   unsigned int length = gen_pid->size();
+
+  if (fSource == 0 && length != fSignalInfo.size()) cout<<"signal info not complete"<<endl;
   unsigned int i = 0;
 
   for (i=0; i<length; i++){
@@ -234,6 +238,13 @@ void TSolROOTFile::BuildGenerated()
     fGenData[i]->SetData(4, gen_vx->at(i));
     fGenData[i]->SetData(5, gen_vy->at(i));
     fGenData[i]->SetData(6, gen_vz->at(i));
+    //assuming fSignalInfo is arranged according to tid
+    
+    if ( fSource != 0) continue;
+    if ( gen_pid->at(i) == fSignalInfo.at(i).pid) 
+    fSignalInfo.at(i).momentum = sqrt(pow(gen_px->at(i),2) + pow(gen_py->at(i),2) 
+                                    + pow(gen_pz->at(i),2))*1.e-3; //To GeV
+    
   }
 
 }
@@ -292,6 +303,7 @@ void TSolROOTFile::BuildECData()
 	    fECData[nhit]->SetData(4, flux_avg_y->at(i));
 	    fECData[nhit]->SetData(5, flux_avg_z->at(i));
             fSignalInfo.at(signalID).ECEDep = flux_trackE->at(i)*1e-3;
+            fSignalInfo.at(signalID).R = sqrt(pow(flux_avg_x->at(i) ,2) + pow(flux_avg_y->at(i) ,2))*1.e-3;
 	    nhit++;
 	  }
         }
