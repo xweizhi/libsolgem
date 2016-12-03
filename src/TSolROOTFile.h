@@ -11,6 +11,8 @@
 #include "TVector3.h"
 #include "TRandom3.h"
 #include "types.h"
+#include "TSolDBManager.h"
+
 using namespace std;
 
 
@@ -18,12 +20,10 @@ class TSolROOTFile {
  public:
 
   TSolROOTFile();
-  TSolROOTFile( const char *name );
+  TSolROOTFile( const char *name, int source );
   virtual ~TSolROOTFile();
   
   void  SetFilename( const char *name );
-  void  SetSource( Int_t i ) { fSource = i; }
-  void  EnableRotateBg() { fRotateBg = kTRUE; }
   void  Clear();
   Int_t Open();
   void  SetBranchAddress();
@@ -51,7 +51,6 @@ class TSolROOTFile {
   hitdata *GetHitData(Int_t i) const { return fHitData[i]; }
   gendata *GetGenData(Int_t i) const { return fGenData[i]; }
   ECdata  *GetECData(Int_t i)  const { return fECData[i];  }
-  UInt_t   GetRotateDetID(Double_t x, Double_t y, UInt_t originID); 
   TSolGEMData *GetGEMData();
   void GetGEMData(TSolGEMData* gd);
 
@@ -72,9 +71,6 @@ class TSolROOTFile {
   TTree *tree_solid_gem;
   TTree *tree_flux;
   Int_t fSource;   // User-defined source ID (e.g. MC run number)
-  TRandom3 fRandom;
-  Bool_t fRotateBg;
-  Double_t fRandomPhi;
   
   //generated branch
   vector<int> *gen_pid;
@@ -130,6 +126,8 @@ class TSolROOTFile {
   unsigned int fMaxEvNum;
 
   vector<SignalInfo> fSignalInfo;  
+  
+  TSolDBManager* fManager;
 };
 
 #endif //__TSOLROOTFILE_H

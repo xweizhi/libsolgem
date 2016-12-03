@@ -7,6 +7,7 @@ using namespace std;
 TSolGEMData::TSolGEMData (UInt_t h)
 {
   fHitData.reserve(h);
+  fSignalSector = -1;
 }
 
 TSolGEMData::~TSolGEMData()
@@ -17,6 +18,7 @@ void
 TSolGEMData::ClearEvent() 
 {
   fHitData.clear();
+  fSignalSector = -1;
 };
 
 void

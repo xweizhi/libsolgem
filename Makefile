@@ -69,7 +69,8 @@ SRC   = src/TSolAnalyzer.cxx \
         src/TSolSimEvent.cxx \
         src/TSolSimFile.cxx \
         src/TSolSimDecoder.cxx \
-        src/TSolROOTFile.cxx
+        src/TSolROOTFile.cxx \
+        src/TSolDBManager.cxx
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o
 HDR	= $(SRC:.cxx=.h) src/Linkdef.h
 ROHDR	= $(SRC:.cxx=.h) src/Linkdef.h

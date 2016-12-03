@@ -6,64 +6,67 @@
 
 #define NGENERATED 7
 #define NSOLID_GEM 23
-#define GEM_DRIFT_ID 6
-#define GEM_COPPER_FRONT_ID 5
-#define GEM_COPPER_BACK_ID 7
-#define NSECTOR 30
-#define GEM_STRIP_ID 19
-#define FAEC_VIRTUAL_ID 3110000
-#define LAEC_VIRTUAL_ID 3210000
 #define NECDATA 8
 //#ifndef __CINT__
 //_______________________________________________________________________
-TSolROOTFile::TSolROOTFile() : fChan(0), fSource(0), fRotateBg(kFALSE), fRandomPhi(0.) {
+TSolROOTFile::TSolROOTFile() : fChan(0), fSource(0) {
   fFilename[0] = '\0';
+  fManager = TSolDBManager::GetInstance();
 }
 //_______________________________________________________________________
-TSolROOTFile::TSolROOTFile(const char *f) : fChan(0), fSource(0), fRotateBg(kFALSE), fRandomPhi(0.) {
- SetFilename(f);
- gen_pid = 0;
- gen_px  = 0;
- gen_py  = 0;
- gen_pz  = 0;
- gen_vx  = 0;
- gen_vy  = 0;
- gen_vz  = 0;
+TSolROOTFile::TSolROOTFile(const char *f, int source) 
+: fChan(0), fSource(source) {
+    SetFilename(f);
+    gen_pid = 0;
+    gen_px  = 0;
+    gen_py  = 0;
+    gen_pz  = 0;
+    gen_vx  = 0;
+    gen_vy  = 0;
+    gen_vz  = 0;
 
- solid_gem_id = 0;
- solid_gem_hitn = 0;
- solid_gem_pid = 0;
- solid_gem_trid = 0;
- solid_gem_x = 0;
- solid_gem_y = 0;
- solid_gem_z = 0;
- solid_gem_lxin = 0;
- solid_gem_lyin = 0;
- solid_gem_lzin = 0;
- solid_gem_tin = 0;
- solid_gem_lxout = 0;
- solid_gem_lyout = 0;
- solid_gem_lzout = 0;
- solid_gem_tout = 0;
- solid_gem_px = 0;
- solid_gem_py = 0;
- solid_gem_pz = 0;
- solid_gem_vx = 0;
- solid_gem_vy = 0;
- solid_gem_vz = 0;
- solid_gem_ETot = 0;
- solid_gem_trE = 0;
- solid_gem_weight = 0;
+    solid_gem_id = 0;
+    solid_gem_hitn = 0;
+    solid_gem_pid = 0;
+    solid_gem_trid = 0;
+    solid_gem_x = 0;
+    solid_gem_y = 0;
+    solid_gem_z = 0;
+    solid_gem_lxin = 0;
+    solid_gem_lyin = 0;
+    solid_gem_lzin = 0;
+    solid_gem_tin = 0;
+    solid_gem_lxout = 0;
+    solid_gem_lyout = 0;
+    solid_gem_lzout = 0;
+    solid_gem_tout = 0;
+    solid_gem_px = 0;
+    solid_gem_py = 0;
+    solid_gem_pz = 0;
+    solid_gem_vx = 0;
+    solid_gem_vy = 0;
+    solid_gem_vz = 0;
+    solid_gem_ETot = 0;
+    solid_gem_trE = 0;
+    solid_gem_weight = 0;
 
- flux_id = 0;
- flux_pid = 0;
- flux_tid = 0;
- flux_trackE = 0;
- flux_avg_x = 0;
- flux_avg_y = 0;
- flux_avg_z = 0;
-
- fSignalInfo.clear();
+    flux_id = 0;
+    flux_pid = 0;
+    flux_tid = 0;
+    flux_trackE = 0;
+    flux_avg_x = 0;
+    flux_avg_y = 0;
+    flux_avg_z = 0;
+    
+    fSignalInfo.clear();
+    fManager = TSolDBManager::GetInstance();
+    
+    if (fSource == 0){
+        for (int i=0; i<fManager->GetNSigParticle(); i++){
+            fSignalInfo.push_back(SignalInfo(fManager->GetSigPID(i), 
+                                             fManager->GetSigTID(i)));
+        }
+    }
 }
 //_______________________________________________________________________
 TSolROOTFile::~TSolROOTFile() {
@@ -88,20 +91,19 @@ Int_t TSolROOTFile::Open(){
     }
 
     fEvNum = -1;
-    //cout<<"event number after initialization"<<fEvNum<<endl;
+    
     SetBranchAddress();
-    //cout<<"done setting address"<<endl;
+    
     return 1;
 }
 //_______________________________________________________________________
 void TSolROOTFile::SetBranchAddress()
 {
   //generated branch
-  //cout<<"setting address"<<endl;
   tree_generated = (TTree*)fChan->Get("generated");
   tree_solid_gem = (TTree*)fChan->Get("solid_gem");
   tree_flux      = (TTree*)fChan->Get("flux");
-  //cout<<tree_generated->GetEntries()<<" "<<tree_solid_gem->GetEntries()<<" "<<tree_flux->GetEntries()<<endl;
+  
   tree_generated->SetBranchAddress("pid",&gen_pid);
   tree_generated->SetBranchAddress("px",&gen_px);
   tree_generated->SetBranchAddress("py",&gen_py);
@@ -109,7 +111,7 @@ void TSolROOTFile::SetBranchAddress()
   tree_generated->SetBranchAddress("vx",&gen_vx);
   tree_generated->SetBranchAddress("vy",&gen_vy);
   tree_generated->SetBranchAddress("vz",&gen_vz);
-  //cout<<"done with the generated branch"<<endl;
+  
   //solid_gem branch
   tree_solid_gem->SetBranchAddress("hitn",&solid_gem_hitn);
   tree_solid_gem->SetBranchAddress("id",&solid_gem_id);
@@ -174,8 +176,8 @@ void TSolROOTFile::Clear(){
 
     fHitData.clear();
     fGenData.clear();
-		fECData.clear();
-		ClearVectors();
+    fECData.clear();
+	ClearVectors();
     return;
 }
 
@@ -201,14 +203,9 @@ Int_t TSolROOTFile::ReadNextEvent(){
     fSignalInfo.at(i).ECEDep = 0.;
     fSignalInfo.at(i).momentum = 0.;
     fSignalInfo.at(i).R = 0.;
+    fSignalInfo.at(i).signalSector = -1;
   }
- 
-  //this is trying to completely rotate the entire background event by a random phi angle, we should not do this for
-  //the PVDIS, but for SIDIS I guess this is OK, as bg in SIDIS should be azimuthal symmetric. The reason we need this
-  //is because we don't have enough statiscis to feed many events, and I want to add more randomness other than just 
-  //randomize the timing later on. This may not be the best place to do this, but it should work. --Weizhi
-  if (fSource != 0 && fRotateBg) fRandomPhi = gRandom->Uniform(0., 2.*TMath::Pi());
-  
+
   tree_generated->GetEntry(fEvNum);
   tree_solid_gem->GetEntry(fEvNum);
   tree_flux->GetEntry(fEvNum);
@@ -231,20 +228,29 @@ void TSolROOTFile::BuildGenerated()
   }
   
   for (i=0; i<length; i++){
-    fGenData[i]->SetData(0, gen_pid->at(i));
-    fGenData[i]->SetData(1, gen_px->at(i));
-    fGenData[i]->SetData(2, gen_py->at(i));
-    fGenData[i]->SetData(3, gen_pz->at(i));
-    fGenData[i]->SetData(4, gen_vx->at(i));
-    fGenData[i]->SetData(5, gen_vy->at(i));
-    fGenData[i]->SetData(6, gen_vz->at(i));
+    if (fSource == 0){
+        fGenData[i]->SetData(0, gen_pid->at(i));
+        fGenData[i]->SetData(1, gen_px->at(i));
+        fGenData[i]->SetData(2, gen_py->at(i));
+        fGenData[i]->SetData(3, gen_pz->at(i));
+        fGenData[i]->SetData(4, gen_vx->at(i));
+        fGenData[i]->SetData(5, gen_vy->at(i));
+        fGenData[i]->SetData(6, gen_vz->at(i));
     //assuming fSignalInfo is arranged according to tid
-    
+    }else{
+        fGenData[i]->SetData(0, gen_pid->at(i));
+        fGenData[i]->SetData(1, 0);
+        fGenData[i]->SetData(2, 0);
+        fGenData[i]->SetData(3, 0);
+        fGenData[i]->SetData(4, 0);
+        fGenData[i]->SetData(5, 0);
+        fGenData[i]->SetData(6, 0);
+    }
     if ( fSource != 0) continue;
-    if ( gen_pid->at(i) == fSignalInfo.at(i).pid) 
-    fSignalInfo.at(i).momentum = sqrt(pow(gen_px->at(i),2) + pow(gen_py->at(i),2) 
+    if ( gen_pid->at(i) == fSignalInfo.at(i).pid)
+    fSignalInfo.at(i).momentum = sqrt(pow(gen_px->at(i),2) + pow(gen_py->at(i),2)
                                     + pow(gen_pz->at(i),2))*1.e-3; //To GeV
-    
+
   }
 
 }
@@ -252,26 +258,37 @@ void TSolROOTFile::BuildGenerated()
 void TSolROOTFile::ExtractDetIDs()
 {
   unsigned int length = solid_gem_id->size();
-  unsigned int i=0; 
+  unsigned int i=0;
   for (i=0; i<length; i++){
-    int detID = TMath::Nint((int)solid_gem_id->at(i));
+    int detID = TMath::Nint(solid_gem_id->at(i));
     fHitData.push_back( new hitdata(detID, NSOLID_GEM) );
     //calculate the hit pattern, particle is considered hitting the GEM chamber if it enters the 3mm gas layer
-    if ( (TMath::Nint(solid_gem_id->at(i)) % 100) == GEM_COPPER_FRONT_ID && fSource == 0 ){
+    /*if ( (TMath::Nint(solid_gem_id->at(i)) % 100) == fManager->GetGEMCopperFrontID() && fSource == 0 ){
         int signalID = -1;
         for (unsigned int j=0; j<fSignalInfo.size(); j++){
-          if (TMath::Nint(solid_gem_pid->at(i)) == fSignalInfo.at(j).pid && 
+          if (TMath::Nint(solid_gem_pid->at(i)) == fSignalInfo.at(j).pid &&
               TMath::Nint(solid_gem_trid->at(i)) == fSignalInfo.at(j).tid ) signalID = j;
         }
 
         if (signalID < 0) continue; //not found in the signal info array
+        //at the moment the signal sector is defined as the first GEM sector that the primary particle hits
+        //Maybe using the EC to define this will be better?
 
-    	int GEMid = TMath::Nint(solid_gem_id->at(i)) / 100000;
-    	GEMid = GEMid % 10;
-    	assert(GEMid - 1 >= 0); // should never happen, GEMid starts from 1
-    	fSignalInfo.at(signalID).fillBitsGEM |= 1<<(GEMid - 1);	
-    }
-    
+    	int chamberID = CalcHitChamber(detID) - 1;
+    	int planeID = chamberID / fManager->GetNSector();
+    	assert(planeID >= 0); // should never happen, planeID should start from 0
+    	fSignalInfo.at(signalID).fillBitsGEM |= 1<<planeID;
+        int n = 0;
+        //find the first fill bit, should has one already filled by now by the above
+        assert(fSignalInfo.at(signalID).fillBitsGEM != 0);
+        while(true){
+          if ((fSignalInfo.at(signalID).fillBitsGEM>>n & 1) == 1) break;
+          n++;
+        }
+        //if planeID is by far the most upstream GEM being hit then:
+        if (n == planeID) fSignalInfo.at(signalID).signalSector = chamberID % fManager->GetNSector();
+    }*/
+
   }
 }
 //_______________________________________________________________________
@@ -281,19 +298,19 @@ void TSolROOTFile::BuildECData()
 	unsigned int i=0;
 	int nhit = 0;
 	for (i=0; i<length; i++){
-	  if (TMath::Nint(flux_id->at(i)) == FAEC_VIRTUAL_ID || TMath::Nint(flux_id->at(i)) == LAEC_VIRTUAL_ID){
+	  if (TMath::Nint(flux_id->at(i)) == fManager->GetFAECID() || TMath::Nint(flux_id->at(i)) == fManager->GetLAECID()){
 	    if ( fSource != 0 ) continue; //not from signal data file
 
             int signalID = -1;
             for (unsigned int j=0; j<fSignalInfo.size(); j++){
-              if (TMath::Nint(flux_pid->at(i)) == fSignalInfo.at(j).pid && 
+              if (TMath::Nint(flux_pid->at(i)) == fSignalInfo.at(j).pid &&
                   TMath::Nint(flux_tid->at(i)) == fSignalInfo.at(j).tid ) signalID = j;
             }
             if (signalID < 0) continue; //not found in the signal info array
 
 
-	    if ( TMath::Nint(flux_id->at(i)) == FAEC_VIRTUAL_ID ) fSignalInfo.at(signalID).fillBitsEC |= 1;
-	    if ( TMath::Nint(flux_id->at(i)) == LAEC_VIRTUAL_ID ) fSignalInfo.at(signalID).fillBitsEC |= (1<<1);
+	    if ( TMath::Nint(flux_id->at(i)) == fManager->GetFAECID() ) fSignalInfo.at(signalID).fillBitsEC |= 1;
+	    if ( TMath::Nint(flux_id->at(i)) == fManager->GetLAECID() ) fSignalInfo.at(signalID).fillBitsEC |= (1<<1);
 
 	    fECData.push_back( new ECdata( TMath::Nint(flux_id->at(i)) ) );
 	    fECData[nhit]->SetData(0, TMath::Nint(flux_pid->at(i)) );
@@ -302,8 +319,8 @@ void TSolROOTFile::BuildECData()
 	    fECData[nhit]->SetData(3, flux_avg_x->at(i));
 	    fECData[nhit]->SetData(4, flux_avg_y->at(i));
 	    fECData[nhit]->SetData(5, flux_avg_z->at(i));
-            fSignalInfo.at(signalID).ECEDep = flux_trackE->at(i)*1e-3;
-            fSignalInfo.at(signalID).R = sqrt(pow(flux_avg_x->at(i) ,2) + pow(flux_avg_y->at(i) ,2))*1.e-3;
+        fSignalInfo.at(signalID).ECEDep = flux_trackE->at(i)*1e-3;
+        fSignalInfo.at(signalID).R = sqrt(pow(flux_avg_x->at(i) ,2) + pow(flux_avg_y->at(i) ,2))*1.e-3;
 	    nhit++;
 	  }
         }
@@ -337,7 +354,6 @@ void TSolROOTFile::BuildData()
     fHitData[i]->SetData(20, solid_gem_px->at(i));
     fHitData[i]->SetData(21, solid_gem_py->at(i));
     fHitData[i]->SetData(22, solid_gem_pz->at(i));
-    //fHitData[i]->SetData(23, solid_gem_id->at(i));
   }
 
   //save the weight factor into fGenData
@@ -361,7 +377,7 @@ TSolGEMData* TSolROOTFile::GetGEMData()
 void TSolROOTFile::GetGEMData(TSolGEMData* gd)
 {
   // Pack data into TSolGEMData
-   
+
 //    printf("NEXT EVENT ---------------------------\n");
 
     if( !gd ) return;
@@ -381,43 +397,34 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
       h = GetHitData(i);
 
 
-      //detector id as defined in GEMC2 should be 
+      //detector id as defined in GEMC2 should be
       //$id=1000000+$n*100000+$sec*1000+$i where n is the plane #, sec is the
       //sector # and i is the layer #
       //this way of finding GEM_DRIFT is still good
-      if( h->GetDetID()%100 == GEM_DRIFT_ID &&  h->GetData(1)>0.0 ){
+      if( h->GetDetID()%100 == fManager->GetGEMDriftID() &&  h->GetData(1)>0.0 ){
 	// Vector information
 	TVector3 p(h->GetData(20), h->GetData(21), h->GetData(22));
-	if (fSource != 0 && fRotateBg) p.RotateZ(fRandomPhi);
+	
 	gd->SetMomentum(ngdata, p);
 
 	TVector3 li(h->GetData(5), h->GetData(6), h->GetData(7));
-	if (fSource != 0 && fRotateBg) li.RotateZ(fRandomPhi);
+	
 	gd->SetHitEntrance(ngdata, li);
 
 	TVector3 lo(h->GetData(9), h->GetData(10), h->GetData(11));
-	if (fSource != 0 && fRotateBg) lo.RotateZ(fRandomPhi);
+	
 	gd->SetHitExit(ngdata, lo);
 	// Average over entrance and exit time
 	gd->SetHitTime(ngdata, (h->GetData(8)+h->GetData(12))/2.0);
 
 	TVector3 vert(h->GetData(14), h->GetData(15), h->GetData(16));
-	if (fSource != 0 && fRotateBg) vert.RotateZ(fRandomPhi);
+	
 	gd->SetVertex(ngdata, vert);
-
-	//	    printf("%d %f %f\n", h->GetDetID()/100, li.X(), li.Y()  );
 
 	gd->SetHitEnergy(ngdata, h->GetData(1)*1e6 ); // Gives eV
 	gd->SetParticleID(ngdata, (UInt_t) h->GetData(18) );
+
 	gd->SetParticleType(ngdata, (UInt_t) h->GetData(13) );
-	// Chamber ID starts indexing a 0 whereas we start conventionally at 1
-	// hit chamber need to be determined differently for the new detector
-	// convention
-	UInt_t hitChamberID = CalcHitChamber(h->GetDetID()) - 1;
-	
-	if (fSource != 0 && fRotateBg) hitChamberID = GetRotateDetID(h->GetData(2), h->GetData(3), hitChamberID);
-	
-	gd->SetHitChamber(ngdata, hitChamberID );
 
 	////////////////////////////////////////////
 	// Search for entrance/exit hits in surrounding Cu plane
@@ -425,15 +432,13 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
 	for( j = 0; j < GetNData(); j++ ){
 	  hs = GetHitData(j);
 
-	  if( hs->GetDetID()%100 == GEM_COPPER_FRONT_ID &&    // is prior Cu plane
+	  if( hs->GetDetID()%100 == fManager->GetGEMCopperFrontID() &&    // is prior Cu plane
 	      hs->GetDetID()/100 == h->GetDetID()/100 && // same detector
 	      ((UInt_t) hs->GetData(18)) == ((UInt_t) h->GetData(18))  // same particle
 	      ){
 	    // Found matching hit, replace entrance data
 	    li = TVector3(hs->GetData(5), hs->GetData(6), hs->GetData(7));
-	    //cout<<"before: "<<li.X()<<" "<<li.Y()<<" "<<li.Z()<<endl;
-	    if (fSource != 0 && fRotateBg) li.RotateZ(fRandomPhi);
-	    //cout<<"afater: "<<li.X()<<" "<<li.Y()<<" "<<li.Z()<<endl;
+	    
 	    gd->SetHitEntrance(ngdata, li);
 	    break;
 	  }
@@ -442,13 +447,13 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
 	for( j = 0; j < GetNData(); j++ ){
 	  hs = GetHitData(j);
 
-	  if( hs->GetDetID()%100 == GEM_COPPER_BACK_ID &&    // is subsequent Cu plane
+	  if( hs->GetDetID()%100 == fManager->GetGEMCopperBackID() &&    // is subsequent Cu plane
 	      hs->GetDetID()/100 == h->GetDetID()/100 && // same detector
 	      ((UInt_t) hs->GetData(18)) == ((UInt_t) h->GetData(18))  // same particle
 	      ){
 	    // Found matching hit, replace exit data
 	    lo = TVector3(hs->GetData(9), hs->GetData(10), hs->GetData(11));
-	    if (fSource != 0 && fRotateBg) lo.RotateZ(fRandomPhi);
+	    
 	    gd->SetHitExit(ngdata, lo);
 	    break;
 	  }
@@ -463,14 +468,14 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
 	for( j = 0; j < GetNData(); j++ ){
 	  hs = GetHitData(j);
 
-	  if( hs->GetDetID()%100 == GEM_STRIP_ID &&    // is strip plane
+	  if( hs->GetDetID()%100 == fManager->GetGEMStripID() &&    // is strip plane
 	      hs->GetDetID()/100 == h->GetDetID()/100 && // same detector
 	      ((UInt_t) hs->GetData(18)) == ((UInt_t) h->GetData(18))  // same particle
 	      ){
 	    if( !matchedstrip ){
 	      // This is the truth information
 	      TVector3 lr(hs->GetData(2), hs->GetData(3), hs->GetData(4));
-	      if (fSource != 0 && fRotateBg) lr.RotateZ(fRandomPhi);
+	      
 	      gd->SetHitReadout(ngdata, lr);
 	      matchedstrip = true;
 	    } else {
@@ -480,23 +485,74 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
 	}
 
 	if( !matchedstrip && (UInt_t) h->GetData(18) == 1 ){
-	  // FIXME
-	  // SPR 12/2/2011
-	  // This isn't the greatest way to do this but we're usually intersted in 
-	  // Particle 1 when we're looking at doing tracking.  Not all things depositing
-	  // energy leave a corresponding hit in the cathode plane.  Maybe we can look at
-	  // the mother IDs or something later.  
+        // FIXME
+        // SPR 12/2/2011
+        // This isn't the greatest way to do this but we're usually intersted in 
+        // Particle 1 when we're looking at doing tracking.  Not all things depositing
+        // energy leave a corresponding hit in the cathode plane.  Maybe we can look at
+        // the mother IDs or something later.  
 
-	  // fprintf(stderr, "%s %s line %d: Did not find readout plane hit corresponding to drift hits.  No truth information\n",
-	  // 	  __FILE__, __FUNCTION__, __LINE__);
-	  TVector3 lr(-1e9, -1e9, -1e9);
-	  gd->SetHitReadout(ngdata, lr);
+         // fprintf(stderr, "%s %s line %d: Did not find readout plane hit corresponding to drift hits.  No truth information\n",
+        // 	  __FILE__, __FUNCTION__, __LINE__);
+        TVector3 lr(-1e9, -1e9, -1e9);
+        gd->SetHitReadout(ngdata, lr);
 	}
-
+	
+	// Chamber ID starts indexing a 0 whereas we start conventionally at 1
+    // hit chamber need to be determined differently for the new detector
+    // convention
+        
+    //in the following there are two ways, one use the chamber id definition in the
+    //gemc simulation, one use self-defined (through db_gemc.dat and db_generalinfo.dat)
+       
+    UInt_t hitChamberID = CalcHitChamber(h->GetDetID()) - 1;
+    int    hitTrackerID = hitChamberID / fManager->GetNSector();
+    assert( hitTrackerID >= 0 && hitTrackerID < fManager->GetNTracker() );
+    
+    if (fManager->DoSelfDefineSector()){
+        double x = (li.X() + lo.X()) / 2. *1.e-3; // mm to m
+        double y = (li.Y() + lo.Y()) / 2. *1.e-3; // mm to m
+        int thisID = fManager->GetSectorIDFromPos(x, y, hitTrackerID);
+        //if the particle doesn't hit any self-defined sector, skip it
+        
+        if (thisID < 0) continue; 
+        if (thisID < 0) cout<<hitChamberID<<" "<<hitTrackerID<<endl;
+        hitChamberID = hitTrackerID*fManager->GetNSector() + thisID;
+        
+    }
+        
+    gd->SetHitChamber(ngdata, hitChamberID );
+    
+    gd->SetPrimary(ngdata, false);
+    if (fSource == 0){
+        for (unsigned int idx = 0; idx < fSignalInfo.size(); idx++){
+            if ( TMath::Nint(h->GetData(13)) == fSignalInfo[idx].pid && 
+                 TMath::Nint(h->GetData(18)) == fSignalInfo[idx].tid ){
+                gd->SetPrimary(ngdata, true);
+      
+                //update GEM hit pattern if the particle is a signal partical
+                fSignalInfo.at(idx).fillBitsGEM |= 1<<hitTrackerID;
+                int n = 0;
+                //find the first fill bit, should has one already filled by now by the above
+                assert(fSignalInfo.at(idx).fillBitsGEM != 0);
+                while(true){
+                    if ((fSignalInfo.at(idx).fillBitsGEM>>n & 1) == 1) break;
+                    n++;
+                }
+                //if planeID is by far the most upstream GEM being hit then:
+                if (n == hitTrackerID) 
+                fSignalInfo.at(idx).signalSector = hitChamberID % fManager->GetNSector();
+            }
+        }
+    }
 	ngdata++;
       }
     }
     gd->SetNHit(ngdata);
+    
+    //if there is more then one signal particle, it doesn't make sense to map
+    //sector, and so signal sector is not useful anyway
+    if (fSignalInfo.size() > 0) gd->SetSigSector(fSignalInfo[0].signalSector);
 }
 
 //_______________________________________________________________________
@@ -511,24 +567,7 @@ UInt_t TSolROOTFile::CalcHitChamber(int detid)
   std::reverse(digi.begin(),digi.end());
   assert(digi.at(0) == 1 && "GEM detector id shoud be like 1xxxxxx");
   
-  return (digi.at(1)-1)*NSECTOR+digi.at(2)*10+digi.at(3);
-}
-//_______________________________________________________________________
-UInt_t TSolROOTFile::GetRotateDetID(Double_t x, Double_t y, UInt_t originID)
-{
-  //this function should not be called if the following is not correct
-  assert(fSource != 0 && fRotateBg);
-  TVector3 v(x, y, 1);
-  v.RotateZ(fRandomPhi);
-  Double_t rotatePhi = TMath::ATan2(v.Y(), v.X());
-  Int_t currentSector = TMath::FloorNint(rotatePhi*NSECTOR/TMath::TwoPi() + 0.5);
-  if( currentSector < 0 ) currentSector += NSECTOR;
-  assert(currentSector >= 0);
-  
-  div_t d = div( originID, NSECTOR );
-  currentSector  = d.quot*NSECTOR + currentSector;
-  
-  return (UInt_t)currentSector;
+  return (digi.at(1)-1)*fManager->GetNSector()+digi.at(2)*10+digi.at(3);
 }
 //_______________________________________________________________________
 void TSolROOTFile::ClearVectors()

@@ -31,15 +31,7 @@
 using namespace std;
 using namespace Podd;
 
-// Constants for conversion of strip (plane,sector,proj,chan) to (crate,slot,chan)
-// FIXME: make parameters configurable!
-static const Int_t NPLANES = 6;
-static const Int_t NSECTORS = 30;
-static const Int_t NPROJ = 2, CHAN_PER_SLOT = 1500;
-static const Int_t modules_per_readout = 1;
-static const Int_t modules_per_chamber = NPROJ*modules_per_readout;
-static const Int_t chambers_per_crate =
-  (TSolSimDecoder::GetMAXSLOT()/modules_per_chamber/NPLANES)*NPLANES;
+static TSolDBManager* manager = TSolDBManager::GetInstance();
 static const Int_t kPrimaryType = 1, kPrimarySource = 0;
 // Projection types must match the definitions in TreeSearch
 enum EProjType { kUPlane = 0, kVPlane };
@@ -50,12 +42,9 @@ typedef vector<int>::size_type vsiz_t;
 
 // Default z position of first tracker plane. May update this in the replay
 // script via TSolSimDecoder::SetZ0()
-Double_t TSolSimDecoder::fgZ0 = 1.571913;
-
 Bool_t   TSolSimDecoder::fgDoCalo = false;
 Double_t TSolSimDecoder::fgCaloZ  = 0.32;
 Double_t TSolSimDecoder::fgCaloRes  = 0.01;
-std::vector<SignalInfo> TSolSimDecoder::fSignalInfo;
 //-----------------------------------------------------------------------------
 TSolSimDecoder::TSolSimDecoder()
 {
@@ -68,6 +57,12 @@ TSolSimDecoder::TSolSimDecoder()
   DefineVariables();
 
   gSystem->Load("libEG.so");  // for TDatabasePDG
+
+
+  for (int i=0; i<manager->GetNSigParticle(); i++){
+    fSignalInfo.push_back(SignalInfo(manager->GetSigPID(i),
+                                     manager->GetSigTID(i)));
+  }
 }
 
 //-----------------------------------------------------------------------------
@@ -250,12 +245,13 @@ void StripToROC( Int_t s_plane, Int_t s_sector, Int_t s_proj,
   // The (crate,slot,chan) assignment must match the detmap definition in
   // the database!  See TreeSearch/dbconvert.cxx
 
-  div_t d = div( s_chan, CHAN_PER_SLOT );
+  div_t d = div( s_chan, manager->GetChanPerSlot() );
   Int_t module = d.quot;
   chan = d.rem;
   Int_t ix = module +
-    modules_per_readout*( s_proj + NPROJ*( s_plane + NPLANES*s_sector ));
-  d = div( ix, chambers_per_crate*modules_per_chamber );
+    manager->GetModulesPerReadOut()*( s_proj + manager->GetNReadOut()*( s_plane +
+                          manager->GetNTracker()*s_sector ));
+  d = div( ix, manager->GetChambersPerCrate()*manager->GetModulesPerChamber() );
   crate = d.quot;
   slot  = d.rem;
 
@@ -267,7 +263,8 @@ static inline
 Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan )
 {
   return chan +
-    CHAN_PER_SLOT*( slot + chambers_per_crate*modules_per_chamber*crate );
+    manager->GetChanPerSlot()*( slot +
+    manager->GetChambersPerCrate()*manager->GetModulesPerChamber()*crate );
 }
 
 //-----------------------------------------------------------------------------
@@ -301,9 +298,18 @@ MCHitInfo TSolSimDecoder::GetMCHitInfo( Int_t crate, Int_t slot, Int_t chan ) co
 
   assert( static_cast<vsiz_t>(istrip) < simEvent->fGEMStrips.size() );
   const TSolSimEvent::DigiGEMStrip& strip = simEvent->fGEMStrips[istrip];
-  assert( strip.fProj >= 0 && strip.fProj < NPROJ );
+  assert( strip.fProj >= 0 && strip.fProj < manager->GetNReadOut() );
 
   MCHitInfo mc;
+  
+  //if the strip is purely induced, don't need to do anything, set the fMCTrack to -1
+  //in order to let the caller knows about it, otherwise we analyze it just like normal
+  if (TESTBIT(strip.fSigType, kInducedStrip) && !TESTBIT(strip.fSigType, kPrimaryStrip) &&
+      !TESTBIT(strip.fSigType, kSecondaryStrip) ){
+    mc.fMCTrack = -1;
+    return mc;
+  }
+  
   Double_t nOverlapSignal = 0.;
   for( Int_t i = 0; i<strip.fClusters.GetSize(); ++i ) {
     Int_t iclust = strip.fClusters[i] - 1;  // yeah, array index = clusterID - 1
@@ -320,8 +326,10 @@ MCHitInfo TSolSimDecoder::GetMCHitInfo( Int_t crate, Int_t slot, Int_t chan ) co
 
     if( signalID >= 0 && c.fSource == kPrimarySource ) {
       if( mc.fMCTrack > 0 ) {
-        //this means the there two signal hits overlapping
+        //this means that there two signal hits overlapping
         //for now I keep the fMCTrack to the first one, by average the fMCPos nad fMCTime
+        //Weizhi Xiong
+        assert(manager->GetNSigParticle() > 1); //otherwise should not happen
         mc.fMCPos += c.fXProj[strip.fProj];
         mc.fMCTime += c.fTime; 
       }else{
@@ -462,7 +470,7 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 
   for (unsigned int i = 0; i<fSignalInfo.size(); i++){
     best_primary.push_back(-1);
-    best_primary_plane.push_back(NPLANES);
+    best_primary_plane.push_back(manager->GetNTracker());
     primary_sector.push_back(-1);
     primary_hitbits.push_back(0);
     ufail.push_back(0);
@@ -473,7 +481,7 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
        i < simEvent->fGEMClust.size(); ++i ) {
     const TSolSimEvent::GEMCluster& c = simEvent->fGEMClust[i];
 
-    if( c.fPlane < 0 || c.fPlane >= NPLANES ) {
+    if( c.fPlane < 0 || c.fPlane >= manager->GetNTracker() ) {
       Error( here, "Illegal plane number = %d in cluster. "
 	     "Should never happen. Call expert.", c.fPlane );
       simEvent->Print("clust");
@@ -674,37 +682,36 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
       date.f = static_cast<Float_t>(simEvent->fECHitData[i].fEdep);
     if (simEvent->fECHitData[i].fPlane == kLAEC){ //LAEC
       //position
-      StripToROC( kLAEC, NSECTORS, kPosition, i, crate, slot, chan ); //slot 0
+      StripToROC( kLAEC, manager->GetNSector(), kPosition, i, crate, slot, chan ); //slot 0
       if( crateslot[idx(crate,slot)]->loadData("adc",chan,datx.i,daty.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
 	    //energy deposition
-	    StripToROC( kLAEC, NSECTORS, kEnergy, i, crate, slot, chan );  //slot 1
+	    StripToROC( kLAEC, manager->GetNSector(), kEnergy, i, crate, slot, chan );  //slot 1
 	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,date.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
     }
     else if (simEvent->fECHitData[i].fPlane == kFAEC){
       //position
-      StripToROC( kFAEC, NSECTORS, kPosition, i, crate, slot, chan ); //slot 2
+      StripToROC( kFAEC, manager->GetNSector(), kPosition, i, crate, slot, chan ); //slot 2
       if( crateslot[idx(crate,slot)]->loadData("adc",chan,datx.i,daty.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
 	    //energy deposition
-	    StripToROC( kFAEC, NSECTORS, kEnergy, i, crate, slot, chan ); //slot 3
+	    StripToROC( kFAEC, manager->GetNSector(), kEnergy, i, crate, slot, chan ); //slot 3
 	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,date.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
     }else{
       Warning( Here(here), "Unknown EC detector. should never happen. Call expert." );
     }
-    
+
   }
-  
+
   // DEBUG:
   //cout << "SimDecoder: nTracks = " << GetNMCTracks() << endl;
   //fMCTracks.Print();
-
   return HED_OK;
 }
 
@@ -755,7 +762,8 @@ Int_t TSolSimBackTrack::Update( const TSolSimEvent::GEMCluster& c )
   // }
 
   if( c.fPlane > 0 ) {
-    Double_t dz = c.fMCpos.Z() - TSolSimDecoder::GetZ0();
+    Double_t dz = c.fMCpos.Z() - manager->GetSectorZ(0,0);
+
     if( dz <= 0 ) {
       Error( here, "Illegal fMCpos z-coordinate in plane = %d. "
 	     "Should never happen. Call expert.", c.fPlane );

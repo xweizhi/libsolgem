@@ -14,6 +14,7 @@
 #include <cassert>
 #include <map>
 #include <vector>
+#include "TSolDBManager.h"
 
 class THaCrateMap;
 
@@ -149,25 +150,17 @@ class TSolSimDecoder : public Podd::SimDecoder {
   static Int_t GetMAXSLOT() { return MAXSLOT; }
 #endif
 
-  static void     SetZ0( Double_t z0 ) { fgZ0 = z0; }
-  static Double_t GetZ0() { return fgZ0; }
-
   // Support for calorimeter emulation. Static functions to allow script access
   static void     EmulateCalorimeter( Bool_t f = true ) { fgDoCalo = f; }
   static void     SetCaloZ( Double_t z )     { fgCaloZ   = z; }
   static void     SetCaloRes( Double_t res ) { fgCaloRes = res; }
 
-  static void AddSignalInfo(Int_t pid, Int_t tid) { fSignalInfo.push_back(SignalInfo(pid, tid)); }
 protected:
   typedef std::map<Int_t,Int_t> StripMap_t;
 
   // Event-by-event data
   TClonesArray*   fBackTracks; //-> Primary particle tracks at first chamber
   StripMap_t      fStripMap;   //! Map ROCKey -> index of corresponding strip
-
-  // Parameters
-  // FIXME: any geometry data here are duplicates of the replay database
-  static Double_t fgZ0;        // z position of first tracker plane
 
   // Calorimeter emulation
   static Bool_t   fgDoCalo;    // Enable calorimeter emulation
@@ -185,7 +178,7 @@ protected:
   Int_t StripFromROC( Int_t crate, Int_t slot, Int_t chan ) const;
   // Int_t MakeROCKey( Int_t crate, Int_t slot, Int_t chan ) const;
 
-  static std::vector<SignalInfo> fSignalInfo;
+  std::vector<SignalInfo> fSignalInfo;
 
   ClassDef(TSolSimDecoder,0) // Decoder for simulated SoLID spectrometer data
 };
