@@ -213,6 +213,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   
   //parameter for numerical integration
   UInt_t   fYIntegralStepsPerPitch;
+  UInt_t   fXIntegralStepsPerPitch;
 
   TSolDigitizedPlane*** fDP; // 2D array of plane pointers indexed by chamber, plane #
 

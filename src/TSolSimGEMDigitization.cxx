@@ -299,6 +299,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
       { "avalateraluncertainty",     &fLateralUncertainty,        kDouble },
       { "max_ion",                   &fMaxNIon,                   kUInt   },
       { "y_integral_step_per_pitch", &fYIntegralStepsPerPitch,    kUInt   },
+      { "x_integral_step_per_pitch", &fXIntegralStepsPerPitch,    kUInt   },
       { "avalanche_range",           &fSNormNsigma,               kDouble },
       { "ava_model",                 &fAvaModel,                  kInt    },
       { "ava_gain",                  &fAvaGain,                   kDouble },
@@ -752,8 +753,14 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         yb = yq * TMath::Floor (yb / yq);
         yt = yq * TMath::Ceil  (yt / yq);
 
-        // # of coarse histogram bins: 1 per pitch x-direction, 10 per pitch in y
-        Int_t nx = iU - iL + 1;
+        //We should also allow x to have variable bin size based on the db
+        //the new avalanche model (Cauchy-Lorentz) has a very sharp full width
+        //half maximum, so if the bin size is too large, it can introduce
+        //fairly large error on the charge deposition. Setting fXIntegralStepsPerPitch
+        //to 1 will go back to the original version -- Weizhi Xiong
+
+        Int_t nstrips = iU - iL + 1;
+        Int_t nx = (iU - iL + 1) * fXIntegralStepsPerPitch;
         Int_t ny = TMath::Nint( (yt - yb)/yq );
 #if DBG_AVA > 0
         cout << "xr xl yt yb nx ny "
@@ -798,7 +805,6 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 	        Double_t ggnorm = fRIon[i].ggnorm;
 	        Double_t r2 = fRIon[i].R2;
 	        Double_t eff_sigma = r2/(fSNormNsigma*fSNormNsigma);
-	        //cout<<eff_sigma<<" "<<xbw<<" "<<ybw<<endl;
 	        // xc and yc are center of current bin
 	        Int_t jx = max(ix-dx,0);
 	        Double_t xc = xl + (jx+0.5) * xbw;
@@ -811,7 +817,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 	            
 	            for (; jy < min(iy+dy+1,ny); ++jy, yc += ybw){
 		            Double_t yd2 = frys-yc; yd2 *= yd2;
-		            //cout<<" "<<yd2<<" "<<r2<<" "<<eff_sigma<<endl;
+
 		            if( xd2 + (frys-yc)*(frys-yc) <= r2 ) {
 		                if( (clipped || bb_clipped) && !IsInActiveArea(pl,xc*1e-3,yc*1e-3) )
 		                continue;
@@ -830,8 +836,6 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 		                        fSumA[jx*ny+jy] += 
 		                        fAvaGain*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma)
 		                        /((xd2+yd2)+eff_sigma*eff_sigma);
-		                        //cout<<jx*ny+jy<<" "<<fAvaGain*ggnorm*(1./(TMath::Pi()*eff_sigma))*(eff_sigma*eff_sigma)
-		                        ///((xd2+yd2)+eff_sigma*eff_sigma)<<endl;
 		                }
 		            }
 	            }
@@ -851,10 +855,15 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         Int_t ai=0;
         Double_t area = xbw * ybw;
 
-        for (Int_t j = 0; j < nx; j++){
+        //when we integrate in order to get the signal pulse, we want all charge
+        //deposition on the area of a single strip -- Weizhi
+        for (Int_t j = 0; j < nstrips; j++){
 	        Int_t posflag = 0;
-	        Double_t us = IntegralY( &fSumA[0], j, nx, ny ) * area;
-
+	        Double_t us = 0.;
+	        for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
+	            us += IntegralY( &fSumA[0], j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
+            }
+            
             //generate the random pedestal phase and amplitude
             Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
             Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
