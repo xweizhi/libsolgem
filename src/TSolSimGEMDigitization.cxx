@@ -281,6 +281,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
       { "gain0",                     &fGain0,                     kDouble },
       { "triggeroffset",             &fTriggerOffset,             kDouble },
       { "triggerjitter",             &fTriggerJitter,             kDouble },
+      { "apv_time_jitter",           &fAPVTimeJitter,             kDouble },
       { "elesamplingpoints",         &fEleSamplingPoints,         kInt    },
       { "elesamplingperiod",         &fEleSamplingPeriod,         kDouble },
       { "pulsenoisesigma",           &fPulseNoiseSigma,           kDouble },
@@ -422,6 +423,18 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
     if( !time_set[itime] ) {
       // Trigger time jitter, including an arbitrary offset to align signal timing
       Double_t trigger_jitter = fTrnd.Gaus(fTriggerOffset, fTriggerJitter);
+      // time jitter due to in fact that the internal clock of APV cannot be synchronized
+      // with our trigger, this will cause a uncertainty about the size of the sampling period
+      // (25ns in the case of APV25). 
+      // Also note that this way of adding the APV time jitter assume that
+      // all APVs are synchronized among themselves, otherwise each APV should get a different
+      // jitter. In that case, there will be a bit more development needed for this program
+      // because we need to group strips into APVs -- Weizhi
+      
+      //fAPVTimeJitter should actually be equal to fEleSamplingPeriod, but I would like to
+      //have the option of turning it on and off
+      trigger_jitter += (fTrnd.Uniform(fAPVTimeJitter) - fAPVTimeJitter/2.);
+      
       if( is_background ) {
 	// For background data, uniformly randomize event time between
 	// -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
