@@ -4,7 +4,7 @@
 
 using namespace std;
 
-TSolGEMData::TSolGEMData (UInt_t h)
+TSolGEMData::TSolGEMData (UInt_t h) : fRunID(0)
 {
   fHitData.reserve(h);
   fSignalSector = -1;
