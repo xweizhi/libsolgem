@@ -19,7 +19,7 @@ void Digitize_sidis_6gem_qgsp( const char *filename = NULL,
   const int mark_interval = 100;
   const double e_charge = 1.60217662e-19; //couloumbs
   const double beam_current = 15.0e-6; // 15 uA
-  const double time_window = 475.0e-9; //475 ns
+  const double time_window = 275.0e-9; //475 ns
 
   int nbacktoadd = (7014199/0.999e10) * beam_current / e_charge * time_window * bgratio;
   gSystem->Load("libsolgem.so");
@@ -144,10 +144,34 @@ void Digitize_sidis_6gem_qgsp( const char *filename = NULL,
     bool pass = true;
     for (unsigned int ii=0; ii<f->GetNSignal(); ii++){
       //condition for event selection
+      //LA electron
+      //if (f->GetSigECBit(ii) != 2) pass = false;
+      //if (f->GetSigECEDep(ii) < 3.0) pass = false;
+      //if (f->GetSigR(ii) > 1.4 || f->GetSigR(ii) < 0.83 ) pass = false;
+      
+      //FA electron
       if (f->GetSigECBit(ii) != 1) pass = false;
-      if (f->GetSigECEDep(ii) < 0.9) pass = false;
-      if (f->GetSigMomentum(ii) > 7.) pass = false;
-      if (f->GetSigR(ii) > 2.1 || f->GetSigR(ii) < 0.96 ) pass = false;
+      Double_t R_EC = f->GetSigR(ii);
+      Double_t mom_EC = f->GetSigECEDep(ii);
+      if (R_EC >= 0.9 && R_EC < 1.1){
+                
+            if (mom_EC <= 4.0) pass = false;
+            
+        }else if (R_EC >= 1.1 && R_EC < 1.25){
+        
+            if (mom_EC <= 3.0) pass = false;
+            
+        }else if (R_EC >= 1.25 && R_EC < 1.45){
+        
+            if (mom_EC <= 2.0) pass = false;
+            
+        }else if (R_EC >= 1.45 && R_EC < 2.30){
+        
+            if (mom_EC <= 1.0) pass = false;
+            
+        }else{
+            pass = false;         
+       }
     }
 
     if (!pass) continue;

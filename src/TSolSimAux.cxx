@@ -1,5 +1,5 @@
 #include "TSolSimAux.h"
-
+#include <iostream>
 #include <cassert>
 #include <TMath.h>
 
@@ -41,7 +41,6 @@ TSolSimAux::PulseShape(Double_t t,
 				  Double_t Tp) // shaping time 
 
 {
-
   Double_t v;
   Double_t x;
   x = t/Tp;
@@ -67,13 +66,11 @@ TSolSimAux::PulseShape(Double_t t,
   Double_t v;
   Double_t x0,x1;
 
-  //  cerr << __FUNCTION__ << " " << t << " " << A << " " << tau0 << " " << tau1 << endl;
-
+    //cerr << __FUNCTION__ << " " << t << " " << A << " " << tau0 << " " << tau1 << endl;
   if (tau1<0) { return PulseShape(t, A, tau0); } // SiD model
   x0 = -t/tau0;
   x1 = -t/tau1;
   v = A * ((tau0+tau1)/tau1/tau1)*(1.-TMath::Exp(x0)) * TMath::Exp(x1);
-  
   return ( v>0. ) ? v : 0.;
  	   
 }

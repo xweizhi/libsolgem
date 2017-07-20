@@ -16,7 +16,12 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
   const int maxdata = startevent+nevents;
 
   const int mark_interval = 100;
-  int nbacktoadd = (1.931389e7/1.e10)*85456805 * bgratio;//275ns
+  const double e_charge = 1.60217662e-19; //couloumbs
+  const double beam_current = 50.0e-6; // 50 uA
+  const double time_window = 275.0e-9; //275 ns
+  
+  int nbacktoadd = (5.22438e7/1.e9)* beam_current / e_charge * time_window * bgratio;//275ns pass 4
+  //int nbacktoadd = (1.931389e7/1.e10)*85830212 * bgratio;//275ns pass 3
   gSystem->Load("libsolgem.so");
   
   if(filename == NULL){
@@ -81,7 +86,7 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
   cout << "Scanning for background files in " << backgr_dir << " " << flush;
   const char* dir_item;
   while( (dir_item = gSystem->GetDirEntry(dirp)) ) {
-    if( !strncmp("bg_solid_PVDIS_LH2_11182016",dir_item,27) &&
+    if( !strncmp("bg_solid_PVDIS_LH2_02102017",dir_item,27) &&
         !strncmp(".root",dir_item+strlen(dir_item)-5,5) ) {
       fnam = backgr_dir;
       fnam.append("/");
@@ -114,15 +119,13 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
 
   if( nbacktoadd > 0 ) {
     if( manager->DoMapSector() )
-      nbacktoadd /= NSECTORS;
+      nbacktoadd /= manager->GetNSector();
     int round_level = TMath::Power(10,TMath::FloorNint(TMath::Log10(nbacktoadd/10)));
     bg_mark_interval = int(nbacktoadd/10/round_level) * round_level;
   }
 
-  int count = 0;
   while( ndata < maxdata && f->ReadNextEvent() ){
     ndata++;
-    
     if( ndata < mindata )
       continue;
     if( interactive || ndata % mark_interval == 0 ){
@@ -131,15 +134,39 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
     f->GetGEMData(gd);
     bool pass = true;
     for (unsigned int ii=0; ii<f->GetNSignal(); ii++){
-      //condition for event selection
+      //condition for event selection, basically the EC trigger
       if (f->GetSigECBit(ii) != 1) pass = false;
-      if (f->GetSigECEDep(ii) < 2.) pass = false;
-      if (f->GetSigMomentum(ii) > 6.) pass = false;
-      //if (fabs(f->GetSigMomentum(ii) - f->GetSigECEDep(ii)) > 0.1) pass = false;
-      if (f->GetSigR(ii) > 2.1 || f->GetSigR(ii) < 0.96 ) pass = false;
+      Double_t R_EC = f->GetSigR(ii);
+      Double_t mom_EC = f->GetSigECEDep(ii);
+      
+      if (R_EC >= 1.1 && R_EC < 1.16){
+                
+            if (mom_EC <= 3.8) pass = false;
+            
+        }else if (R_EC >= 1.16 && R_EC < 1.24){
+        
+            if (mom_EC <= 3.5) pass = false;
+            
+        }else if (R_EC >= 1.24 && R_EC < 1.65){
+        
+            if (mom_EC <= 2.5) pass = false;
+            
+        }else if (R_EC >= 1.65 && R_EC < 2.05){
+        
+            if (mom_EC <= 2.0) pass = false;
+            
+        }else if (R_EC >= 2.05 && R_EC < 2.65){
+        
+            if (mom_EC <= 1.5) pass = false;
+            
+        }else{
+        
+            pass = false;
+                    
+       }
+      
     }
     if (!pass) continue;
-    count++;
     ddd->SetTreeEvent(*gd,*f,nwritten+1);
     ddd->Digitize(*gd, *dds);
     // Add background events
@@ -189,7 +216,6 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
       --c;
     }
   }
-  cout<<count<<endl;
   
   cout << "Read " << ndata << " events, " << nwritten << " written" << endl;
 

@@ -48,6 +48,7 @@ static void ChamberToSector( Short_t chamber, Short_t& sector, Short_t& plane )
   // The number of sectors is implied to be 30.
 
   div_t d = div( chamber, manager->GetNSector() );
+
   sector = d.rem;
   plane  = d.quot;
 }
@@ -71,6 +72,7 @@ TSolDigitizedPlane::TSolDigitizedPlane (UShort_t nstrip,
     fCharge = new Float_t[nstrip];
     fTime = new Float_t[nstrip];
     fTotADC = new Int_t[nstrip];
+    fMaxADC = new Int_t[nstrip];
     fOverThr = new Short_t[nstrip];
 
     fStripADC.Set(fNSamples*fNStrips);
@@ -85,6 +87,7 @@ TSolDigitizedPlane::~TSolDigitizedPlane()
   delete[] fCharge;
   delete[] fTime;
   delete[] fTotADC;
+  delete[] fMaxADC;
   delete[] fOverThr;
 };
 
@@ -94,6 +97,7 @@ TSolDigitizedPlane::Clear()
   fStripADC.Reset();
   memset( fType,   0, fNStrips*sizeof(Short_t) );
   memset( fTotADC, 0, fNStrips*sizeof(Int_t) );
+  memset( fMaxADC, 0, fNStrips*sizeof(Int_t) );
   memset( fCharge, 0, fNStrips*sizeof(Float_t) );
 
   for (Int_t i = 0; i < fNStrips; i++) {
@@ -114,7 +118,7 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
             fType[idx] |= type;
             fTime[idx] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
             fCharge[idx] += vv->GetCharge(j);
-            bool was_below = !( fTotADC[idx] > fThreshold );
+            bool was_below = !( /*fTotADC[idx]*/fMaxADC[idx] > fThreshold );
             for( UInt_t k=0; k<fNSamples; k++ ) {
 	            Int_t nnn = vv->GetADC(j,k);
 	            assert( nnn >= 0 );
@@ -122,8 +126,9 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
 	            Int_t iadc = idx*fNSamples+k;
 	            fStripADC[iadc] = fStripADC[iadc] + nnn;
 	            fTotADC[idx] += nnn;
+	            if (fStripADC[iadc] > fMaxADC[idx]) fMaxADC[idx] = fStripADC[iadc];
             }
-            if( was_below && fTotADC[idx] > fThreshold ) {
+            if( was_below && /*fTotADC[idx]*/ fMaxADC[idx] > fThreshold ) {
 	            assert( fNOT < fNStrips );
 	            fOverThr[fNOT] = idx;
 	            ++fNOT;
@@ -152,7 +157,7 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
             //same time as the main signal strip
             fTime[idxInduce] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
             fCharge[idxInduce] += factor*vv->GetCharge(j);
-            bool was_below = !( fTotADC[idxInduce] > fThreshold );
+            bool was_below = !( /*fTotADC[idxInduce]*/fMaxADC[idxInduce] > fThreshold );
             for( UInt_t k=0; k<fNSamples; k++ ) {
                 Int_t nnn = vv->GetADC(j,k);
                 assert( nnn >= 0 );
@@ -161,8 +166,9 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
                 Int_t iadc = idxInduce*fNSamples+k;
                 fStripADC[iadc] = fStripADC[iadc] + nnn;
                 fTotADC[idxInduce] += nnn;
+                if (fStripADC[iadc] > fMaxADC[idxInduce]) fMaxADC[idxInduce] = fStripADC[iadc];
             }
-            if( was_below && fTotADC[idxInduce] > fThreshold ) {
+            if( was_below && /*fTotADC[idxInduce]*/fMaxADC[idxInduce] > fThreshold ) {
                 assert( fNOT < fNStrips );
                 fOverThr[fNOT] = idxInduce;
                 ++fNOT;
@@ -184,7 +190,7 @@ TSolDigitizedPlane::Threshold( Int_t thr )
 
   for (UInt_t j = 0; j < fNStrips; j++)
     {
-      if (fTotADC[j] > thr)
+      if (/*fTotADC[j]*/fMaxADC[j] > thr)
 	{
 	  fOverThr[fNOT] = j;
 	  fNOT++;
@@ -249,10 +255,9 @@ TSolSimGEMDigitization::Initialize(const TSolSpec& spect)
 	fDP[ic][ip] =
 	  new TSolDigitizedPlane( spect.GetChamber(ic).GetPlane(ip).GetNStrips(),
 				  fEleSamplingPoints, // # ADC samples
-				  0 );                // threshold is zero for now
+				  manager->GetTotalADCThreshold() );                // threshold is zero for now
       }
     }
-
   // Estimated max size of the charge collection area in AvaModel
   Double_t pitch = 0.4; // [mm]
   Double_t f = ( 2 * fAvalancheFiducialBand * 0.1 /* fRSMax */ ) / pitch + 6 /* track slope */;
@@ -269,52 +274,67 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
 {
   FILE* file = OpenFile (date);
   if (!file) return kFileError;
-
-  const DBRequest request[] =
-    {
-      { "gasionwidth",               &fGasWion,                   kDouble },
-      { "gasdiffusion",              &fGasDiffusion,              kDouble },
-      { "gasdriftvelocity",          &fGasDriftVelocity,          kDouble },
-      { "avalanchefiducialband",     &fAvalancheFiducialBand,     kDouble },
-      { "avalanchechargestatistics", &fAvalancheChargeStatistics, kInt    },
-      { "gainmean",                  &fGainMean,                  kDouble },
-      { "gain0",                     &fGain0,                     kDouble },
-      { "triggeroffset",             &fTriggerOffset,             kDouble },
-      { "triggerjitter",             &fTriggerJitter,             kDouble },
-      { "apv_time_jitter",           &fAPVTimeJitter,             kDouble },
-      { "elesamplingpoints",         &fEleSamplingPoints,         kInt    },
-      { "elesamplingperiod",         &fEleSamplingPeriod,         kDouble },
-      { "pulsenoisesigma",           &fPulseNoiseSigma,           kDouble },
-      { "pulsenoiseperiod",          &fPulseNoisePeriod,          kDouble },
-      { "pulsenoiseampconst",        &fPulseNoiseAmpConst,        kDouble },
-      { "pulsenoiseampsigma",        &fPulseNoiseAmpSigma,        kDouble },
-      { "adcoffset",                 &fADCoffset,                 kDouble },
-      { "adcgain",                   &fADCgain,                   kDouble },
-      { "adcbits",                   &fADCbits,                   kInt    },
-      { "gatewidth",                 &fGateWidth,                 kDouble },
-      { "pulseshapetau0",            &fPulseShapeTau0,            kDouble },
-      { "pulseshapetau1",            &fPulseShapeTau1,            kDouble },
-      { "zrout",                     &fRoutZ,                     kDouble },
-      { "use_tracker_frame",         &fUseTrackerFrame,           kInt    },
-      { "entrance_ref",              &fEntranceRef,               kDouble },
-      { "avalateraluncertainty",     &fLateralUncertainty,        kDouble },
-      { "max_ion",                   &fMaxNIon,                   kUInt   },
-      { "y_integral_step_per_pitch", &fYIntegralStepsPerPitch,    kUInt   },
-      { "x_integral_step_per_pitch", &fXIntegralStepsPerPitch,    kUInt   },
-      { "avalanche_range",           &fSNormNsigma,               kDouble },
-      { "ava_model",                 &fAvaModel,                  kInt    },
-      { "ava_gain",                  &fAvaGain,                   kDouble },
-      { "do_crosstalk",              &fDoCrossTalk,               kInt    },
-      { "crosstalk_mean",            &fCrossFactor,               kDouble },
-      { "crosstalk_sigma",           &fCrossSigma,                kDouble },
-      { "corsstalk_strip_apart",     &fNCStripApart,              kInt    },
-      { 0 }
-    };
-
-  Int_t err = LoadDB (file, date, request, fPrefix);
-  fclose(file);
-  if (err)
-    return kInitError;
+  
+  vector<Double_t>* offset = 0;
+  
+  try{
+    offset = new vector<Double_t>;
+    const DBRequest request[] =
+        {
+          { "gasionwidth",               &fGasWion,                   kDouble },
+          { "gasdiffusion",              &fGasDiffusion,              kDouble },
+          { "gasdriftvelocity",          &fGasDriftVelocity,          kDouble },
+          { "avalanchefiducialband",     &fAvalancheFiducialBand,     kDouble },
+          { "avalanchechargestatistics", &fAvalancheChargeStatistics, kInt    },
+          { "gainmean",                  &fGainMean,                  kDouble },
+          { "gain0",                     &fGain0,                     kDouble },
+          { "triggeroffset",             offset,                      kDoubleV},
+          { "triggerjitter",             &fTriggerJitter,             kDouble },
+          { "apv_time_jitter",           &fAPVTimeJitter,             kDouble },
+          { "elesamplingpoints",         &fEleSamplingPoints,         kInt    },
+          { "elesamplingperiod",         &fEleSamplingPeriod,         kDouble },
+          { "pulsenoisesigma",           &fPulseNoiseSigma,           kDouble },
+          { "pulsenoiseperiod",          &fPulseNoisePeriod,          kDouble },
+          { "pulsenoiseampconst",        &fPulseNoiseAmpConst,        kDouble },
+          { "pulsenoiseampsigma",        &fPulseNoiseAmpSigma,        kDouble },
+          { "adcoffset",                 &fADCoffset,                 kDouble },
+          { "adcgain",                   &fADCgain,                   kDouble },
+          { "adcbits",                   &fADCbits,                   kInt    },
+          { "gatewidth",                 &fGateWidth,                 kDouble },
+          { "pulseshapetau0",            &fPulseShapeTau0,            kDouble },
+          { "pulseshapetau1",            &fPulseShapeTau1,            kDouble },
+          { "zrout",                     &fRoutZ,                     kDouble },
+          { "use_tracker_frame",         &fUseTrackerFrame,           kInt    },
+          { "entrance_ref",              &fEntranceRef,               kDouble },
+          { "avalateraluncertainty",     &fLateralUncertainty,        kDouble },
+          { "max_ion",                   &fMaxNIon,                   kUInt   },
+          { "y_integral_step_per_pitch", &fYIntegralStepsPerPitch,    kUInt   },
+          { "x_integral_step_per_pitch", &fXIntegralStepsPerPitch,    kUInt   },
+          { "avalanche_range",           &fSNormNsigma,               kDouble },
+          { "ava_model",                 &fAvaModel,                  kInt    },
+          { "ava_gain",                  &fAvaGain,                   kDouble },
+          { "do_crosstalk",              &fDoCrossTalk,               kInt    },
+          { "crosstalk_mean",            &fCrossFactor,               kDouble },
+          { "crosstalk_sigma",           &fCrossSigma,                kDouble },
+          { "corsstalk_strip_apart",     &fNCStripApart,              kInt    },
+          { 0 }
+        };
+        Int_t err = LoadDB (file, date, request, fPrefix);
+        fclose(file);
+        if (err)
+        return kInitError;
+        
+        assert((Int_t)offset->size() == manager->GetNTracker());
+        for (UInt_t i=0; i<offset->size(); i++){
+            fTriggerOffset.push_back(offset->at(i));
+        }
+        
+        delete offset;
+  }  catch(...) {
+        delete offset;
+        fclose(file);
+        throw;
+  }    
 
   if( fEleSamplingPoints < 0 || fEleSamplingPoints > 10 )
     fEleSamplingPoints = 10;
@@ -400,6 +420,14 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       
     TVector3 vv1 = gdata.GetHitEntrance (ih);
     TVector3 vv2 = gdata.GetHitExit (ih);
+    
+    Double_t eDep = gdata.GetHitEnergy(ih);
+    //cheack if the hit is landing in a inactive area, i.e HV sector off
+    //if so, set the edep to 0, so that it will not produce any ion pairs
+    Double_t meanX = (vv1.X() + vv2.X())/2.*1.e-3;
+    Double_t meanY = (vv1.Y() + vv2.Y())/2.*1.e-3;
+    if (spect.GetChamber(igem).IsInDeadArea(meanX, meanY)) eDep = 0.0;
+    
     // These vectors are in the lab frame, we need them in the chamber frame
     // Also convert to mm
 
@@ -411,7 +439,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
     vv2.RotateZ (-angle);
 
     TSolGEMVStrip **dh = NULL;
-    IonModel (vv1, vv2, gdata.GetHitEnergy(ih) );
+    IonModel (vv1, vv2, eDep );
 
     // Generate randomized event time (for background) and trigger time jitter
     if( map_backgr ) {
@@ -422,7 +450,8 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
     }
     if( !time_set[itime] ) {
       // Trigger time jitter, including an arbitrary offset to align signal timing
-      Double_t trigger_jitter = fTrnd.Gaus(fTriggerOffset, fTriggerJitter);
+      Double_t trigger_jitter = fTrnd.Gaus(0, fTriggerJitter);
+      
       // time jitter due to in fact that the internal clock of APV cannot be synchronized
       // with our trigger, this will cause a uncertainty about the size of the sampling period
       // (25ns in the case of APV25). 
@@ -433,23 +462,24 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       
       //fAPVTimeJitter should actually be equal to fEleSamplingPeriod, but I would like to
       //have the option of turning it on and off
-      trigger_jitter += (fTrnd.Uniform(fAPVTimeJitter) - fAPVTimeJitter/2.);
+      Double_t apvJitter = (fTrnd.Uniform(fAPVTimeJitter) - fAPVTimeJitter/2.);
+      trigger_jitter += apvJitter;
       
       if( is_background ) {
 	// For background data, uniformly randomize event time between
 	// -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-	event_time[itime] = fTrnd.Uniform(fGateWidth + 3*fEleSamplingPeriod)
+	event_time[itime] = fTrnd.Uniform(fGateWidth + 3.*fEleSamplingPeriod)
 	  - fGateWidth - trigger_jitter;
 
       } else {
-	// Signal events occur at t = 0, smeared only by the trigger jitter
-	event_time[itime] = -trigger_jitter;
+	    // Signal events occur at t = 0, smeared only by the trigger jitter
+	    event_time[itime] = -trigger_jitter;
+        fJitterMeasure = apvJitter;
       }
       time_set[itime] = true;
     }
     // Time of the leading edge of this hit's avalance relative to the trigger
-    Double_t time_zero = event_time[itime] + gdata.GetHitTime(ih) + fRTime0*1e9;
-    //cout<<"timing: "<<time_zero<<endl;
+    Double_t time_zero = event_time[itime] - fTriggerOffset[iplane] + gdata.GetHitTime(ih) + fRTime0*1e9;
     if (fRNIon > 0) {
       dh = AvaModel (igem, spect, vv1, vv2, time_zero);
     }
@@ -466,6 +496,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
 	  igem += fEvent->fGEMClust.back().fSector;
 	}
       }
+
       for (UInt_t j = 0; j < 2; j++) {
 	fDP[igem][j]->Cumulate (dh[j], itype, id );
       }
@@ -878,8 +909,8 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
             }
             
             //generate the random pedestal phase and amplitude
-            Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
-            Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
+            //Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
+            //Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
 	        for (Int_t b = 0; b < fEleSamplingPoints; b++){
 	            Double_t pulse =
@@ -896,8 +927,8 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 	            // pulse += fTrnd.Gaus(0., fPulseNoiseSigma);
 
                 //add noise only to those strips that are hit,
-                if( fPulseNoiseSigma > 0. && pulse > 0. )
-                    pulse += GetPedNoise(phase, amp, b);
+                //if( fPulseNoiseSigma > 0. && pulse > 0. )
+                //    pulse += GetPedNoise(phase, amp, b);
 
 	            Short_t dadc = TSolSimAux::ADCConvert( pulse,
 						                               fADCoffset,
@@ -922,7 +953,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
   return virs;
 }
 //___________________________________________________________________________________
-inline Double_t TSolSimGEMDigitization::GetPedNoise(Double_t &phase, Double_t& amp, Int_t& isample)
+Double_t TSolSimGEMDigitization::GetPedNoise(Double_t &phase, Double_t& amp, UInt_t& isample)
 {
   Double_t thisPhase = phase + isample*fEleSamplingPeriod;
   return fTrnd.Gaus(0., fPulseNoiseSigma)
@@ -943,7 +974,10 @@ TSolSimGEMDigitization::Print() const
   cout << "    Gain 0: " << fGain0 << endl;
 
   cout << "  Electronics parameters:" << endl;
-  cout << "    Trigger offset: " << fTriggerOffset << endl;
+  cout << "    Trigger offset: " << endl;
+  for (UInt_t i=0; i<fTriggerOffset.size(); i++) cout<<fTriggerOffset[i]<<" ";
+  cout<<endl;
+  
   cout << "    Trigger jitter: " << fTriggerJitter << endl;
   cout << "    Sampling Period: " << fEleSamplingPeriod << endl;
   cout << "    Sampling Points: " << fEleSamplingPoints   << endl;
@@ -1078,6 +1112,7 @@ TSolSimGEMDigitization::SetTreeEvent (const TSolGEMData& tsgd,
 
   fEvent->fSectorsMapped = fDoMapSector;
   fEvent->fSignalSector = tsgd.GetSigSector();
+  fEvent->fTDCTimeMeas = fJitterMeasure;
 
   //might just record the EC hit info here
   fEvent->fECHitData.clear();
@@ -1149,6 +1184,7 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
     if (dh != NULL && dh[j] != NULL)
       {
 	clust.fSize[j]  = dh[j]->GetSize();
+
 	clust.fStart[j] = (clust.fSize[j] > 0) ? dh[j]->GetIdx(0) : -1;
       }
     else
@@ -1214,6 +1250,7 @@ TSolSimGEMDigitization::SetTreeStrips()
     // be different for each chamber, so what's "x" in one chamber may very
     // well be something else, like "x'", in another. These angles don't even
     // have to match anything in the Monte Carlo.
+    
     for (UInt_t ip = 0; ip < GetNPlanes (ich); ++ip) {
       strip.fProj = (Short_t) ip;
       strip.fNsamp = TMath::Min((UShort_t)MC_MAXSAMP,
@@ -1222,10 +1259,19 @@ TSolSimGEMDigitization::SetTreeStrips()
       for (UInt_t iover = 0; iover < nover; iover++) {
 	Short_t idx = GetIdxOverThr(ich, ip, iover);
 	strip.fChan = idx;
+    //move the pedestal noise here
+    Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
+    Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
-	for (UInt_t ss = 0; ss < strip.fNsamp; ++ss)
+    //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"channel: "<<idx<<endl;
+	for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
 	  strip.fADC[ss] = GetADC(ich, ip, idx, ss);
-
+	  //cout<<strip.fADC[ss]<<" ";
+	  if( fPulseNoiseSigma > 0.)
+        strip.fADC[ss] += GetPedNoise(phase, amp, ss);
+    }
+    //cout<<endl;
+    
 	strip.fSigType = GetType(ich, ip, idx);
 	strip.fCharge  = GetCharge(ich, ip, idx);
 	strip.fTime1   = GetTime(ich, ip, idx);

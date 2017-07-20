@@ -58,6 +58,8 @@ TSolROOTFile::TSolROOTFile(const char *f, int source)
     flux_avg_y = 0;
     flux_avg_z = 0;
     
+    header_var8 = 0;
+    
     fSignalInfo.clear();
     fManager = TSolDBManager::GetInstance();
     
@@ -103,6 +105,7 @@ void TSolROOTFile::SetBranchAddress()
   tree_generated = (TTree*)fChan->Get("generated");
   tree_solid_gem = (TTree*)fChan->Get("solid_gem");
   tree_flux      = (TTree*)fChan->Get("flux");
+  tree_header    = (TTree*)fChan->Get("header");
   
   tree_generated->SetBranchAddress("pid",&gen_pid);
   tree_generated->SetBranchAddress("px",&gen_px);
@@ -145,6 +148,9 @@ void TSolROOTFile::SetBranchAddress()
   tree_flux->SetBranchAddress("avg_x",&flux_avg_x);
   tree_flux->SetBranchAddress("avg_y",&flux_avg_y);
   tree_flux->SetBranchAddress("avg_z",&flux_avg_z);
+  
+  //header branch
+  tree_header->SetBranchAddress("var8", &header_var8);
 
   fMaxEvNum = tree_flux->GetEntries();  
 }
@@ -194,8 +200,7 @@ Int_t TSolROOTFile::ReadNextEvent(){
   if (fEvNum >= fMaxEvNum || fEvNum < 0 ){
     return 0;
   }
-  
-  //hit pattern of the current SIGNAL track, 011111 if the particle hit all FA GEMs, and 01 if it also hit the FAEC  
+   
   //clear signal info array
   for (unsigned int i = 0; i < fSignalInfo.size(); i++){
     fSignalInfo.at(i).fillBitsGEM = 0;
@@ -209,6 +214,7 @@ Int_t TSolROOTFile::ReadNextEvent(){
   tree_generated->GetEntry(fEvNum);
   tree_solid_gem->GetEntry(fEvNum);
   tree_flux->GetEntry(fEvNum);
+  tree_header->GetEntry(fEvNum);
   BuildGenerated();
   BuildECData();
   ExtractDetIDs();
@@ -219,8 +225,6 @@ Int_t TSolROOTFile::ReadNextEvent(){
 void TSolROOTFile::BuildGenerated()
 {
   unsigned int length = gen_pid->size();
-
-  if (fSource == 0 && length != fSignalInfo.size()) cout<<"signal info not complete"<<endl;
   unsigned int i = 0;
 
   for (i=0; i<length; i++){
@@ -252,7 +256,19 @@ void TSolROOTFile::BuildGenerated()
                                     + pow(gen_pz->at(i),2))*1.e-3; //To GeV
 
   }
-
+  
+  if ( fSource != 0 ) return;
+  
+  length = header_var8->size() > gen_pid->size() ? gen_pid->size() : header_var8->size();
+  i=0;
+  
+  //sometimes there is empty entry in the generated branch but not in the header branch
+  //the following assert will then result in a crush
+  //assert(length == fGenData.size());
+  
+  for (i=0; i<length; i++){
+    fGenData[i]->SetData(7, header_var8->at(i));
+  }
 }
 //_______________________________________________________________________
 void TSolROOTFile::ExtractDetIDs()
@@ -357,9 +373,9 @@ void TSolROOTFile::BuildData()
   }
 
   //save the weight factor into fGenData
-  for( i = 0; i < fGenData.size() && length > 0; i++ ){
+  /*for( i = 0; i < fGenData.size() && length > 0; i++ ){
     fGenData[i]->SetData(7, solid_gem_weight->at(0));
-  }
+  }*/
 }
 
 //_______________________________________________________________________
@@ -616,6 +632,8 @@ void TSolROOTFile::ClearVectors()
   flux_avg_x->clear();
   flux_avg_y->clear();
   flux_avg_z->clear();
+  
+  header_var8->clear();
 }
 //______________________________________________________________________
 void TSolROOTFile::DeleteVectors()
@@ -665,6 +683,8 @@ void TSolROOTFile::DeleteVectors()
   vector<double>().swap(*flux_avg_x);
   vector<double>().swap(*flux_avg_y);
   vector<double>().swap(*flux_avg_z);
+  
+  vector<double>().swap(*header_var8);
 }
 //#endif
 

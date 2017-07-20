@@ -1,4 +1,6 @@
 #include <iostream>
+#include <cassert>
+#include <cmath>
 
 #include "TSolGEMChamber.h"
 #include "TSolGEMPlane.h"
@@ -16,7 +18,7 @@ TSolGEMChamber::TSolGEMChamber( const char *name, const char *desc )
   fNPlanes = 2;
   fPlanes = new TSolGEMPlane*[fNPlanes];
   fWedge = new TSolWedge;
-
+  fVector3.SetXYZ(0, 0, 0);
   return;
 }
 
@@ -72,21 +74,61 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
   Double_t dphi = -999.0;
   Double_t z0 = -999.0;
   Double_t depth = -999.0;
+  Int_t nOff = 0;
+  fHVSectorOff.clear();
   const DBRequest request[] =
     {
-      {"r0",          &r0,           kDouble, 0, 1},
-      {"r1",          &r1,           kDouble, 0, 1},
-      {"phi0",        &phi0,         kDouble, 0, 1},
-      {"dphi",        &dphi,         kDouble, 0, 1},
-      {"z0",          &z0,           kDouble, 0, 1},
-      {"depth",       &depth,        kDouble, 0, 1},
+      {"r0",               &r0,           kDouble, 0, 1},
+      {"r1",               &r1,           kDouble, 0, 1},
+      {"phi0",             &phi0,         kDouble, 0, 1},
+      {"dphi",             &dphi,         kDouble, 0, 1},
+      {"z0",               &z0,           kDouble, 0, 1},
+      {"depth",            &depth,        kDouble, 0, 1},
+      {"frame_width",      &fFrameWidth,  kDouble, 0, 1},
+      {"n_HV_sector_off",  &nOff,         kInt,    0, 1},
       {0}
     };
   err = LoadDB (file, date, request, fPrefix);
 
   if (err)
     return err;
-  //cout<<"from data base: "<<r0<<" "<<r1<<" "<<phi0<<" "<<dphi<<" "<<z0<<" "<<depth<<endl;
+  
+  //now read the information for HV sector to be turned off
+  
+  if (nOff > 0){
+    
+    for (Int_t i=0; i<nOff; i++){
+        vector<Double_t>* HVbound = 0;
+        try{
+            HVbound = new vector<Double_t>;
+            DBRequest HVRequest[] = {
+            {"bound",       HVbound,          kDoubleV, 0, 1},
+            { 0 }
+            };
+            
+            ostringstream tmp_prefix(fPrefix, ios_base::ate);
+            tmp_prefix<<"HV"<<i+1<<".";
+            string HV_prefix = tmp_prefix.str();
+            err = LoadDB (file, date, HVRequest, HV_prefix.c_str());
+            if (err == kOK){
+                assert(HVbound->size() == 4 && HVbound->at(1) >= HVbound->at(0) && 
+                       HVbound->at(3) >= HVbound->at(2));
+                
+                fHVSectorOff.push_back(HVSector(HVbound->at(0), HVbound->at(1), HVbound->at(2), HVbound->at(3)));
+            }
+            
+            delete HVbound;
+        }catch(...) {
+            delete HVbound;
+            fclose(file);
+            throw;
+        }
+        
+    }
+  
+  }
+  
+  
   // Database specifies angles in degrees, convert to radians
   Double_t torad = atan(1) / 45.0;
   phi0 *= torad;
@@ -151,4 +193,24 @@ TSolGEMChamber::Print (const Bool_t printplanes)
       {
 	fPlanes[i]->Print();
       }
+}
+
+//__________________________________________________________________________________
+Bool_t TSolGEMChamber::IsInDeadArea(Double_t& x, Double_t& y)
+{
+    //fitst rotate into tracker frame
+    fVector3.SetXYZ(x, y, 0);
+    fVector3.RotateZ(-1.*fWedge->GetAngle());
+    
+    //first check whether it is on the GEM frame
+    Double_t a = -1.*tan(fWedge->GetDPhi()/2.);
+    if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
+    a *= -1.;
+    if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
+    
+    for (UInt_t i=0; i<fHVSectorOff.size(); i++){
+        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) return true;
+    }
+    
+    return false;
 }

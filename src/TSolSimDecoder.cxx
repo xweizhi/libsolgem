@@ -317,7 +317,7 @@ MCHitInfo TSolSimDecoder::GetMCHitInfo( Int_t crate, Int_t slot, Int_t chan ) co
     const TSolSimEvent::GEMCluster& c = simEvent->fGEMClust[iclust];
     assert( c.fID == iclust+1 );
     assert( strip.fPlane == c.fPlane && strip.fSector == c.fSector );
-
+    
     Int_t signalID = -1;
     for (unsigned int ii = 0; ii<fSignalInfo.size(); ii++){
       if (c.fType == fSignalInfo.at(ii).tid && c.fPID == fSignalInfo.at(ii).pid)
@@ -329,7 +329,8 @@ MCHitInfo TSolSimDecoder::GetMCHitInfo( Int_t crate, Int_t slot, Int_t chan ) co
         //this means that there two signal hits overlapping
         //for now I keep the fMCTrack to the first one, by average the fMCPos nad fMCTime
         //Weizhi Xiong
-        assert(manager->GetNSigParticle() > 1); //otherwise should not happen
+        //assert(manager->GetNSigParticle() > 1); //otherwise should not happen
+        
         mc.fMCPos += c.fXProj[strip.fProj];
         mc.fMCTime += c.fTime; 
       }else{

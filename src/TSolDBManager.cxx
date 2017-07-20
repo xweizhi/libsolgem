@@ -26,22 +26,22 @@ void TSolDBManager::LoadGeneralInfo(const string& fileName)
     }
     const string prefix = "generalinfo.";
     DBRequest request[] = {
-        {"do_map_sector",       &fDoMapSector         , kInt, 0, 1},
-        {"self_define_sector",  &fDoSelfDefinedSector , kInt, 0, 1},
-        {"sector_mapped",       &fMappedSector        , kInt, 0, 1},
-        {"ntracker",            &fNTracker            , kInt, 0, 1},
-        {"nsector",             &fNSector             , kInt, 0, 1},
-        {"nreadout",            &fNReadOut            , kInt, 0, 1},
-        {"gem_drift_id",        &fGEMDriftID          , kInt, 0, 1},
-        {"gem_copper_front_id", &fGEMCopperFrontID    , kInt, 0, 1},
-        {"gem_copper_back_id",  &fGEMCopperBackID     , kInt, 0, 1},
-        {"gem_strip_id",        &fGEMStripID          , kInt, 0, 1},
-        {"faec_id",             &fFAECID              , kInt, 0, 1},
-        {"laec_id",             &fLAECID              , kInt, 0, 1},
-        {"nsignal",             &fNSigParticle        , kInt, 0, 1},
-        {"chan_per_slot",       &fChanPerSlot         , kInt, 0, 1},
-        {"modules_per_readout", &fModulesPerReadOut   , kInt, 0, 1},
-        {"self_defined_sector", &fDoSelfDefinedSector , kInt, 0, 1},
+        {"do_map_sector",       &fDoMapSector         , kInt, 0, 0},
+        {"sector_mapped",       &fMappedSector        , kInt, 0, 0},
+        {"ntracker",            &fNTracker            , kInt, 0, 0},
+        {"nsector",             &fNSector             , kInt, 0, 0},
+        {"nreadout",            &fNReadOut            , kInt, 0, 0},
+        {"gem_drift_id",        &fGEMDriftID          , kInt, 0, 0},
+        {"gem_copper_front_id", &fGEMCopperFrontID    , kInt, 0, 0},
+        {"gem_copper_back_id",  &fGEMCopperBackID     , kInt, 0, 0},
+        {"gem_strip_id",        &fGEMStripID          , kInt, 0, 0},
+        {"faec_id",             &fFAECID              , kInt, 0, 0},
+        {"laec_id",             &fLAECID              , kInt, 0, 0},
+        {"nsignal",             &fNSigParticle        , kInt, 0, 0},
+        {"chan_per_slot",       &fChanPerSlot         , kInt, 0, 0},
+        {"modules_per_readout", &fModulesPerReadOut   , kInt, 0, 0},
+        {"self_defined_sector", &fDoSelfDefinedSector , kInt, 0, 0},
+        {"threshold_total_adc", &fADCThreshold        , kInt, 0, 0},
         { 0 }
     };
     int pid, tid;

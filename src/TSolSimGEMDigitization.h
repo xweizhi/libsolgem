@@ -10,7 +10,7 @@
 #include "THaAnalysisObject.h"
 
 #include <vector>
-
+using namespace std;
 class TFile;
 class TTree;
 
@@ -34,6 +34,7 @@ private:
   TArrayI fStripADC;
   Short_t *fType;
   Int_t   *fTotADC;
+  Int_t   *fMaxADC;
 
   Float_t *fCharge;
   Float_t *fTime;
@@ -163,7 +164,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
 			     const TVector3& xo,
 			     const Double_t time_off);
 
-  Double_t GetPedNoise(Double_t& phase, Double_t& amp, Int_t& isample);
+  Double_t GetPedNoise(Double_t& phase, Double_t& amp, UInt_t& isample);
 
   // Gas parameters
   Double_t fGasWion;               // eV
@@ -179,7 +180,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Int_t    fAvaModel;              //0 for Heavyside, 1 for Gaussian, 2 for Cauchy-Lorentz
   Double_t fAvaGain;
   // Electronics parameters
-  Double_t fTriggerOffset;         // trigger offset (ns), incl latency & readout offset
+  vector<Double_t> fTriggerOffset;         // trigger offset (ns), incl latency & readout offset
   Double_t fTriggerJitter;         // trigger sigma jitter (ns)
   Double_t fAPVTimeJitter;         // time jitter associated with the APV internal clock
   Int_t    fEleSamplingPoints;
@@ -211,6 +212,9 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   // Sector mapping
   Bool_t   fDoMapSector;
   Int_t    fSignalSector;
+
+  //TDC measure for the trigger jitter
+  Float_t  fJitterMeasure;
   
   //parameter for numerical integration
   UInt_t   fYIntegralStepsPerPitch;

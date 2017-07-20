@@ -1,5 +1,4 @@
 generalinfo.do_map_sector = 1
-generalinfo.self_define_sector = 1
 generalinfo.sector_mapped = 0
 generalinfo.ntracker = 5
 generalinfo.nsector = 30
@@ -13,6 +12,7 @@ generalinfo.laec_id = 3210000
 generalinfo.chan_per_slot = 1600
 generalinfo.modules_per_readout = 1
 generalinfo.self_defined_sector = 1
+generalinfo.threshold_total_adc = 0
 
 generalinfo.nsignal = 1
 generalinfo.signal1.pid = 11

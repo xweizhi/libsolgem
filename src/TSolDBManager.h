@@ -42,6 +42,7 @@ public:
     const int    &   GetModulesPerReadOut(){ return fModulesPerReadOut; }
     const int    &   GetModulesPerChamber(){ return fModulesPerChamber; }
     const int    &   GetChambersPerCrate() { return fChambersPerCrate; }
+    const int    &   GetTotalADCThreshold(){ return fADCThreshold; }
     
     const int    &   GetSigPID(unsigned int i);
     const int    &   GetSigTID(unsigned int i);
@@ -86,6 +87,7 @@ protected:
     int    fChambersPerCrate;
     
     int    fErrID;
+    int    fADCThreshold;
     double fErrVal;
     
     vector<int>    fSigPID;

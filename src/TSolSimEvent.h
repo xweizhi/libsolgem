@@ -82,6 +82,7 @@ public:
 
   Bool_t    fSectorsMapped;       // Sectors are mapped to 0
   Int_t     fSignalSector;        // Sector of primary signal particle
+  Float_t   fTDCTimeMeas;         // TDC measurement for the event time jitter
 
   struct GEMCluster {
     Short_t   fID;        // Cluster number, cross-ref to GEMStrip

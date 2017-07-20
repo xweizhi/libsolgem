@@ -70,6 +70,7 @@ class TSolROOTFile {
   TTree *tree_generated;
   TTree *tree_solid_gem;
   TTree *tree_flux;
+  TTree *tree_header;
   Int_t fSource;   // User-defined source ID (e.g. MC run number)
   
   //generated branch
@@ -116,6 +117,9 @@ class TSolROOTFile {
   vector<double> *flux_avg_x;
   vector<double> *flux_avg_y;
   vector<double> *flux_avg_z;
+  
+  //header branch
+  vector<double> *header_var8;
   
 
   vector<hitdata *>   fHitData;
