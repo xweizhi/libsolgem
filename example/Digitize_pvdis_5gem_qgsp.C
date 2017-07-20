@@ -17,8 +17,8 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
 
   const int mark_interval = 100;
   const double e_charge = 1.60217662e-19; //couloumbs
-  const double beam_current = 50.0e-6; // 15 uA
-  const double time_window = 275.0e-9; //475 ns
+  const double beam_current = 50.0e-6; // 50 uA
+  const double time_window = 275.0e-9; //275 ns
   
   int nbacktoadd = (5.22438e7/1.e9)* beam_current / e_charge * time_window * bgratio;//275ns pass 4
   //int nbacktoadd = (1.931389e7/1.e10)*85830212 * bgratio;//275ns pass 3
