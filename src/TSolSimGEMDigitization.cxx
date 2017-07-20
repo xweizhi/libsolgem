@@ -77,7 +77,7 @@ TSolDigitizedPlane::TSolDigitizedPlane (UShort_t nstrip,
 
     fStripADC.Set(fNSamples*fNStrips);
     fStripClusters.resize(fNStrips);
-    fRan.SetSeed(0);
+    fRan.SetSeed(1);
     Clear();
 };
 
