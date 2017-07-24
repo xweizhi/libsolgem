@@ -237,7 +237,11 @@ Bool_t TSolGEMChamber::IsInDeadArea(Double_t& x, Double_t& y)
     if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
     
     for (UInt_t i=0; i<fHVSectorOff.size(); i++){
-        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) return true;
+        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) 
+	  {
+	    cout << "Rejection in " << GetName() << " at " << fVector3.X() << " " << fVector3.Y() << endl;
+	    return true;
+	  }
     }
     
     return false;
