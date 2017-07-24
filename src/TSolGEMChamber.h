@@ -3,6 +3,7 @@
 
 #include "THaDetector.h"
 #include "TSolWedge.h"
+#include "TSolPolygon.h"
 #include "TVector3.h"
 #include <vector>
 #include <sstream>
@@ -80,21 +81,7 @@ class TSolGEMChamber : public THaDetector {
   
   Double_t fFrameWidth;  //GEM frame width, used in dead area calculation
   
-  struct HVSector{
-    Double_t xmin;
-    Double_t xmax;
-    Double_t ymin;
-    Double_t ymax;
-    HVSector() {}
-    HVSector(Double_t& x1, Double_t& x2, Double_t& y1, Double_t y2)
-    : xmin(x1), xmax(x2), ymin(y1), ymax(y2) {} 
-    Bool_t Contains(const Double_t& x, const Double_t& y){
-        //x and y must be already in the tracker frame
-        if (x < xmax && x > xmin && y < ymax && y > ymin) return true;
-        else return false;
-    }
-  };
-  std::vector<HVSector> fHVSectorOff;
+  std::vector<TSolPolygon> fHVSectorOff; // polygonal dead areas
   TVector3 fVector3;
 
   ClassDef(TSolGEMChamber,0)

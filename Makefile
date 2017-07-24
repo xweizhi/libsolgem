@@ -72,7 +72,7 @@ SRC   = src/TSolAnalyzer.cxx \
         src/TSolROOTFile.cxx \
         src/TSolDBManager.cxx
 OBJS	= $(SRC:.cxx=.$(ObjSuf)) $(DICT).o
-HDR	= $(SRC:.cxx=.h) src/Linkdef.h
+HDR	= $(SRC:.cxx=.h) src/TSolPolygon.h src/Linkdef.h
 ROHDR	= $(SRC:.cxx=.h) src/Linkdef.h
 
 LIBSOLGEM	= libsolgem.so

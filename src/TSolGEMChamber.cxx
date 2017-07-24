@@ -105,17 +105,44 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
             {"bound",       HVbound,          kDoubleV, 0, 1},
             { 0 }
             };
+
+	    // HVbound is x1, y1, x2, y2, ... xn, yn n >= 3
+	    //   vertex coordinates for a polygon
+	    // OR for backward compatibility
+	    // x1, x2, y1, y2 (note, NOT x1, y1, x2, y2)
+	    //   vertex coordinates for 2 corners of rectangle
             
             ostringstream tmp_prefix(fPrefix, ios_base::ate);
             tmp_prefix<<"HV"<<i+1<<".";
             string HV_prefix = tmp_prefix.str();
             err = LoadDB (file, date, HVRequest, HV_prefix.c_str());
-            if (err == kOK){
-                assert(HVbound->size() == 4 && HVbound->at(1) >= HVbound->at(0) && 
-                       HVbound->at(3) >= HVbound->at(2));
-                
-                fHVSectorOff.push_back(HVSector(HVbound->at(0), HVbound->at(1), HVbound->at(2), HVbound->at(3)));
-            }
+            if (err == kOK)
+	      {
+		std::vector<Double_t> polyx;
+		std::vector<Double_t> polyy;
+		if (HVbound->size() == 4)
+		  {
+		    // rectangle parallel to x/y axes
+		    assert(HVbound->at(1) >= HVbound->at(0) && 
+			   HVbound->at(3) >= HVbound->at(2));
+		    polyx->push_back (HVbound->at(0)); polyy->push_back (HVbound->at(2));
+		    polyx->push_back (HVbound->at(0)); polyy->push_back (HVbound->at(3));
+		    polyx->push_back (HVbound->at(1)); polyy->push_back (HVbound->at(3));
+		    polyx->push_back (HVbound->at(1)); polyy->push_back (HVbound->at(2));
+		    fHVSectorOff.push_back (HVSector (4, polyx, polyy));
+		  }
+		else
+		  {
+		    assert (HVbound->size() > 5 || HVbound->size()%2 == 0);
+		    UInt_t ncorner = HVbound->size() / 2;
+		    for (UInt_t icorner = 0; icorner < ncorner; ++icorner)
+		      {
+			polyx->push_back (HVbound->at(icorner*2)); 
+			polyy->push_back (HVbound->at(icorner*2+1));
+		      }
+		    fHVSectorOff.push_back (HVSector (ncorner, polyx, polyy));
+		  }
+	      }
             
             delete HVbound;
         }catch(...) {
