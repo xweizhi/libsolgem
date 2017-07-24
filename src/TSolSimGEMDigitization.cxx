@@ -316,7 +316,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
           { "do_crosstalk",              &fDoCrossTalk,               kInt    },
           { "crosstalk_mean",            &fCrossFactor,               kDouble },
           { "crosstalk_sigma",           &fCrossSigma,                kDouble },
-          { "corsstalk_strip_apart",     &fNCStripApart,              kInt    },
+          { "crosstalk_strip_apart",     &fNCStripApart,              kInt    },
           { 0 }
         };
         Int_t err = LoadDB (file, date, request, fPrefix);
