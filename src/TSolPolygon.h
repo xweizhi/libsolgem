@@ -6,11 +6,11 @@
 
 #include <vector>
 
-class TSolPolygon:
+class TSolPolygon
 {
  public:
   TSolPolygon() {};
-  TSolPolygon (Int_t polyCorners, std::vector<Double_t>& polyX, std::vector<Double_t>& polyY)
+  TSolPolygon (UInt_t polyCorners, std::vector<Double_t>& polyX, std::vector<Double_t>& polyY)
     {
       // polyCorners is number of vertices of polygon
       // polyX and polyY are vectors of vertex coordinates in plane 

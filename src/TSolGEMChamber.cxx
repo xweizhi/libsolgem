@@ -4,6 +4,7 @@
 
 #include "TSolGEMChamber.h"
 #include "TSolGEMPlane.h"
+#include "TSolPolygon.h"
 #include "THaEvData.h"
 #include "THaApparatus.h"
 #include "TMath.h"
@@ -125,11 +126,11 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
 		    // rectangle parallel to x/y axes
 		    assert(HVbound->at(1) >= HVbound->at(0) && 
 			   HVbound->at(3) >= HVbound->at(2));
-		    polyx->push_back (HVbound->at(0)); polyy->push_back (HVbound->at(2));
-		    polyx->push_back (HVbound->at(0)); polyy->push_back (HVbound->at(3));
-		    polyx->push_back (HVbound->at(1)); polyy->push_back (HVbound->at(3));
-		    polyx->push_back (HVbound->at(1)); polyy->push_back (HVbound->at(2));
-		    fHVSectorOff.push_back (HVSector (4, polyx, polyy));
+		    polyx.push_back (HVbound->at(0)); polyy.push_back (HVbound->at(2));
+		    polyx.push_back (HVbound->at(0)); polyy.push_back (HVbound->at(3));
+		    polyx.push_back (HVbound->at(1)); polyy.push_back (HVbound->at(3));
+		    polyx.push_back (HVbound->at(1)); polyy.push_back (HVbound->at(2));
+		    fHVSectorOff.push_back (TSolPolygon (4, polyx, polyy));
 		  }
 		else
 		  {
@@ -137,10 +138,10 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
 		    UInt_t ncorner = HVbound->size() / 2;
 		    for (UInt_t icorner = 0; icorner < ncorner; ++icorner)
 		      {
-			polyx->push_back (HVbound->at(icorner*2)); 
-			polyy->push_back (HVbound->at(icorner*2+1));
+			polyx.push_back (HVbound->at(icorner*2)); 
+			polyy.push_back (HVbound->at(icorner*2+1));
 		      }
-		    fHVSectorOff.push_back (HVSector (ncorner, polyx, polyy));
+		    fHVSectorOff.push_back (TSolPolygon (ncorner, polyx, polyy));
 		  }
 	      }
             
