@@ -109,9 +109,6 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
 
 	    // HVbound is x1, y1, x2, y2, ... xn, yn n >= 3
 	    //   vertex coordinates for a polygon
-	    // OR for backward compatibility
-	    // x1, x2, y1, y2 (note, NOT x1, y1, x2, y2)
-	    //   vertex coordinates for 2 corners of rectangle
             
             ostringstream tmp_prefix(fPrefix, ios_base::ate);
             tmp_prefix<<"HV"<<i+1<<".";
@@ -119,30 +116,16 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
             err = LoadDB (file, date, HVRequest, HV_prefix.c_str());
             if (err == kOK)
 	      {
+		assert (HVbound->size() > 5 || HVbound->size()%2 == 0);
 		std::vector<Double_t> polyx;
 		std::vector<Double_t> polyy;
-		if (HVbound->size() == 4)
+		UInt_t ncorner = HVbound->size() / 2;
+		for (UInt_t icorner = 0; icorner < ncorner; ++icorner)
 		  {
-		    // rectangle parallel to x/y axes
-		    assert(HVbound->at(1) >= HVbound->at(0) && 
-			   HVbound->at(3) >= HVbound->at(2));
-		    polyx.push_back (HVbound->at(0)); polyy.push_back (HVbound->at(2));
-		    polyx.push_back (HVbound->at(0)); polyy.push_back (HVbound->at(3));
-		    polyx.push_back (HVbound->at(1)); polyy.push_back (HVbound->at(3));
-		    polyx.push_back (HVbound->at(1)); polyy.push_back (HVbound->at(2));
-		    fHVSectorOff.push_back (TSolPolygon (4, polyx, polyy));
+		    polyx.push_back (HVbound->at(icorner*2)); 
+		    polyy.push_back (HVbound->at(icorner*2+1));
 		  }
-		else
-		  {
-		    assert (HVbound->size() > 5 || HVbound->size()%2 == 0);
-		    UInt_t ncorner = HVbound->size() / 2;
-		    for (UInt_t icorner = 0; icorner < ncorner; ++icorner)
-		      {
-			polyx.push_back (HVbound->at(icorner*2)); 
-			polyy.push_back (HVbound->at(icorner*2+1));
-		      }
-		    fHVSectorOff.push_back (TSolPolygon (ncorner, polyx, polyy));
-		  }
+		fHVSectorOff.push_back (TSolPolygon (ncorner, polyx, polyy));
 	      }
             
             delete HVbound;
@@ -237,11 +220,7 @@ Bool_t TSolGEMChamber::IsInDeadArea(Double_t& x, Double_t& y)
     if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
     
     for (UInt_t i=0; i<fHVSectorOff.size(); i++){
-        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) 
-	  {
-	    cout << "Rejection in " << GetName() << " at " << fVector3.X() << " " << fVector3.Y() << endl;
-	    return true;
-	  }
+        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) return true;
     }
     
     return false;
