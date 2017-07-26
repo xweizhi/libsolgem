@@ -14,11 +14,14 @@
 
 using namespace std;
 
+// ***** A lot of this will have to be modified for divided strips
+
 TSolGEMPlane::TSolGEMPlane()
   : THaSubDetector()
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
+  fYDiv = NULL;
   return;
 }
 
@@ -28,13 +31,16 @@ TSolGEMPlane::TSolGEMPlane( const char *name, const char *desc,
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
+  fYDiv = NULL;
   return;
 }
 
 TSolGEMPlane::~TSolGEMPlane()
 {
   //  delete fClusters;
+  cerr << "dest" << endl;
   delete fWedge;
+  delete[] fYDiv;
 }
 
 Int_t 
@@ -99,6 +105,7 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       
       if (err)
 	return err;
+
       //cout<<"from database: "<<phi0<<" "<<dphi<<endl;
       // Database specifies angles in degrees, convert to radians
       phi0 *= torad;
@@ -114,10 +121,12 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       depth = -999.0;
     }
 
+  vector<Double_t> DivSegment (4);
   const DBRequest request[] = 
     {
       {"stripangle",  &fSAngle,      kDouble, 0, 1},
       {"pitch",       &fSPitch,      kDouble, 0, 1},
+      {"divsegment",  &DivSegment,    kDoubleV, 0, 1},
       {"z0",          &z0,           kDouble, 0, 1},
       {"depth",       &depth,        kDouble, 0, 1},
       {0}
@@ -126,6 +135,9 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
 
   if (err)
     return err;
+
+  if (DivSegment.at(0) || DivSegment.at(1) || DivSegment.at(2) || DivSegment.at(3))
+    cout << DivSegment.at(0) << " " << DivSegment.at(1) << " " << DivSegment.at(2) << " " << DivSegment.at(3) << endl;
 
   fSAngle *= torad;
 
@@ -154,6 +166,52 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
   fSBeg = -fNStrips * fSPitch * 0.5;
   //cout<<"after rotation: "<<xs[0]<<" "<<xs[1]<<" "<<xs[2]<<" "<<xs[3]<<endl;
   //cout<<"after rotation: "<<ys[0]<<" "<<ys[1]<<" "<<ys[2]<<" "<<ys[3]<<endl;
+
+  // Make table of strip divisions
+
+  // Get affected strips (the ones containing the segment endpoints)
+  Int_t ds[2];
+  Double_t xds[2];
+  Double_t yds[2];
+  for (UInt_t i = 0; i < 2; ++i)
+    {
+      xds[i] = DivSegment.at(2*i+0);
+      yds[i] = DivSegment.at(2*i+1);
+      PlaneToStrip (xds[i], yds[i]);      
+      ds[i] = GetStripInRange (xds[i]);
+    }
+  if (ds[0] > ds[1])
+    {
+      swap (ds[0], ds[1]);
+      swap (xds[0], xds[1]);
+      swap (yds[0], yds[1]);
+    }
+
+  if (ds[1] > ds[0])
+    {
+      cout << "Division segment in strip frame is (" << xds[0] << ", " << yds[0]
+	   << ") to (" << xds[1] << ", " << yds[1] << ")" << endl;
+      cout << "Division strips are " << ds[0] << " to " << ds[1] << endl;
+
+      fNDiv = ds[1] - ds[0] + 1;
+      fSDiv0 = ds[0];
+      Double_t ms = (yds[1] - yds[0]) / (xds[1] - xds[0]);
+      fYDiv = new Double_t[fNDiv];
+      for (UInt_t i = 0; i < fNDiv; ++i)
+	{
+	  fYDiv[i] =  yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]);
+	  cout << "Strip " << i+fSDiv0 
+	       << " center at " << GetStripCenter (i+fSDiv0) 
+	       << " divides at " << fYDiv[i]
+	       << endl;
+	}
+    }
+  else
+    {
+      fNDiv = 0;
+      fSDiv0 = 0;
+    }
+
   return kOK;
 }
 
@@ -229,6 +287,9 @@ TSolGEMPlane::GetStripLowerEdge (UInt_t is) const {return (fSBeg + is * GetSPitc
 
 Double_t 
 TSolGEMPlane::GetStripUpperEdge (UInt_t is) const {return GetStripLowerEdge (is) + GetSPitch();}
+
+Double_t 
+TSolGEMPlane::GetStripCenter (UInt_t is) const {return GetStripLowerEdge (is) + 0.5 * GetSPitch();}
 
 
 Int_t

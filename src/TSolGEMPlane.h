@@ -2,6 +2,7 @@
 #define __TSOLGEMPLANE_H
 
 #include <cmath>
+#include <vector>
 
 #include "THaSubDetector.h"
 #include "TSolWedge.h"
@@ -86,9 +87,10 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t StriptoProj( Double_t s );
 	Double_t StripNumtoProj( Int_t s );
 
-	// Edges of strip, in strip frame, in meters
+	// Edges, centers of strip, in strip frame, in meters
 	Double_t GetStripLowerEdge (UInt_t is) const;
 	Double_t GetStripUpperEdge (UInt_t is) const;
+	Double_t GetStripCenter (UInt_t is) const;
 
         // Strip number corresponding to x-coordinate
         Int_t GetStripUnchecked( Double_t x )  const;
@@ -115,6 +117,11 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t fCWS; // ... wedge to strip
 	Double_t fSLS; // sin...
 	Double_t fSWS;
+
+	// Table of divided strips
+	UInt_t    fNDiv;     // number of divided strips
+	UInt_t    fSDiv0;    // first divided strip
+        Double_t*  fYDiv;
 	
     public:
 	ClassDef(TSolGEMPlane,0)
