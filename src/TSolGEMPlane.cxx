@@ -38,7 +38,6 @@ TSolGEMPlane::TSolGEMPlane( const char *name, const char *desc,
 TSolGEMPlane::~TSolGEMPlane()
 {
   //  delete fClusters;
-  cerr << "dest" << endl;
   delete fWedge;
   delete[] fYDiv;
 }
@@ -105,7 +104,6 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       
       if (err)
 	return err;
-
       //cout<<"from database: "<<phi0<<" "<<dphi<<endl;
       // Database specifies angles in degrees, convert to radians
       phi0 *= torad;
@@ -126,7 +124,7 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
     {
       {"stripangle",  &fSAngle,      kDouble, 0, 1},
       {"pitch",       &fSPitch,      kDouble, 0, 1},
-      {"divsegment",  &DivSegment,    kDoubleV, 0, 1},
+      {"divsegment",  &DivSegment,   kDoubleV, 0, 1},
       {"z0",          &z0,           kDouble, 0, 1},
       {"depth",       &depth,        kDouble, 0, 1},
       {0}
@@ -135,9 +133,6 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
 
   if (err)
     return err;
-
-  if (DivSegment.at(0) || DivSegment.at(1) || DivSegment.at(2) || DivSegment.at(3))
-    cout << DivSegment.at(0) << " " << DivSegment.at(1) << " " << DivSegment.at(2) << " " << DivSegment.at(3) << endl;
 
   fSAngle *= torad;
 
@@ -211,6 +206,8 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       fNDiv = 0;
       fSDiv0 = 0;
     }
+
+
 
   return kOK;
 }
@@ -291,6 +288,11 @@ TSolGEMPlane::GetStripUpperEdge (UInt_t is) const {return GetStripLowerEdge (is)
 Double_t 
 TSolGEMPlane::GetStripCenter (UInt_t is) const {return GetStripLowerEdge (is) + 0.5 * GetSPitch();}
 
+Double_t 
+TSolGEMPlane::GetYDiv (UInt_t is) const 
+{
+  return (is >= fSDiv0 && is < fSDiv0+fNDiv) ? fYDiv[is-fSDiv0] : 1e9;
+}
 
 Int_t
 TSolGEMPlane::GetStripUnchecked( Double_t x ) const
@@ -328,6 +330,12 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
   Int_t s = GetStripUnchecked(x);
   assert( s >= 0 && s < GetNStrips() ); // by construction in ReadGeometry()
   return s;
+}
+
+Int_t 
+TSolGEMPlane::GetDivision (UInt_t is, Double_t y) const
+{
+  return (is >= fSDiv0 && is < fSDiv0+fNDiv) ? (y > fYDiv[is-fSDiv0] ? 1 : 0) : 0;  
 }
 
 void 

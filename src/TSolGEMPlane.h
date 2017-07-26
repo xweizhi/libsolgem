@@ -92,6 +92,9 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t GetStripUpperEdge (UInt_t is) const;
 	Double_t GetStripCenter (UInt_t is) const;
 
+        // Division point of strip
+        Double_t GetYDiv (UInt_t is) const;
+
         // Strip number corresponding to x-coordinate
         Int_t GetStripUnchecked( Double_t x )  const;
 	Int_t GetStripInRange( Double_t x )    const;
@@ -99,6 +102,8 @@ class TSolGEMPlane : public THaSubDetector {
 	// Strip number corresponding to coordinates x, y in 
 	// strip frame, or -1 if outside (2-d) bounds
 	Int_t GetStrip (Double_t x, Double_t y) const;
+        // Division number corresponding to strip is and coordinate y in strip frame
+        Int_t GetDivision (UInt_t is, Double_t y) const;
 
 	void Print() const;
 	void SetRotations();
