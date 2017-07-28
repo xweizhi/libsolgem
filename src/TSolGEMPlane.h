@@ -67,6 +67,8 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t GetAngle() const {return fWedge->GetAngle();}; // rotation angle between lab and wedge frame
 
 	Int_t    GetNStrips()  const { return fNStrips; }
+	Int_t    GetNDividedStrips()  const { return fNDiv; }
+	Int_t    GetFirstDividedStrip()  const { return fSDiv0; }
 	Double_t GetSPitch()   const { return fSPitch; } // in meters
 	Double_t GetSAngle()   const; // Angle (rad) between horizontal axis
 	                              // in wedge frame
@@ -92,8 +94,9 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t GetStripUpperEdge (UInt_t is) const;
 	Double_t GetStripCenter (UInt_t is) const;
 
-        // Division point of strip
-        Double_t GetYDiv (UInt_t is) const;
+	Bool_t IsDivided (UInt_t is) const;        // Whether strip is divided
+        Double_t GetYDiv (UInt_t is) const;        // Division point of strip
+
 
         // Strip number corresponding to x-coordinate
         Int_t GetStripUnchecked( Double_t x )  const;

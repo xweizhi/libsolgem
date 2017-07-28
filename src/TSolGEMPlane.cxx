@@ -184,9 +184,9 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
 
   if (ds[1] > ds[0])
     {
-      cout << "Division segment in strip frame is (" << xds[0] << ", " << yds[0]
-	   << ") to (" << xds[1] << ", " << yds[1] << ")" << endl;
-      cout << "Division strips are " << ds[0] << " to " << ds[1] << endl;
+      // cout << "Division segment in strip frame is (" << xds[0] << ", " << yds[0]
+      // 	   << ") to (" << xds[1] << ", " << yds[1] << ")" << endl;
+      // cout << "Division strips are " << ds[0] << " to " << ds[1] << endl;
 
       fNDiv = ds[1] - ds[0] + 1;
       fSDiv0 = ds[0];
@@ -195,19 +195,19 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       for (UInt_t i = 0; i < fNDiv; ++i)
 	{
 	  fYDiv[i] =  yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]);
-	  cout << "Strip " << i+fSDiv0 
-	       << " center at " << GetStripCenter (i+fSDiv0) 
-	       << " divides at " << fYDiv[i]
-	       << endl;
+	  // cout << "Strip " << i+fSDiv0 
+	  //      << " center at " << GetStripCenter (i+fSDiv0) 
+	  //      << " divides at " << fYDiv[i]
+	  //      << endl;
 	}
+      Print();
+
     }
   else
     {
       fNDiv = 0;
       fSDiv0 = 0;
     }
-
-
 
   return kOK;
 }
@@ -288,10 +288,16 @@ TSolGEMPlane::GetStripUpperEdge (UInt_t is) const {return GetStripLowerEdge (is)
 Double_t 
 TSolGEMPlane::GetStripCenter (UInt_t is) const {return GetStripLowerEdge (is) + 0.5 * GetSPitch();}
 
+Bool_t
+TSolGEMPlane::IsDivided (UInt_t is) const 
+{
+  return (is >= fSDiv0 && is < fSDiv0+fNDiv);
+}
+
 Double_t 
 TSolGEMPlane::GetYDiv (UInt_t is) const 
 {
-  return (is >= fSDiv0 && is < fSDiv0+fNDiv) ? fYDiv[is-fSDiv0] : 1e9;
+  return IsDivided (is) ? fYDiv[is-fSDiv0] : 1e9;
 }
 
 Int_t
@@ -335,7 +341,7 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
 Int_t 
 TSolGEMPlane::GetDivision (UInt_t is, Double_t y) const
 {
-  return (is >= fSDiv0 && is < fSDiv0+fNDiv) ? (y > fYDiv[is-fSDiv0] ? 1 : 0) : 0;  
+  return IsDivided (is) ? (y > fYDiv[is-fSDiv0] ? 1 : 0) : 0;  
 }
 
 void 
@@ -367,6 +373,16 @@ TSolGEMPlane::Print() const
        << ", start " << fSBeg << " " << 0.5*(GetStripLowerEdge(0)+GetStripUpperEdge(0))
        << ", pitch " << GetSPitch()
        << endl;
+
+  Int_t nd = GetNDividedStrips();
+  Int_t sd0 = GetFirstDividedStrip();
+  if (nd > 0)
+    cout << "  " << nd << " divided strips"
+	 << ", from " << sd0 
+	 << " at " << GetYDiv (sd0)
+	 << " to " << sd0 + nd - 1
+	 << " at " << GetYDiv (sd0 + nd - 1)
+	 << endl;
 }
 
 void
