@@ -635,11 +635,13 @@ TSolSimGEMDigitization::IonModel(const TVector3& xi,
 //-------------------------------------------------------
 // Helper functions for integration in AvaModel
 inline static
-Double_t IntegralY( Double_t* a, Int_t ix, Int_t nx, Int_t ny )
+Double_t IntegralY( Double_t* a, Int_t ix, Int_t iy0, Int_t iy1, Int_t ny )
 {
+  // Given table of values (# of y bins is ny, we don't need # of x bins)
+  // integrate bin ix in x from bin iy0 to, but not including, iy1 in y
   register double sum = 0.;
-  register int kx = ix*ny;
-  for( Int_t jy = ny; jy != 0; --jy )
+  register int kx = ix*ny+iy0;
+  for( Int_t ky = iy0; ky < iy1; ++ky)
     sum += a[kx++];
   return sum;
 }
@@ -742,6 +744,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         xs1 *= 1e3; ys1 *= 1e3;
 
 #if DBG_AVA > 0
+        cout << "plane coords x0 y0 x1 y1 " << (x0*1e-3) << " " << (y0*1e-3) << " " << (x1*1e-3) << " " << (y1*1e-3) << endl;
         cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
 
@@ -789,6 +792,12 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         // We do this in units of strip pitch for convenience (even though
         // this is the direction orthogonal to the pitch direction)
 
+	// We do not take into account strip ends here.  In the loop
+	// over bins we check if we're in the active area.  Might be
+	// faster enough to initialize a table of strip end
+	// coordinates and then truncate the integration limits with
+	// that to make it worth doing.
+
         // Use y-integration step size of 1/10 of strip pitch (in mm)
         Double_t yq = pl.GetSPitch() * 1000.0 / fYIntegralStepsPerPitch;
         Double_t yb = ys0, yt = ys1;
@@ -815,12 +824,12 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 
         // define function, gaussian and sum of gaussian
 
-        Double_t xbw = (xr - xl) / nx;
+        Double_t xbw = (xr - xl) / nx; // integration bin widths
         Double_t ybw = (yt - yb) / ny;
 #if DBG_AVA > 0
         cout << "xbw ybw " << xbw << " " << ybw << endl;
 #endif
-        fSumA.resize(nx*ny);
+        fSumA.resize(nx*ny); 
         memset (&fSumA[0], 0, fSumA.size() * sizeof (Double_t));
         for (UInt_t i = 0; i < fRNIon; i++){
 	        Double_t frxs = fRIon[i].X * 1e-3;
@@ -891,7 +900,14 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 	    << endl;
 #endif
 
-        virs[ipl] = new TSolGEMVStrip(nx,fEleSamplingPoints);
+	// At this point fSumA has charge deposited in each bin within rectangular avalanche region
+	// Now we partition the charge among the affected strips ... and divisions.
+
+	Int_t nsubstrips = nstrips;
+        for (Int_t j = 0; j < nstrips; j++)
+	  if (pl.IsDivided (iL+j)) ++nsubstrips;
+
+        virs[ipl] = new TSolGEMVStrip (nsubstrips, fEleSamplingPoints);
 
         virs[ipl]->SetTime(t0);
         virs[ipl]->SetHitCharge(fRTotalCharge);
@@ -902,52 +918,87 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         //when we integrate in order to get the signal pulse, we want all charge
         //deposition on the area of a single strip -- Weizhi
         for (Int_t j = 0; j < nstrips; j++){
-	        Int_t posflag = 0;
-	        Double_t us = 0.;
-	        for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
-	            us += IntegralY( &fSumA[0], j * fXIntegralStepsPerPitch + k, nx, ny ) * area;
-            }
+
+		// Bin limits in y are 0 to ny if strip is undivided
+		// Find division bin if divided
+
+		Int_t ndiv = 1;
+		Int_t iy0[2] = {0, 0};
+		Int_t iy1[2] = {ny, ny};
+		if (pl.IsDivided (iL+j))
+		  {
+		    Int_t iyd = (pl.GetYDiv (iL+j) * 1e3 - yb) / ybw;
+		    iyd = min (ny-1, max (0, iyd));
+		    ndiv = 2;
+		    iy1[0] = iyd;
+		    iy0[1] = iyd;
+		  }
+
+		for (Int_t idiv = 0; idiv < ndiv; ++idiv)
+		  {
+		    Bool_t hasSignal = false;
+		    Double_t us = 0.;
+
+		      for (UInt_t k=0; k<fXIntegralStepsPerPitch; k++){
+			us += IntegralY( &fSumA[0], 
+					 j * fXIntegralStepsPerPitch + k, 
+					 iy0[idiv], iy1[idiv],
+					 ny ) * area;
+		      }
+#if DBG_AVA > 0
+		      cout << "Strip " << (j+iL) << " ndiv " << ndiv
+			   << " Integrate " << iy0[idiv] << " to " << iy1[idiv] 
+			   << " result " << us << endl;
+#endif
             
-            //generate the random pedestal phase and amplitude
-            //Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
-            //Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
+		    //generate the random pedestal phase and amplitude
+		    //Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
+		    //Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
-	        for (Int_t b = 0; b < fEleSamplingPoints; b++){
-	            Double_t pulse =
+		    for (Int_t b = 0; b < fEleSamplingPoints; b++){
+		      Double_t pulse =
 		        TSolSimAux::PulseShape (fEleSamplingPeriod * b - t0,
-					                    us,
-					                    fPulseShapeTau0,
-					                    fPulseShapeTau1 );
+						us,
+						fPulseShapeTau0,
+						fPulseShapeTau1 );
 
-                //nx is larger than the size of the strips that are actually being hit,
-                //however, this way of adding noise will add signals to those strips that were not hit
-                //and the cluster size will essentially equal to nx
-                //not sure if this is what we what...
-	            // if( fPulseNoiseSigma > 0.)
-	            // pulse += fTrnd.Gaus(0., fPulseNoiseSigma);
+		      //nx is larger than the size of the strips that
+		      //are actually being hit, however, this way of
+		      //adding noise will add signals to those strips
+		      //that were not hit
+		      //and the cluster size will essentially equal to nx
+		      //not sure if this is what we what...
+		      // if( fPulseNoiseSigma > 0.)
+		      // pulse += fTrnd.Gaus(0., fPulseNoiseSigma);
 
-                //add noise only to those strips that are hit,
-                //if( fPulseNoiseSigma > 0. && pulse > 0. )
-                //    pulse += GetPedNoise(phase, amp, b);
+		      //add noise only to those strips that are hit,
+		      //if( fPulseNoiseSigma > 0. && pulse > 0. )
+		      //    pulse += GetPedNoise(phase, amp, b);
 
-	            Short_t dadc = TSolSimAux::ADCConvert( pulse,
-						                               fADCoffset,
-						                               fADCgain,
-						                               fADCbits );
+		      Short_t dadc = TSolSimAux::ADCConvert( pulse,
+							     fADCoffset,
+							     fADCgain,
+							     fADCbits );
 
-	            fDADC[b] = dadc;
-	            posflag += dadc;
-	        }
-	        if (posflag > 0) { // store only strip with signal
-	            for (Int_t b = 0; b < fEleSamplingPoints; b++)
-		        virs[ipl]->AddSampleAt (fDADC[b], b, ai);
-	            virs[ipl]->AddStripAt (iL+j, ai);
-	            virs[ipl]->AddChargeAt (us, ai);
-	            ai++;
-	        }
-	    }
+		      fDADC[b] = dadc;
+		      if (dadc) hasSignal = true;
+		    }
+
+		    if (hasSignal) { // store only substrip with signal
+		      for (Int_t b = 0; b < fEleSamplingPoints; b++)
+			virs[ipl]->AddSampleAt (fDADC[b], b, ai);
+		      virs[ipl]->AddStripAt (iL+j, ai);
+		      virs[ipl]->AddSubstripAt (idiv, ai);
+		      virs[ipl]->AddChargeAt (us, ai);
+		      ai++;
+		    }
+		  }
+	}
 
         virs[ipl]->SetSize(ai);
+#if DBG_AVA > 0
+	virs[ipl]->Print();
+#endif
     }
 
   return virs;

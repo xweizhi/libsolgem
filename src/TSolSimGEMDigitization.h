@@ -239,7 +239,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fRTotalCharge;
   Double_t fRTime0;
 
-  std::vector<Double_t> fSumA;
+  std::vector<Double_t> fSumA;   // Charge deposit in each bin, to be integrated
   std::vector<Short_t>  fDADC;
 
   // Tree
