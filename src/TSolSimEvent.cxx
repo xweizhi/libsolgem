@@ -186,7 +186,8 @@ void TSolSimEvent::Print( const Option_t* opt ) const
 	   << ", sect = "   << s.fSector
 	   << ", plane = "  << s.fPlane
 	   << ", proj = "   << s.fProj
-	   << ", strip = "  << s.fChan
+	   << ", strip = "  << s.fStrip
+	   << ", substrip = "  << s.fSubstrip
 	   << ", type = "   << s.fSigType
 	   << ", chrg = "   << s.fCharge
 	   << ", adc = ";

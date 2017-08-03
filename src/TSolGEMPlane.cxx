@@ -14,8 +14,6 @@
 
 using namespace std;
 
-// ***** A lot of this will have to be modified for divided strips
-
 TSolGEMPlane::TSolGEMPlane()
   : THaSubDetector()
 {

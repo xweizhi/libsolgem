@@ -28,7 +28,7 @@ TSolGEMVStrip::Print() {
   
   for (i=0;i<GetSize();i++) {
     
-    cerr << i << ") " << GetIdx(i) << " / " << GetIss(i) << " : ";
+    cerr << i << ") " << GetStrip(i) << " / " << GetSubstrip(i) << " : ";
     cerr << GetCharge(i) << " = ";
     
     for (k=0;k<fNsample;k++) {

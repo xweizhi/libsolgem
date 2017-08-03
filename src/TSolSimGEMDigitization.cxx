@@ -63,77 +63,75 @@ static UInt_t MapSector( UInt_t chamber )
 
 // Auxiliary class
 
-TSolDigitizedPlane::TSolDigitizedPlane (UShort_t nstrip,
+TSolDigitizedPlane::TSolDigitizedPlane (const TSolGEMPlane* plane,
 					UShort_t nsample,
 					Int_t threshold )
-  : fNSamples(nsample), fNStrips(nstrip), fThreshold(threshold)
+  : fNSamples(nsample), fThreshold(threshold)
 {
-    fType = new Short_t[nstrip];
-    fCharge = new Float_t[nstrip];
-    fTime = new Float_t[nstrip];
-    fTotADC = new Int_t[nstrip];
-    fMaxADC = new Int_t[nstrip];
-    fOverThr = new Short_t[nstrip];
-
-    fStripADC.Set(fNSamples*fNStrips);
-    fStripClusters.resize(fNStrips);
-    fRan.SetSeed(1);
-    Clear();
+  fNSubstrips = plane->GetNStrips() + plane->GetNDividedStrips();
+  fDigPlane.resize (fNSubstrips);
+  for (std::vector<DigSubstrip*>::iterator i = fDigPlane.begin(); i != fDigPlane.end(); ++i)
+    *i = new DigSubstrip (nsample);
+  fRan.SetSeed(1);
+  Clear();
 };
 
 TSolDigitizedPlane::~TSolDigitizedPlane()
 {
-  delete[] fType;
-  delete[] fCharge;
-  delete[] fTime;
-  delete[] fTotADC;
-  delete[] fMaxADC;
-  delete[] fOverThr;
+  for (std::vector<DigSubstrip*>::iterator i = fDigPlane.begin(); i != fDigPlane.end(); ++i)
+    delete *i;
 };
 
 void
 TSolDigitizedPlane::Clear()
 {
-  fStripADC.Reset();
-  memset( fType,   0, fNStrips*sizeof(Short_t) );
-  memset( fTotADC, 0, fNStrips*sizeof(Int_t) );
-  memset( fMaxADC, 0, fNStrips*sizeof(Int_t) );
-  memset( fCharge, 0, fNStrips*sizeof(Float_t) );
-
-  for (Int_t i = 0; i < fNStrips; i++) {
-    fTime[i] = 9999.;
-    fStripClusters[i].clear();
-  }
+  for (std::vector<DigSubstrip*>::iterator i = fDigPlane.begin(); i != fDigPlane.end(); ++i)
+    {
+      (*i)->fStripADC.assign (fNSamples, 0);
+      (*i)->fType = 0;
+      (*i)->fTotADC = 0;
+      (*i)->fCharge = 0;
+      (*i)->fTime = 9999.;
+      (*i)->fStripClusters.clear();
+    }
   fNOT = 0;
+  fOverThr.clear();
 }
 
 void
-TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
+TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, 
+			      const TSolGEMPlane* plane,
+			      Short_t type,
 			      Short_t clusterID )
 {
     if (vv) {
         for( Int_t j=0; j < vv->GetSize(); j++ ) {
-            Int_t idx = vv->GetIdx(j);
-            assert( idx >= 0 && idx < fNStrips );
-            fType[idx] |= type;
-            fTime[idx] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
-            fCharge[idx] += vv->GetCharge(j);
-            bool was_below = !( /*fTotADC[idx]*/fMaxADC[idx] > fThreshold );
+            Int_t ist = vv->GetStrip(j);
+	    Int_t iss = vv->GetSubstrip(j);
+	    Int_t idx = plane->GetIndex (ist, iss);
+	    // Assertion can fail if mapping sectors and sectors do not
+	    // have same geometry
+            assert( ist >= 0 && idx < fNSubstrips );
+	    DigSubstrip* dpp = fDigPlane.at(idx);
+            dpp->fType |= type;
+            dpp->fTime = (dpp->fTime < vv->GetTime()) ? dpp->fTime : vv->GetTime();
+            dpp->fCharge += vv->GetCharge(j);
+            bool was_below = !( dpp->/*fTotADC*/fMaxADC > fThreshold );
             for( UInt_t k=0; k<fNSamples; k++ ) {
 	            Int_t nnn = vv->GetADC(j,k);
 	            assert( nnn >= 0 );
 	            if( nnn == 0 ) continue;
-	            Int_t iadc = idx*fNSamples+k;
-	            fStripADC[iadc] = fStripADC[iadc] + nnn;
-	            fTotADC[idx] += nnn;
-	            if (fStripADC[iadc] > fMaxADC[idx]) fMaxADC[idx] = fStripADC[iadc];
+		    dpp->fStripADC.at(k) += nnn;
+		    dpp->fTotADC += nnn;
+		    if (dpp->fStripADC.at(k) > dpp->fMaxADC)
+		      dpp->fMaxADC = dpp->fStripADC.at(k);
             }
-            if( was_below && /*fTotADC[idx]*/ fMaxADC[idx] > fThreshold ) {
-	            assert( fNOT < fNStrips );
-	            fOverThr[fNOT] = idx;
+            if( was_below && dpp->/*fTotADC*/fMaxADC > fThreshold ) {
+	            assert( fNOT < fNSubstrips );
+	            fOverThr.push_back (idx);
 	            ++fNOT;
             }
-            fStripClusters[idx].push_back(clusterID);
+            dpp->fStripClusters.push_back(clusterID);
         }
         
         //do cross talk if requested, a big signal along the strips 
@@ -147,33 +145,38 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
         if (factor <= 0.) return; //no induced signal
         
         for( Int_t j=0; j < vv->GetSize(); j++ ) {
-            Int_t idx = vv->GetIdx(j);
-            assert( idx >= 0 && idx < fNStrips );
+	    Int_t ist = vv->GetStrip(j);
+	    Int_t iss = vv->GetSubstrip(j);
+	    Int_t idx = plane->GetIndex (ist, iss);
+            assert( ist >= 0 && ist < fNSubstrips );
 
             Int_t idxInduce = idx + isLeft*TSolSimGEMDigitization::fNCStripApart;
-            if (idxInduce < 0 || idxInduce >= fNStrips ) continue; //outside the readout
+            if (idxInduce < 0 || idxInduce >= fNSubstrips ) continue; //outside the readout
+	    DigSubstrip* dppInduce = fDigPlane.at(idxInduce);
+	    DigSubstrip* dpp = fDigPlane.at(idx);
 
-            SETBIT(fType[idxInduce], kInducedStrip);
+            SETBIT(dppInduce->fType, kInducedStrip);
             //same time as the main signal strip
-            fTime[idxInduce] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
-            fCharge[idxInduce] += factor*vv->GetCharge(j);
-            bool was_below = !( /*fTotADC[idxInduce]*/fMaxADC[idxInduce] > fThreshold );
+            dppInduce->fTime = (dpp->fTime < vv->GetTime()) ? dpp->fTime : vv->GetTime();
+            dppInduce->fCharge += factor*vv->GetCharge(j);
+            bool was_below = !( dppInduce->/*fTotADC*/fMaxADC > fThreshold );
             for( UInt_t k=0; k<fNSamples; k++ ) {
                 Int_t nnn = vv->GetADC(j,k);
                 assert( nnn >= 0 );
                 nnn *= factor;
                 if( nnn == 0 ) continue;
-                Int_t iadc = idxInduce*fNSamples+k;
-                fStripADC[iadc] = fStripADC[iadc] + nnn;
-                fTotADC[idxInduce] += nnn;
-                if (fStripADC[iadc] > fMaxADC[idxInduce]) fMaxADC[idxInduce] = fStripADC[iadc];
+		dppInduce->fStripADC.at(k) += nnn;
+		dppInduce->fTotADC += nnn;
+		if (dppInduce->fStripADC.at(k) > dppInduce->fMaxADC)
+		  dppInduce->fMaxADC = dppInduce->fStripADC.at(k);
             }
-            if( was_below && /*fTotADC[idxInduce]*/fMaxADC[idxInduce] > fThreshold ) {
-                assert( fNOT < fNStrips );
-                fOverThr[fNOT] = idxInduce;
+            if( was_below && dppInduce->/*fTotADC*/fMaxADC > fThreshold ) {
+                assert( fNOT < fNSubstrips );
+                fOverThr.push_back (idxInduce);
                 ++fNOT;
             }
         }
+
     }
 };
 
@@ -182,17 +185,18 @@ UShort_t
 TSolDigitizedPlane::Threshold( Int_t thr )
 {
   // Find number of strips over threshold 'thr'
-  // and build index table for GetIdxOverThr.
+  // and build index table for GetIndexOverThr.
   // This needs to be called only if one wants a change the threshold value.
 
   fNOT = 0;
   fThreshold = thr;
+  fOverThr.clear();
 
-  for (UInt_t j = 0; j < fNStrips; j++)
+  for (UInt_t j = 0; j < fNSubstrips; j++)
     {
-      if (/*fTotADC[j]*/fMaxADC[j] > thr)
+      if (fDigPlane.at(j)->/*fTotADC*/fMaxADC > thr)
 	{
-	  fOverThr[fNOT] = j;
+	  fOverThr.push_back (j);
 	  fNOT++;
 	}
     }
@@ -253,7 +257,7 @@ TSolSimGEMDigitization::Initialize(const TSolSpec& spect)
       fDP[ic] = new TSolDigitizedPlane*[fNPlanes[ic]];
       for (UInt_t ip = 0; ip < fNPlanes[ic]; ++ip) {
 	fDP[ic][ip] =
-	  new TSolDigitizedPlane( spect.GetChamber(ic).GetPlane(ip).GetNStrips(),
+	  new TSolDigitizedPlane( &(spect.GetChamber(ic).GetPlane(ip)),
 				  fEleSamplingPoints, // # ADC samples
 				  manager->GetTotalADCThreshold() );                // threshold is zero for now
       }
@@ -351,7 +355,6 @@ Int_t
 TSolSimGEMDigitization::Digitize (const TSolGEMData& gdata, const TSolSpec& spect)
 {
   // Digitize event after clearing all previous digitization results.
-
   fEvent->Clear();
   fSignalSector = 0;  // safe default, will normally be overridden in AdditiveDigitize
 
@@ -396,6 +399,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
   if( nh == 0 ) return 0;
 
   // Map sectors of any background data to the signal sector, if so requested
+  // WARNING this implicitly assumes geometry is same for all sectors in plane
   bool map_backgr = fDoMapSector && is_background;
 
   // Randomize the event time for background events
@@ -480,6 +484,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
     }
     // Time of the leading edge of this hit's avalance relative to the trigger
     Double_t time_zero = event_time[itime] - fTriggerOffset[iplane] + gdata.GetHitTime(ih) + fRTime0*1e9;
+
     if (fRNIon > 0) {
       dh = AvaModel (igem, spect, vv1, vv2, time_zero);
     }
@@ -498,7 +503,8 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       }
 
       for (UInt_t j = 0; j < 2; j++) {
-	fDP[igem][j]->Cumulate (dh[j], itype, id );
+	fDP[igem][j]->Cumulate (dh[j], &(spect.GetChamber(igem).GetPlane(j)),
+				itype, id );
       }
       // TODO: make dh[2] a member variable & clear it here to avoid the constant
       // construction and deletion
@@ -529,7 +535,7 @@ TSolSimGEMDigitization::NoDigitize (const TSolGEMData& gdata, const TSolSpec& sp
       // Short_t id =
       SetTreeHit (ih, spect, dh, gdata, 0.0);
     }
-  SetTreeStrips ();
+  SetTreeStrips (spect);
 }
 
 
@@ -1055,7 +1061,7 @@ TSolSimGEMDigitization::PrintCharges() const
   for (UInt_t ic = 0; ic < fNChambers; ++ic)
     {
       for (UInt_t ip = 0; ip < fNPlanes[ic]; ++ip)
-	for (UInt_t ist = 0; ist < (UInt_t) GetNStrips(ic, ip); ++ist)
+	for (UInt_t ist = 0; ist < (UInt_t) GetNSubstrips(ic, ip); ++ist)
 	  {
 	    if (fDP[ic][ip]->GetCharge (ist) > 0)
 	      cout << setw(4) << ic
@@ -1080,7 +1086,7 @@ TSolSimGEMDigitization::PrintSamples() const
   for (UInt_t ic = 0; ic < fNChambers; ++ic)
     {
       for (UInt_t ip = 0; ip < fNPlanes[ic]; ++ip)
-	for (UInt_t ist = 0; ist < (UInt_t) GetNStrips (ic, ip); ++ist)
+	for (UInt_t ist = 0; ist < (UInt_t) GetNSubstrips (ic, ip); ++ist)
 	  if (GetCharge (ic, ip, ist) > 0)
 	    {
 	      cout << setw(4) << ic
@@ -1236,7 +1242,7 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
       {
 	clust.fSize[j]  = dh[j]->GetSize();
 
-	clust.fStart[j] = (clust.fSize[j] > 0) ? dh[j]->GetIdx(0) : -1;
+	clust.fStart[j] = (clust.fSize[j] > 0) ? dh[j]->GetStrip(0) : -1;
       }
     else
       {
@@ -1284,7 +1290,7 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
 }
 
 void
-TSolSimGEMDigitization::SetTreeStrips()
+TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
 {
   // Sets the variables in fEvent->fGEMStrips describing strip signals
   // This is later used to fill the tree.
@@ -1308,13 +1314,15 @@ TSolSimGEMDigitization::SetTreeStrips()
 				(UShort_t)GetNSamples(ich, ip));
       UInt_t nover = GetNOverThr(ich, ip);
       for (UInt_t iover = 0; iover < nover; iover++) {
-	Short_t idx = GetIdxOverThr(ich, ip, iover);
+	Short_t idx = GetIndexOverThr(ich, ip, iover);
 	strip.fChan = idx;
+	strip.fStrip = spect.GetChamber(ich).GetPlane(ip).GetStrip (idx);
+	strip.fSubstrip = spect.GetChamber(ich).GetPlane(ip).GetSubstrip (idx);
     //move the pedestal noise here
     Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
     Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
-    //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"channel: "<<idx<<endl;
+    //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"substrip: "<<idx<<endl;
 	for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
 	  strip.fADC[ss] = GetADC(ich, ip, idx, ss);
 	  //cout<<strip.fADC[ss]<<" ";
@@ -1338,10 +1346,10 @@ TSolSimGEMDigitization::SetTreeStrips()
 }
 
 void
-TSolSimGEMDigitization::FillTree ()
+TSolSimGEMDigitization::FillTree (const TSolSpec& spect)
 {
   if( !fFilledStrips )
-    SetTreeStrips();
+    SetTreeStrips(spect);
   
   fOFile = fOTree->GetCurrentFile();
   if (fOFile && fOTree

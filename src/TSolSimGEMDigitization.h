@@ -15,6 +15,7 @@ class TFile;
 class TTree;
 
 class TSolGEMData;
+class TSolGEMPlane;
 class TSolGEMVStrip;
 class TSolSpec;
 class TSolSimEvent;
@@ -30,51 +31,57 @@ class TSolDigitizedPlane {
 private:
   // ADC sampled value of strip array of each axis
 
-  //TODO: make this a struct inside an STL vector or similar
-  TArrayI fStripADC;
-  Short_t *fType;
-  Int_t   *fTotADC;
-  Int_t   *fMaxADC;
+  struct DigSubstrip
+  {
+    DigSubstrip (UShort_t nsample): fType(0), fTotADC(0), fMaxADC(0), fCharge(0), fTime(0) {fStripADC.assign (nsample, 0); fStripClusters.clear();}
+    std::vector<Int_t> fStripADC;
+    Short_t fType;
+    Int_t   fTotADC;
+    Int_t   fMaxADC;
+    Float_t fCharge;
+    Float_t fTime;
+    std::vector<Short_t> fStripClusters; // Clusters associated with each strip
+  };
+  std::vector<DigSubstrip*> fDigPlane;
 
-  Float_t *fCharge;
-  Float_t *fTime;
-
+  TSolGEMPlane* fPlane;
   UShort_t fNSamples;
-  UShort_t fNStrips;
+  UShort_t fNSubstrips;
   Int_t    fThreshold;
-
-  UShort_t  fNOT;   // # strips over threshold
-  Short_t*  fOverThr;  // # list of strips over threshold
-
-  std::vector< std::vector<Short_t> > fStripClusters; // Clusters associated with each strip
+  UShort_t  fNOT;   // # substrips over threshold
+  std::vector<Short_t> fOverThr;  // # list of substrips over threshold
 
   //used to simulate cross talk of APV25
   TRandom3 fRan;
 public:
   // init and reset physics strips arrays
-  TSolDigitizedPlane (UShort_t nstrip,
+  TSolDigitizedPlane (const TSolGEMPlane* plane,
 		      UShort_t nsample = 10,
 		      Int_t    threshold = 0 );
   ~TSolDigitizedPlane();
   void Clear();
 
   // cumulate hits (strips signals)
-  void Cumulate (const TSolGEMVStrip *vv, Short_t type, Short_t clusterID );
+  void Cumulate (const TSolGEMVStrip *vv, 
+		 const TSolGEMPlane* plane,
+		 Short_t type, Short_t clusterID );
 
-  Short_t  GetType (Int_t n) const {return fType[n];}
-  Int_t    GetTotADC (Int_t n) const {return fTotADC[n];}
-  Float_t  GetTime (Int_t n) const {return fTime[n];}
-  Float_t  GetCharge (Int_t n) const {return fCharge[n];}
-  Int_t    GetADC (Int_t n, Int_t ks) const {return fStripADC[n*fNSamples+ks];}
+  Short_t  GetType (Int_t n) const {return fDigPlane.at(n)->fType;}
+  Int_t    GetTotADC (Int_t n) const {return fDigPlane.at(n)->fTotADC;}
+  Float_t  GetTime (Int_t n) const {return fDigPlane.at(n)->fTime;}
+  Float_t  GetCharge (Int_t n) const {return fDigPlane.at(n)->fCharge;}
+  Int_t    GetADC (Int_t n, Int_t ks) const  {return fDigPlane.at(n)->fStripADC.at(ks);}
   UShort_t GetNSamples() const {return fNSamples;}
-  UShort_t GetNStrips() const {return fNStrips;}
+  UShort_t GetNSubstrips() const {return fNSubstrips;}
 
   UShort_t Threshold (Int_t thr);
 
   UShort_t GetNOverThr() const {return fNOT;}
-  Short_t  GetIdxOverThr (Int_t n) const {return fOverThr[n];}
+  Short_t  GetIndexOverThr (Int_t n) const {return fOverThr[n];}
 
-  const std::vector<Short_t>& GetStripClusters(UInt_t n) const { return fStripClusters[n]; }
+  const std::vector<Short_t>& GetStripClusters(UInt_t n) const { return fDigPlane.at(n)->fStripClusters; }
+
+  const TSolGEMPlane* GetPlane() const { return fPlane; }
 };
 
 
@@ -118,8 +125,8 @@ class TSolSimGEMDigitization: public THaAnalysisObject
 		      TSolGEMVStrip* const *dh,
 		      const TSolGEMData& tsgd,
 		      Double_t t0 ); // called from Digitization
-  void SetTreeStrips(); // called from Digitization
-  void FillTree ();
+  void SetTreeStrips(const TSolSpec& spect); // called from Digitization
+  void FillTree (const TSolSpec& spect);
   void WriteTree () const;
   void CloseTree () const;
 
@@ -132,11 +139,11 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   UInt_t   GetNChambers() const {return fNChambers;};
   UInt_t   GetNPlanes (const UInt_t i) const {return fNPlanes[i];}
   UShort_t GetNSamples (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNSamples();}
-  UShort_t GetNStrips (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNStrips();}
+  UShort_t GetNSubstrips (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNSubstrips();}
   UShort_t Threshold (UInt_t ich, UInt_t ip, Int_t thr) {return fDP[ich][ip]->Threshold (thr);}
   UShort_t GetNOverThr (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNOverThr();}
-  Short_t  GetIdxOverThr (UInt_t ich, UInt_t ip, Int_t n) const
-  { return fDP[ich][ip]->GetIdxOverThr(n); }
+  Short_t  GetIndexOverThr (UInt_t ich, UInt_t ip, Int_t n) const
+  { return fDP[ich][ip]->GetIndexOverThr(n); }
 
   const std::vector<Short_t>& GetStripClusters(UInt_t ich, UInt_t ip, UInt_t n) const
   { return fDP[ich][ip]->GetStripClusters(n); }
@@ -148,7 +155,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   
   // APV cross talk parameters
   static Int_t    fDoCrossTalk;  //whether we want to do cross talk simulation
-  static Int_t    fNCStripApart; // # of strips the induced signal is away from the mean signal
+  static Int_t    fNCStripApart; // # of channels the induced signal is away from the mean signal
   static Double_t fCrossFactor;  //reduction factor for the induced signal
   static Double_t fCrossSigma;   //uncertainty of the reduction factor
 

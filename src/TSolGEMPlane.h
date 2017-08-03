@@ -76,6 +76,12 @@ class TSolGEMPlane : public THaSubDetector {
 	                              // increasing strip position
 	Double_t GetSAngleComp() const { return 2*atan(1) - GetSAngle(); }
 
+	// Conversions between strip, substrip and index
+	Int_t GetIndex (Int_t ist, Int_t iss) const { 
+	  return iss == 1 ? GetNStrips()+(ist-GetFirstDividedStrip()) : ist; }
+	Int_t GetStrip (Int_t idx) const { return idx >= GetNStrips() ? GetFirstDividedStrip() + idx - GetNStrips() : idx; }
+	Int_t GetSubstrip (Int_t idx) const { return idx >= GetNStrips() ? 1 : 0; }
+
 	// Frame conversions
 	void LabToPlane (Double_t& x, Double_t& y) const {fWedge->LabToWedge (x, y);};  // input and output in meters
 	void PlaneToStrip (Double_t& x, Double_t& y) const; // input and output in meters
@@ -96,7 +102,6 @@ class TSolGEMPlane : public THaSubDetector {
 
 	Bool_t IsDivided (UInt_t is) const;        // Whether strip is divided
         Double_t GetYDiv (UInt_t is) const;        // Division point of strip
-
 
         // Strip number corresponding to x-coordinate
         Int_t GetStripUnchecked( Double_t x )  const;
