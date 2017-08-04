@@ -198,7 +198,7 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
 	  //      << " divides at " << fYDiv[i]
 	  //      << endl;
 	}
-      Print();
+      // Print();
 
     }
   else
