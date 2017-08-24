@@ -1222,7 +1222,9 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
   // the origin of first plane of the sector, but rotated by the nominal
   // (non-offset) sector angle.
   // NB: assumes even sector spacing, clockwise numbering and sector 0 at 0 deg
-  Double_t sector_angle = TMath::TwoPi()*clust.fSector/manager->GetNSector();
+
+  // Double_t sector_angle = TMath::TwoPi()*clust.fSector/manager->GetNSector();
+  Double_t sector_angle = spect.GetChamber(clust.fSector).GetWedge().GetPhi0() - spect.GetChamber(0).GetWedge().GetPhi0();
   if (!fUseTrackerFrame){
     clust.fHitpos = clust.fMCpos;// - spect.GetChamber(clust.fSector).GetOrigin(); //let's not use this tracker frame, Weizhi Xiong
   }else{

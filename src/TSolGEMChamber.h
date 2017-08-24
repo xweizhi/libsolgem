@@ -31,14 +31,6 @@ class TSolGEMPlane;
 // The origin and phi0 are specified in the lab frame. The size is in the
 // wedge frame.
 
-//hv sector of a GEM detector, use four lines to determine a boundary
-//of the HV sector, which is a rectangle, four lines are determined in the tracker frame where
-//x axis is along the symmetric axis of the chamber and the two lines along 
-// the side of the chamber can extend to the origin
-
-//TODO the side of the rectangle must be parallel to the x and y axis of the tracker frame
-//may need to generalize it to any shape, this is just to save time now -- Weizhi
-
 
 class TSolGEMChamber : public THaDetector {
  public:
