@@ -186,6 +186,8 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fSNormNsigma;           //fSNormNsigma is an arbitrary multiplicative factor for the avalance radius.
   Int_t    fAvaModel;              //0 for Heavyside, 1 for Gaussian, 2 for Cauchy-Lorentz
   Double_t fAvaGain;
+  Double_t fLateralUncertainty; // avalanche electrons can only pass through the holes of GEM foil
+                                // which introduce additional uncertainty in the lateral direction
   // Electronics parameters
   vector<Double_t> fTriggerOffset;         // trigger offset (ns), incl latency & readout offset
   Double_t fTriggerJitter;         // trigger sigma jitter (ns)
@@ -196,12 +198,6 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fADCgain;               // ADC gain
   Int_t    fADCbits;               // ADC resolutions in bits
   Double_t fGateWidth;             // to be changed , ns - pulse shape width at ~1/10 max
-  Int_t    fUseTrackerFrame;       // tracker frame is used in the original version, but not so in my version
-                                   // Weizhi Xiong
-  Double_t fEntranceRef;           // z position of the copper layer right before the first GEM gas layer,
-                             // relative to the center of the GEM chamber
-  Double_t fLateralUncertainty; // avalanche electrons can only pass through the holes of GEM foil
-                                // which introduce additional uncertainty in the lateral direction
 
   //parameter for GEM pedestal noise
   Double_t fPulseNoiseSigma;  // additional sigma term of the pedestal noise
@@ -215,6 +211,10 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   
   // Geometry
   Double_t fRoutZ;            // z-distance hit entrance to readout plane [mm]
+  Int_t    fUseTrackerFrame;       // tracker frame is used in the original version, but not so in my version
+                                   // Weizhi Xiong
+  Double_t fEntranceRef;           // z position of the copper layer right before the first GEM gas layer,
+                             // relative to the center of the GEM chamber
 
   // Sector mapping
   Bool_t   fDoMapSector;
