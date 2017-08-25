@@ -90,6 +90,7 @@ TSolDigitizedPlane::Clear()
       (*i)->fStripADC.assign (fNSamples, 0);
       (*i)->fType = 0;
       (*i)->fTotADC = 0;
+      (*i)->fMaxADC = 0;
       (*i)->fCharge = 0;
       (*i)->fTime = 9999.;
       (*i)->fStripClusters.clear();
@@ -930,7 +931,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 
 		Int_t ndiv = 1;
 		Int_t iy0[2] = {0, 0};
-		Int_t iy1[2] = {ny, ny};
+		Int_t iy1[2] = {ny-1, ny-1};
 		if (pl.IsDivided (iL+j))
 		  {
 		    Int_t iyd = (pl.GetYDiv (iL+j) * 1e3 - yb) / ybw;
