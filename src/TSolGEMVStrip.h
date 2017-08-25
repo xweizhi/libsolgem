@@ -57,7 +57,7 @@ class TSolGEMVStrip {
   Float_t GetTime() const { return fTime; };
   Double_t GetHitCharge() const { return fHitCharge; };
 
-  void Print();
+  void Print() const;
 };
 
 #endif

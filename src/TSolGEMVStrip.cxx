@@ -21,7 +21,7 @@ TSolGEMVStrip::~TSolGEMVStrip() {
 };
 
 void 
-TSolGEMVStrip::Print() {
+TSolGEMVStrip::Print() const {
   Int_t i,k;
   
   cerr << "Virtual strips sampled starting at " << GetTime() << endl;
