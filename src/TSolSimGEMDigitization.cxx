@@ -931,7 +931,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 
 		Int_t ndiv = 1;
 		Int_t iy0[2] = {0, 0};
-		Int_t iy1[2] = {ny-1, ny-1};
+		Int_t iy1[2] = {ny, ny};
 		if (pl.IsDivided (iL+j))
 		  {
 		    Int_t iyd = (pl.GetYDiv (iL+j) * 1e3 - yb) / ybw;
@@ -954,7 +954,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 		      }
 #if DBG_AVA > 0
 		      cout << "Strip " << (j+iL) << " ndiv " << ndiv
-			   << " Integrate " << iy0[idiv] << " to " << iy1[idiv] 
+			   << " Integrate " << iy0[idiv] << " to " << iy1[idiv]-1 
 			   << " result " << us << endl;
 #endif
             
@@ -1022,6 +1022,12 @@ void
 TSolSimGEMDigitization::Print() const
 {
   cout << "GEM digitization:" << endl;
+  cout << "  APV cross talk parameters:" << endl;
+  cout << "    Do cross talk simulation: " <<     fDoCrossTalk << endl;
+  cout << "    # of channels apart: " <<     fNCStripApart << endl;
+  cout << "    Reduction factor: " <<  fCrossFactor << endl;
+  cout << "    Uncertainty of reduction factor: " <<  fCrossSigma << endl;
+
   cout << "  Gas parameters:" << endl;
   cout << "    Gas ion width: " << fGasWion << endl;
   cout << "    Gas diffusion: " << fGasDiffusion << endl;
@@ -1030,9 +1036,15 @@ TSolSimGEMDigitization::Print() const
   cout << "    Avalanche charge statistics: " << fAvalancheChargeStatistics << endl;
   cout << "    Gain mean: " << fGainMean << endl;
   cout << "    Gain 0: " << fGain0 << endl;
+  cout << "    Maximum ion pairs: " <<    fMaxNIon << endl;
+  
+  cout << "    Factor for avalanche radius: " <<  fSNormNsigma << endl;
+  cout << "    0 for Heavyside, 1 for Gaussian, 2 for Cauchy-Lorentz: " <<     fAvaModel << endl;
+  cout << "    Ava gain: " <<  fAvaGain << endl;
+  cout << "    Lateral uncertainty: " <<  fLateralUncertainty << endl;
 
   cout << "  Electronics parameters:" << endl;
-  cout << "    Trigger offset: " << endl;
+  cout << "    Trigger offset:" << endl;
   for (UInt_t i=0; i<fTriggerOffset.size(); i++) cout<<fTriggerOffset[i]<<" ";
   cout<<endl;
   
@@ -1044,7 +1056,7 @@ TSolSimGEMDigitization::Print() const
   cout << "    ADC bits: " << fADCbits << endl;
   cout << "    Gate width: " << fGateWidth << endl;
 
-  cout << "  GEM pedestal noise parameters: "<<endl;
+  cout << "  GEM pedestal noise parameters:" << endl;
   cout << "    Pulse Noise period: " << fPulseNoisePeriod << endl;
   cout << "    Pulse Noise amplitude sigma: " << fPulseNoiseAmpSigma << endl;
   cout << "    Pulse Noise amplitude constant: " << fPulseNoiseAmpConst << endl;
@@ -1053,6 +1065,18 @@ TSolSimGEMDigitization::Print() const
   cout << "  Pulse shaping parameters:" << endl;
   cout << "    Pulse shape tau0: " << fPulseShapeTau0 << endl;
   cout << "    Pulse shape tau1: " << fPulseShapeTau1 << endl;
+
+  cout << "  Geometry:" << endl;
+  cout << "    z distance hit entrance to readout plane [mm]: " <<  fRoutZ << endl;
+  cout << "    z position of copper layer: " <<  fEntranceRef << endl;
+
+  cout << "  Sector mapping:" << endl;
+  cout << "    Do sector mapping: " <<    fDoMapSector << endl;
+
+  cout << "  Numerical integration:" << endl;
+  cout << "    x step size: " <<    fXIntegralStepsPerPitch << endl;
+  cout << "    y step size: " <<    fYIntegralStepsPerPitch << endl;
+
 }
 
 void
