@@ -13,6 +13,7 @@
 #include <cassert>
 #include <iomanip>
 
+
 using namespace std;
 
 TSolGEMPlane::TSolGEMPlane()
@@ -146,14 +147,27 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
 
   Double_t xs0 = fWedge->GetR1() * cos (fWedge->GetDPhi()/2) - rorigin;
   Double_t ys0 = fWedge->GetR1() * sin (fWedge->GetDPhi()/2);
+#define OTHERWAY
+#ifdef OTHERWAY
+  if (GetSAngle() < TMath::Pi()/2)
+    ys0 = -ys0;
+#else
   if (GetSAngle() > TMath::Pi()/2)
     ys0 = -ys0;
+#endif
 
   PlaneToStrip (xs0, ys0);
+#ifdef OTHERWAY
+  if (GetSAngle() < TMath::Pi()/2)
+    fNStrips = int ((fSBeg + xs0) / GetSPitch());
+  else
+    fNStrips = int ((-xs0 + fSBeg) / GetSPitch());
+#else
   if (GetSAngle() > TMath::Pi()/2)
     fNStrips = int ((fSBeg - xs0) / GetSPitch());
   else
     fNStrips = int ((xs0 + fSBeg) / GetSPitch());
+#endif
 
   // Make table of strip divisions
 
@@ -328,6 +342,10 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
 {
   // Strip number corresponding to coordinates x, y in 
   // strip frame, or -1 if outside (2-d) bounds
+  
+  // Double_t xw = x;
+  // Double_t yw = yc;
+  // StripToPlane (xw, yw);
 
   Double_t xc = x;
   StripToLab (xc, yc);
@@ -336,6 +354,12 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
     return -1;
 
   Int_t s = GetStripUnchecked(x);
+  // cout << GetName()
+  //      << " " << s << " " << x << " " << GetNStrips() 
+  //      << " " << xc << " " << yc
+  //      << " " << xw << " " << yw << endl;
+  //      assert (!(TString(GetName()) == "gem92y"));
+
   assert( s >= 0 && s < GetNStrips() ); // by construction in ReadGeometry()
   return s;
 }
@@ -389,6 +413,20 @@ TSolGEMPlane::Print() const
 	 << " to " << sd0 + nd - 1
 	 << " at " << GetYDiv (sd0 + nd - 1)
 	 << endl;
+
+  Double_t xxx[4] = { -(fWedge->GetSize())[0],  (fWedge->GetSize())[0],  (fWedge->GetSize())[0],  -(fWedge->GetSize())[0] };
+  Double_t yyy[4] = { -(fWedge->GetSize())[1],  -(fWedge->GetSize())[1],  (fWedge->GetSize())[1],  (fWedge->GetSize())[1] };
+  Double_t xxxs[4];
+  Double_t yyys[4];
+  for (UInt_t ixxx = 0; ixxx < 4; ++ixxx)
+    {
+      xxxs[ixxx] = xxx[ixxx];
+      yyys[ixxx] = yyy[ixxx];
+      PlaneToStrip (xxxs[ixxx], yyys[ixxx]);
+      cout << "Plane vertex " << xxx[ixxx] << " " << yyy[ixxx] 
+	   << " -> Strip vertex " << xxxs[ixxx] << " " << yyys[ixxx] 
+	   << endl;
+    }
 }
 
 void
@@ -396,8 +434,15 @@ TSolGEMPlane::SetRotations()
 {
   // Set rotation angle trig functions
   //cout<<"strip angles: "<<GetSAngle()<<" "<<GetAngle()<<endl;
+#ifdef OTHERWAY
+  fCWS = cos (GetSAngle());
+  fCLS = cos (-GetAngle()+GetSAngle());
+  fSWS = sin (GetSAngle());
+  fSLS = sin (-GetAngle()+GetSAngle());
+#else
   fCWS = cos (-GetSAngle());
   fCLS = cos (-GetAngle()-GetSAngle());
   fSWS = sin (-GetSAngle());
   fSLS = sin (-GetAngle()-GetSAngle());
+#endif
 }
