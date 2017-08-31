@@ -4,6 +4,8 @@
 #include <cmath>
 #include <vector>
 
+#include "TMath.h"
+
 #include "THaSubDetector.h"
 #include "TSolWedge.h"
 
@@ -50,6 +52,9 @@ class TClonesArray;
 // The origin and phi0 are specified in the lab frame. The size is in the
 // wedge frame.
 
+// Strips are numbered 0 to fNStrips-1. Strip number increases with
+// increasing x in strip frame.
+
 class TSolGEMPlane : public THaSubDetector {
     public:
         TSolGEMPlane ();
@@ -74,7 +79,7 @@ class TSolGEMPlane : public THaSubDetector {
 	                              // in wedge frame
                                       // and normal to strips in dir of
 	                              // increasing strip position
-	Double_t GetSAngleComp() const { return 2*atan(1) - GetSAngle(); }
+	Double_t GetSAngleComp() const { return TMath::Pi() - GetSAngle(); }
 
 	// Conversions between strip, substrip and index
 	Int_t GetIndex (Int_t ist, Int_t iss) const { 
@@ -122,7 +127,7 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t fSAngle;        // Strip angle (measurement direction)
 	Int_t    fNStrips;  // Number of strips
 	Double_t fSPitch;   // Strip pitch (m)
-	Double_t fSBeg;     // X coordinate of lower edge of first strip
+	Double_t fSBeg;     // X coordinate of outer edge of longest strip (abs)
 	TSolWedge* fWedge;  // Wedge geometry
 
 	// Trig functions for rotations
