@@ -5,6 +5,7 @@
 // Implemented entirely in header
 
 #include <vector>
+#include <iostream>
 
 class TSolPolygon
 {
@@ -20,12 +21,14 @@ class TSolPolygon
       // see http://alienryderflex.com/polygon/
       
       fPc = polyCorners;
+      fPX = new Double_t[fPc];
       fPY = new Double_t[fPc];
       fConstant = new Double_t[fPc];
       fMultiple = new Double_t[fPc];
       UInt_t j = polyCorners - 1;
       for (UInt_t i = 0; i < polyCorners; i++) 
 	{
+	  fPX[i] = polyX[i];
 	  fPY[i] = polyY[i];
 	  if (polyY[j] == polyY[i]) 
 	    {
@@ -61,12 +64,19 @@ class TSolPolygon
 	  oddNodes ^= (y * fMultiple[i] + fConstant[i] < x); 
 	j = i; 
       }
-    
+
     return oddNodes; 
+  }
+
+  void Print() const
+  {
+    for (UInt_t i = 0; i < fPc; ++i)
+      std::cout << i << ": (" << fPX[i] << ", " << fPY[i] << ")" << std::endl;
   }
 
  private:  
   UInt_t fPc;
+  Double_t* fPX;  // x coordinates not actually used directly but stored for printing
   Double_t* fPY;
   Double_t* fConstant;
   Double_t* fMultiple;
