@@ -31,6 +31,18 @@ TSolSimAux::ADCConvert(Double_t val, Double_t off, Double_t gain, Int_t bits)
 
 }
 
+Int_t TSolSimAux::CheckSaturation(Int_t ADC, Int_t bits)
+{
+    assert( bits >= 0 && bits <= MAX_ADCBITS );
+    
+    Double_t saturation = static_cast<Double_t>( (1<<bits)-1 );
+    
+    if( ADC > saturation )
+    ADC = saturation;
+    
+    return ADC;
+}
+
 // Pulse Shape SiD model
 // APV25 time function from  M. Friedl et al NIMA 572 (2007) pg 385-387 (APV25 for silicon!)
 //
@@ -73,6 +85,23 @@ TSolSimAux::PulseShape(Double_t t,
   v = A * ((tau0+tau1)/tau1/tau1)*(1.-TMath::Exp(x0)) * TMath::Exp(x1);
   return ( v>0. ) ? v : 0.;
  	   
+}
+
+Double_t TSolSimAux::SAMPAPulseShape(Double_t t, Double_t A)
+{
+    //hard code the parameters here for now for test 160ns shaping
+    //Double_t p1 = 1.89019e+02;
+    //Double_t p2 = 2.33628e+00;
+    //Double_t p3 = 1.29642e+02;
+    //Double_t p4 = 1.36690e+00;
+
+    Double_t p1 = 1.17276e+02;
+    Double_t p2 = 2.33628e+00;
+    Double_t p3 = 6.48168e+01;
+    Double_t p4 = 1.36690e+00;
+    
+    Double_t v = A* TMath::Power(t/p1, p2) * TMath::Exp(-TMath::Power(t/p3, p4));
+    return ( v>0. ) ? v : 0.;
 }
 
 // par[0] = norm

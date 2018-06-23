@@ -490,7 +490,10 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     }
 
     // Save hits in the GEMs
-    new( (*fMCHits)[GetNMCHits()] ) TSolSimGEMHit(c);
+    //new( (*fMCHits)[GetNMCHits()] ) TSolSimGEMHit(c);
+    
+    //Save only hits from signal file
+    if (c.fSource == kPrimarySource) new( (*fMCHits)[GetNMCHits()] ) TSolSimGEMHit(c);
 
     // Extra bookkeeping for primary tracks, used for making back tracks below
     if (c.fSource != kPrimarySource) continue;

@@ -468,7 +468,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       if( is_background ) {
 	// For background data, uniformly randomize event time between
 	// -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-	event_time[itime] = fTrnd.Uniform(fGateWidth + 3.*fEleSamplingPeriod)
+	event_time[itime] = fTrnd.Uniform(fGateWidth + 10.*fEleSamplingPeriod)
 	  - fGateWidth - trigger_jitter;
 
       } else {
@@ -913,11 +913,15 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
             //Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
 	        for (Int_t b = 0; b < fEleSamplingPoints; b++){
+	            //default
 	            Double_t pulse =
 		        TSolSimAux::PulseShape (fEleSamplingPeriod * b - t0,
 					                    us,
 					                    fPulseShapeTau0,
 					                    fPulseShapeTau1 );
+		        //test for SAMPA
+		        //Double_t pulse = TSolSimAux::SAMPAPulseShape (fEleSamplingPeriod * b - t0, us);        
+			   
 
                 //nx is larger than the size of the strips that are actually being hit,
                 //however, this way of adding noise will add signals to those strips that were not hit
@@ -930,6 +934,11 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
                 //if( fPulseNoiseSigma > 0. && pulse > 0. )
                 //    pulse += GetPedNoise(phase, amp, b);
 
+
+                //satuation should be checked later, not in the ADCConvert (at least not only in) 
+                //becuase we will accumulate the signal on each strip later on
+                //even though we checked the satuation for this hit, after accumulation
+                //the total signal ADC can still be larger than the maximum allowed ADC -- Weizhi
 	            Short_t dadc = TSolSimAux::ADCConvert( pulse,
 						                               fADCoffset,
 						                               fADCgain,
@@ -1259,14 +1268,18 @@ TSolSimGEMDigitization::SetTreeStrips()
       for (UInt_t iover = 0; iover < nover; iover++) {
 	Short_t idx = GetIdxOverThr(ich, ip, iover);
 	strip.fChan = idx;
-    //move the pedestal noise here
+    //move the pedestal noise here, and check for satuation
     Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
     Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
     //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"channel: "<<idx<<endl;
 	for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
-	  strip.fADC[ss] = GetADC(ich, ip, idx, ss);
+	  //strip.fADC[ss] = GetADC(ich, ip, idx, ss);
 	  //cout<<strip.fADC[ss]<<" ";
+	  
+	  //check satuation here in the final step, after accumulating all signals
+	  strip.fADC[ss] = TSolSimAux::CheckSaturation( GetADC(ich, ip, idx, ss) , fADCbits );
+	  
 	  if( fPulseNoiseSigma > 0.)
         strip.fADC[ss] += GetPedNoise(phase, amp, ss);
     }
