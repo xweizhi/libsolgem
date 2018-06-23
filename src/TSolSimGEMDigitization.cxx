@@ -468,7 +468,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       if( is_background ) {
 	// For background data, uniformly randomize event time between
 	// -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-	event_time[itime] = fTrnd.Uniform(fGateWidth + 10.*fEleSamplingPeriod)
+	event_time[itime] = fTrnd.Uniform(fGateWidth + 3.*fEleSamplingPeriod)
 	  - fGateWidth - trigger_jitter;
 
       } else {
