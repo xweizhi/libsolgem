@@ -154,6 +154,7 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
   fSBeg = -fNStrips * fSPitch * 0.5;
   //cout<<"after rotation: "<<xs[0]<<" "<<xs[1]<<" "<<xs[2]<<" "<<xs[3]<<endl;
   //cout<<"after rotation: "<<ys[0]<<" "<<ys[1]<<" "<<ys[2]<<" "<<ys[3]<<endl;
+  
   return kOK;
 }
 

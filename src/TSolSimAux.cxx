@@ -87,19 +87,27 @@ TSolSimAux::PulseShape(Double_t t,
  	   
 }
 
-Double_t TSolSimAux::SAMPAPulseShape(Double_t t, Double_t A)
+Double_t TSolSimAux::SAMPAPulseShape(Double_t t, Double_t A, Int_t mode)
 {
     //hard code the parameters here for now for test 160ns shaping
-    //Double_t p1 = 1.89019e+02;
-    //Double_t p2 = 2.33628e+00;
-    //Double_t p3 = 1.29642e+02;
-    //Double_t p4 = 1.36690e+00;
-
-    Double_t p1 = 1.17276e+02;
-    Double_t p2 = 2.33628e+00;
-    Double_t p3 = 6.48168e+01;
-    Double_t p4 = 1.36690e+00;
+    Double_t p1 = 0.;
+    Double_t p2 = 0.;
+    Double_t p3 = 0.;
+    Double_t p4 = 0.;
     
+    if (mode == 1){
+        //160ns shaping time
+        p1 = 1.89019e+02;
+        p2 = 2.33628e+00;
+        p3 = 1.29642e+02;
+        p4 = 1.36690e+00;
+    }else{
+        //80ns shaping time
+        p1 = 1.17276e+02;
+        p2 = 2.33628e+00;
+        p3 = 6.48168e+01;
+        p4 = 1.36690e+00;
+    }
     Double_t v = A* TMath::Power(t/p1, p2) * TMath::Exp(-TMath::Power(t/p3, p4));
     return ( v>0. ) ? v : 0.;
 }

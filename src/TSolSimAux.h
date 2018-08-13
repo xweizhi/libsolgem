@@ -23,7 +23,8 @@ namespace TSolSimAux
 		      Double_t tau1);  // second time constant
   Double_t SAMPAPulseShape(
               Double_t t,
-              Double_t A
+              Double_t A,
+              Int_t mode
            );
   Double_t Gaus2D(Double_t *x, Double_t *par);
   Double_t MultiGaus2D(Double_t *x, Double_t *par);

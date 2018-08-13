@@ -189,12 +189,16 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fADCgain;               // ADC gain
   Int_t    fADCbits;               // ADC resolutions in bits
   Double_t fGateWidth;             // to be changed , ns - pulse shape width at ~1/10 max
+  Double_t fGateWidthPost;         
   Int_t    fUseTrackerFrame;       // tracker frame is used in the original version, but not so in my version
                                    // Weizhi Xiong
   Double_t fEntranceRef;           // z position of the copper layer right before the first GEM gas layer,
                              // relative to the center of the GEM chamber
   Double_t fLateralUncertainty; // avalanche electrons can only pass through the holes of GEM foil
                                 // which introduce additional uncertainty in the lateral direction
+                                
+  Int_t    fChipMode;           //0 for APV25, 1 for SAMPA with 160ns shapping time, 2 for SAMPA
+                                //with 80ns shapping time
 
   //parameter for GEM pedestal noise
   Double_t fPulseNoiseSigma;  // additional sigma term of the pedestal noise

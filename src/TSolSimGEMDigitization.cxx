@@ -114,6 +114,7 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv, Short_t type,
     if (vv) {
         for( Int_t j=0; j < vv->GetSize(); j++ ) {
             Int_t idx = vv->GetIdx(j);
+
             assert( idx >= 0 && idx < fNStrips );
             fType[idx] |= type;
             fTime[idx] = (fTime[idx] < vv->GetTime()) ? fTime[idx] : vv->GetTime();
@@ -301,6 +302,8 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
           { "adcgain",                   &fADCgain,                   kDouble },
           { "adcbits",                   &fADCbits,                   kInt    },
           { "gatewidth",                 &fGateWidth,                 kDouble },
+          { "gatewidth_post",            &fGateWidthPost,             kDouble },
+          { "chip_mode",                 &fChipMode,                  kInt    },
           { "pulseshapetau0",            &fPulseShapeTau0,            kDouble },
           { "pulseshapetau1",            &fPulseShapeTau1,            kDouble },
           { "zrout",                     &fRoutZ,                     kDouble },
@@ -496,7 +499,6 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
 	  igem += fEvent->fGEMClust.back().fSector;
 	}
       }
-
       for (UInt_t j = 0; j < 2; j++) {
 	fDP[igem][j]->Cumulate (dh[j], itype, id );
       }
@@ -732,7 +734,6 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         // Compute strips affected by the avalanche
 
         const TSolGEMPlane& pl = chamber.GetPlane(ipl);
-
         // Positions in strip frame
         Double_t xs0 = x0 * 1e-3; Double_t ys0 = y0 * 1e-3;
         pl.PlaneToStrip (xs0, ys0);
@@ -740,7 +741,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
         Double_t xs1 = x1 * 1e-3; Double_t ys1 = y1 * 1e-3;
         pl.PlaneToStrip (xs1, ys1);
         xs1 *= 1e3; ys1 *= 1e3;
-
+        
 #if DBG_AVA > 0
         cout << "xs0 ys0 xs1 ys1 " << xs0 << " " << ys0 << " " << xs1 << " " << ys1 << endl;
 #endif
@@ -914,14 +915,18 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 
 	        for (Int_t b = 0; b < fEleSamplingPoints; b++){
 	            //default
-	            Double_t pulse =
-		        TSolSimAux::PulseShape (fEleSamplingPeriod * b - t0,
-					                    us,
-					                    fPulseShapeTau0,
-					                    fPulseShapeTau1 );
+	            Double_t pulse = 0.;
+	            
+	            if (fChipMode == 0){
+		            pulse = TSolSimAux::PulseShape (fEleSamplingPeriod * b - t0,
+					                                us,
+					                                fPulseShapeTau0,
+					                                fPulseShapeTau1 );
+		        }
+		        else{
 		        //test for SAMPA
-		        //Double_t pulse = TSolSimAux::SAMPAPulseShape (fEleSamplingPeriod * b - t0, us);        
-			   
+		            pulse = TSolSimAux::SAMPAPulseShape (fEleSamplingPeriod * b - t0, us, fChipMode);        
+			    }
 
                 //nx is larger than the size of the strips that are actually being hit,
                 //however, this way of adding noise will add signals to those strips that were not hit
@@ -981,6 +986,8 @@ TSolSimGEMDigitization::Print() const
   cout << "    Avalanche charge statistics: " << fAvalancheChargeStatistics << endl;
   cout << "    Gain mean: " << fGainMean << endl;
   cout << "    Gain 0: " << fGain0 << endl;
+  cout << "    Avalanche model: "<<fAvaModel<<endl;
+  cout << "    Avalanche gain: "<<fAvaGain<<endl;
 
   cout << "  Electronics parameters:" << endl;
   cout << "    Trigger offset: " << endl;
@@ -994,6 +1001,8 @@ TSolSimGEMDigitization::Print() const
   cout << "    ADC gain: " << fADCgain << endl;
   cout << "    ADC bits: " << fADCbits << endl;
   cout << "    Gate width: " << fGateWidth << endl;
+  cout << "    Post gate width: "<<fGateWidthPost<<endl;
+  cout << "    Readout chip type: "<<fChipMode<<endl;
 
   cout << "  GEM pedestal noise parameters: "<<endl;
   cout << "    Pulse Noise period: " << fPulseNoisePeriod << endl;
@@ -1238,6 +1247,7 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
   if( clust.fPlane == 0 && clust.fType == 1 && clust.fSource == 0 )
     fEvent->fNSignal++;
 
+
   return clust.fID;
 }
 
@@ -1291,6 +1301,7 @@ TSolSimGEMDigitization::SetTreeStrips()
 
 	const vector<Short_t>& sc = GetStripClusters(ich, ip, idx);
 	strip.fClusters.Set( sc.size(), &sc[0] );
+	
 
 	fEvent->fGEMStrips.push_back( strip );
       }
