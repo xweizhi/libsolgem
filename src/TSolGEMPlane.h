@@ -139,7 +139,7 @@ class TSolGEMPlane : public THaSubDetector {
 	// Table of divided strips
 	UInt_t    fNDiv;     // number of divided strips
 	UInt_t    fSDiv0;    // first divided strip
-        Double_t*  fYDiv;
+        std::vector<Double_t>  fYDiv;
 	
     public:
 	ClassDef(TSolGEMPlane,0)

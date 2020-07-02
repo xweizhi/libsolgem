@@ -272,6 +272,7 @@ TSolSimGEMDigitization::Initialize(const TSolSpec& spect)
 
   fDADC.resize(fEleSamplingPoints);
   fFilledStrips = true;
+  //fTrnd.SetSeed(1);
 }
 
 Int_t
@@ -475,7 +476,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
       if( is_background ) {
 	// For background data, uniformly randomize event time between
 	// -fGateWidth to +75 ns (assuming 3 useful 25 ns samples).
-	event_time[itime] = fTrnd.Uniform(fGateWidth + 3.*fEleSamplingPeriod)
+	event_time[itime] = fTrnd.Uniform(fGateWidth + fGateWidthPost)
 	  - fGateWidth - trigger_jitter;
 
       } else {

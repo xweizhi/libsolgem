@@ -1,0 +1,3889 @@
+# -*- mode: Text -*-
+#
+# Database for SoLIDTracking
+#
+# Converted from db_gemc.dat
+
+#-----------------------------------------------------------------
+# parameters common for all tracker systems
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.detconf = 1
+solid.trackersystem.${allsystems}.MCdata = 1
+solid.trackersystem.${allsystems}.ntracker = 5
+solid.trackersystem.${allsystems}.do_rawdecode = 1
+solid.trackersystem.${allsystems}.do_coarsetrack = 1
+solid.trackersystem.${allsystems}.do_finetrack = 0
+solid.trackersystem.${allsystems}.do_chi2 = 0
+solid.trackersystem.${allsystems}.chi2_cut = 10000
+solid.trackersystem.${allsystems}.max_miss_hit = 1
+
+# "Crate map". Specifies the overall DAQ module configuration.
+# The map can be common to all sectors. It's just a lookup table
+# for (crate,slot) -> (model,nchan)
+#
+# Each row is:     crate slot_lo slot_hi model# nchan
+#
+solid.trackersystem.${allsystems}.cratemap = \
+                   0     0       29      6425   1600 \
+                   1     0       29      6425   1600 \
+                   2     0       29      6425   1600 \
+                   3     0       29      6425   1600 \
+                   4     0       29      6425   1600 \
+                   5     0       29      6425   1600 \
+                   6     0       29      6425   1600 \
+                   7     0       29      6425   1600 \
+                   8     0       29      6425   1600 \
+                   9     0       29      6425   1600 \
+                   10    0       3       6425   30
+
+#-----------------------------------------------------------------
+# parameters for ecal
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.ecal.laec_z = 0
+solid.trackersystem.${allsystems}.ecal.faec_z = 3.23
+solid.trackersystem.${allsystems}.ecal.ec_pos_reso = 0.01
+solid.trackersystem.${allsystems}.ecal.ec_energy_reso = 0.1
+solid.trackersystem.${allsystems}.ecal.laec_detmap_pos = 10 0  0 29
+solid.trackersystem.${allsystems}.ecal.laec_detmap_edp = 10 1  0 29
+solid.trackersystem.${allsystems}.ecal.faec_detmap_pos = 10 2  0 29
+solid.trackersystem.${allsystems}.ecal.faec_detmap_edp = 10 3  0 29
+
+#-----------------------------------------------------------------
+# parameters common for all trackers
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.${alltrackers}.nchamber = 1
+solid.trackersystem.${allsystems}.${alltrackers}.combine_hits = 0
+solid.trackersystem.${allsystems}.${alltrackers}.kill_cross_talk = 0
+solid.trackersystem.${allsystems}.${alltrackers}.cross_talk_thres = 0.1
+solid.trackersystem.${allsystems}.${alltrackers}.cross_strip_apart = 32
+
+#-----------------------------------------------------------------
+# parameters common for all chambers
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.do_3d_amcorr = 1
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.3d_amcorr_cut = 1
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.nreadout = 2
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.acc_file_name = pos_acceptance.root
+
+#-----------------------------------------------------------------
+# parameters common for all readouts
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.xp_res = 6e-05
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.maxclustsiz = 4
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.adc_min = 95
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.split_frac = 0.2
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.maxhits = 1000
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.maxsamp = 3
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.adc_sigma = 0.2
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.do_noise = 0
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.check_pulse_shape = 1
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.do_histos = 0
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.strip_pitch = 0.0004
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.dz = 0.05
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.dphi = 12
+solid.trackersystem.${allsystems}.${alltrackers}.${allchambers}.${allreadouts}.deconmode = 0
+
+#-----------------------------------------------------------------
+# tracker system specific parameters
+# for SIDIS there is only 1 tracker system
+# for PVDIS there are 30, each has a rotation with respect to the lab frame
+#-----------------------------------------------------------------
+solid.trackersystem.0.phi = 0
+solid.trackersystem.1.phi = 12
+solid.trackersystem.2.phi = 24
+solid.trackersystem.3.phi = 36
+solid.trackersystem.4.phi = 48
+solid.trackersystem.5.phi = 60
+solid.trackersystem.6.phi = 72
+solid.trackersystem.7.phi = 84
+solid.trackersystem.8.phi = 96
+solid.trackersystem.9.phi = 108
+solid.trackersystem.10.phi = 120
+solid.trackersystem.11.phi = 132
+solid.trackersystem.12.phi = 144
+solid.trackersystem.13.phi = 156
+solid.trackersystem.14.phi = 168
+solid.trackersystem.15.phi = 180
+solid.trackersystem.16.phi = 192
+solid.trackersystem.17.phi = 204
+solid.trackersystem.18.phi = 216
+solid.trackersystem.19.phi = 228
+solid.trackersystem.20.phi = 240
+solid.trackersystem.21.phi = 252
+solid.trackersystem.22.phi = 264
+solid.trackersystem.23.phi = 276
+solid.trackersystem.24.phi = 288
+solid.trackersystem.25.phi = 300
+solid.trackersystem.26.phi = 312
+solid.trackersystem.27.phi = 324
+solid.trackersystem.28.phi = 336
+solid.trackersystem.29.phi = 348
+
+#-----------------------------------------------------------------
+# tracker specific parameters
+# for PVDIS, the concept of tracker and chamber is the same
+# so I will leave the phi_offset to chamber specific parameter
+#-----------------------------------------------------------------
+solid.trackersystem.${allsystems}.0.tracker_z = 1.57182
+solid.trackersystem.${allsystems}.1.tracker_z = 1.85182
+solid.trackersystem.${allsystems}.2.tracker_z = 1.89682
+solid.trackersystem.${allsystems}.3.tracker_z = 3.05682
+solid.trackersystem.${allsystems}.4.tracker_z = 3.14682
+
+#-----------------------------------------------------------------
+# chamber specific parameters
+#-----------------------------------------------------------------
+solid.trackersystem.0.0.0.rmin = 0.48
+solid.trackersystem.0.0.0.rmax = 1.22
+solid.trackersystem.0.0.0.dz = 0
+solid.trackersystem.0.0.0.phi = 0
+solid.trackersystem.0.0.0.phi_cover = 12
+solid.trackersystem.0.0.0.phi_offset = 3.2
+solid.trackersystem.0.0.0.reference = 0 0
+solid.trackersystem.0.0.0.has_div_segment = 0
+solid.trackersystem.0.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.0.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.0.1.0.rmin = 0.59
+solid.trackersystem.0.1.0.rmax = 1.43
+solid.trackersystem.0.1.0.dz = 0
+solid.trackersystem.0.1.0.phi = 0
+solid.trackersystem.0.1.0.phi_cover = 12
+solid.trackersystem.0.1.0.phi_offset = 2.2
+solid.trackersystem.0.1.0.reference = 0 0
+solid.trackersystem.0.1.0.has_div_segment = 0
+solid.trackersystem.0.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.0.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.0.2.0.rmin = 0.65
+solid.trackersystem.0.2.0.rmax = 1.43
+solid.trackersystem.0.2.0.dz = 0
+solid.trackersystem.0.2.0.phi = 0
+solid.trackersystem.0.2.0.phi_cover = 12
+solid.trackersystem.0.2.0.phi_offset = 2.2
+solid.trackersystem.0.2.0.reference = 0 0
+solid.trackersystem.0.2.0.has_div_segment = 0
+solid.trackersystem.0.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.0.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.0.3.0.rmin = 1.05
+solid.trackersystem.0.3.0.rmax = 2.3
+solid.trackersystem.0.3.0.dz = 0
+solid.trackersystem.0.3.0.phi = 0
+solid.trackersystem.0.3.0.phi_cover = 12
+solid.trackersystem.0.3.0.phi_offset = -0.8
+solid.trackersystem.0.3.0.reference = 0 0
+solid.trackersystem.0.3.0.has_div_segment = 0
+solid.trackersystem.0.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.0.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.0.4.0.rmin = 1.09
+solid.trackersystem.0.4.0.rmax = 2.37
+solid.trackersystem.0.4.0.dz = 0
+solid.trackersystem.0.4.0.phi = 0
+solid.trackersystem.0.4.0.phi_cover = 12
+solid.trackersystem.0.4.0.phi_offset = -0.8
+solid.trackersystem.0.4.0.reference = 0 0
+solid.trackersystem.0.4.0.has_div_segment = 0
+solid.trackersystem.0.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.0.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.1.0.0.rmin = 0.48
+solid.trackersystem.1.0.0.rmax = 1.22
+solid.trackersystem.1.0.0.dz = 0
+solid.trackersystem.1.0.0.phi = 0
+solid.trackersystem.1.0.0.phi_cover = 12
+solid.trackersystem.1.0.0.phi_offset = 3.2
+solid.trackersystem.1.0.0.reference = 0 0
+solid.trackersystem.1.0.0.has_div_segment = 0
+solid.trackersystem.1.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.1.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.1.1.0.rmin = 0.59
+solid.trackersystem.1.1.0.rmax = 1.43
+solid.trackersystem.1.1.0.dz = 0
+solid.trackersystem.1.1.0.phi = 0
+solid.trackersystem.1.1.0.phi_cover = 12
+solid.trackersystem.1.1.0.phi_offset = 2.2
+solid.trackersystem.1.1.0.reference = 0 0
+solid.trackersystem.1.1.0.has_div_segment = 0
+solid.trackersystem.1.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.1.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.1.2.0.rmin = 0.65
+solid.trackersystem.1.2.0.rmax = 1.43
+solid.trackersystem.1.2.0.dz = 0
+solid.trackersystem.1.2.0.phi = 0
+solid.trackersystem.1.2.0.phi_cover = 12
+solid.trackersystem.1.2.0.phi_offset = 2.2
+solid.trackersystem.1.2.0.reference = 0 0
+solid.trackersystem.1.2.0.has_div_segment = 0
+solid.trackersystem.1.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.1.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.1.3.0.rmin = 1.05
+solid.trackersystem.1.3.0.rmax = 2.3
+solid.trackersystem.1.3.0.dz = 0
+solid.trackersystem.1.3.0.phi = 0
+solid.trackersystem.1.3.0.phi_cover = 12
+solid.trackersystem.1.3.0.phi_offset = -0.8
+solid.trackersystem.1.3.0.reference = 0 0
+solid.trackersystem.1.3.0.has_div_segment = 0
+solid.trackersystem.1.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.1.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.1.4.0.rmin = 1.09
+solid.trackersystem.1.4.0.rmax = 2.37
+solid.trackersystem.1.4.0.dz = 0
+solid.trackersystem.1.4.0.phi = 0
+solid.trackersystem.1.4.0.phi_cover = 12
+solid.trackersystem.1.4.0.phi_offset = -0.8
+solid.trackersystem.1.4.0.reference = 0 0
+solid.trackersystem.1.4.0.has_div_segment = 0
+solid.trackersystem.1.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.1.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.2.0.0.rmin = 0.48
+solid.trackersystem.2.0.0.rmax = 1.22
+solid.trackersystem.2.0.0.dz = 0
+solid.trackersystem.2.0.0.phi = 0
+solid.trackersystem.2.0.0.phi_cover = 12
+solid.trackersystem.2.0.0.phi_offset = 3.2
+solid.trackersystem.2.0.0.reference = 0 0
+solid.trackersystem.2.0.0.has_div_segment = 0
+solid.trackersystem.2.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.2.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.2.1.0.rmin = 0.59
+solid.trackersystem.2.1.0.rmax = 1.43
+solid.trackersystem.2.1.0.dz = 0
+solid.trackersystem.2.1.0.phi = 0
+solid.trackersystem.2.1.0.phi_cover = 12
+solid.trackersystem.2.1.0.phi_offset = 2.2
+solid.trackersystem.2.1.0.reference = 0 0
+solid.trackersystem.2.1.0.has_div_segment = 0
+solid.trackersystem.2.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.2.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.2.2.0.rmin = 0.65
+solid.trackersystem.2.2.0.rmax = 1.43
+solid.trackersystem.2.2.0.dz = 0
+solid.trackersystem.2.2.0.phi = 0
+solid.trackersystem.2.2.0.phi_cover = 12
+solid.trackersystem.2.2.0.phi_offset = 2.2
+solid.trackersystem.2.2.0.reference = 0 0
+solid.trackersystem.2.2.0.has_div_segment = 0
+solid.trackersystem.2.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.2.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.2.3.0.rmin = 1.05
+solid.trackersystem.2.3.0.rmax = 2.3
+solid.trackersystem.2.3.0.dz = 0
+solid.trackersystem.2.3.0.phi = 0
+solid.trackersystem.2.3.0.phi_cover = 12
+solid.trackersystem.2.3.0.phi_offset = -0.8
+solid.trackersystem.2.3.0.reference = 0 0
+solid.trackersystem.2.3.0.has_div_segment = 0
+solid.trackersystem.2.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.2.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.2.4.0.rmin = 1.09
+solid.trackersystem.2.4.0.rmax = 2.37
+solid.trackersystem.2.4.0.dz = 0
+solid.trackersystem.2.4.0.phi = 0
+solid.trackersystem.2.4.0.phi_cover = 12
+solid.trackersystem.2.4.0.phi_offset = -0.8
+solid.trackersystem.2.4.0.reference = 0 0
+solid.trackersystem.2.4.0.has_div_segment = 0
+solid.trackersystem.2.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.2.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.3.0.0.rmin = 0.48
+solid.trackersystem.3.0.0.rmax = 1.22
+solid.trackersystem.3.0.0.dz = 0
+solid.trackersystem.3.0.0.phi = 0
+solid.trackersystem.3.0.0.phi_cover = 12
+solid.trackersystem.3.0.0.phi_offset = 3.2
+solid.trackersystem.3.0.0.reference = 0 0
+solid.trackersystem.3.0.0.has_div_segment = 0
+solid.trackersystem.3.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.3.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.3.1.0.rmin = 0.59
+solid.trackersystem.3.1.0.rmax = 1.43
+solid.trackersystem.3.1.0.dz = 0
+solid.trackersystem.3.1.0.phi = 0
+solid.trackersystem.3.1.0.phi_cover = 12
+solid.trackersystem.3.1.0.phi_offset = 2.2
+solid.trackersystem.3.1.0.reference = 0 0
+solid.trackersystem.3.1.0.has_div_segment = 0
+solid.trackersystem.3.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.3.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.3.2.0.rmin = 0.65
+solid.trackersystem.3.2.0.rmax = 1.43
+solid.trackersystem.3.2.0.dz = 0
+solid.trackersystem.3.2.0.phi = 0
+solid.trackersystem.3.2.0.phi_cover = 12
+solid.trackersystem.3.2.0.phi_offset = 2.2
+solid.trackersystem.3.2.0.reference = 0 0
+solid.trackersystem.3.2.0.has_div_segment = 0
+solid.trackersystem.3.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.3.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.3.3.0.rmin = 1.05
+solid.trackersystem.3.3.0.rmax = 2.3
+solid.trackersystem.3.3.0.dz = 0
+solid.trackersystem.3.3.0.phi = 0
+solid.trackersystem.3.3.0.phi_cover = 12
+solid.trackersystem.3.3.0.phi_offset = -0.8
+solid.trackersystem.3.3.0.reference = 0 0
+solid.trackersystem.3.3.0.has_div_segment = 0
+solid.trackersystem.3.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.3.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.3.4.0.rmin = 1.09
+solid.trackersystem.3.4.0.rmax = 2.37
+solid.trackersystem.3.4.0.dz = 0
+solid.trackersystem.3.4.0.phi = 0
+solid.trackersystem.3.4.0.phi_cover = 12
+solid.trackersystem.3.4.0.phi_offset = -0.8
+solid.trackersystem.3.4.0.reference = 0 0
+solid.trackersystem.3.4.0.has_div_segment = 0
+solid.trackersystem.3.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.3.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.4.0.0.rmin = 0.48
+solid.trackersystem.4.0.0.rmax = 1.22
+solid.trackersystem.4.0.0.dz = 0
+solid.trackersystem.4.0.0.phi = 0
+solid.trackersystem.4.0.0.phi_cover = 12
+solid.trackersystem.4.0.0.phi_offset = 3.2
+solid.trackersystem.4.0.0.reference = 0 0
+solid.trackersystem.4.0.0.has_div_segment = 0
+solid.trackersystem.4.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.4.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.4.1.0.rmin = 0.59
+solid.trackersystem.4.1.0.rmax = 1.43
+solid.trackersystem.4.1.0.dz = 0
+solid.trackersystem.4.1.0.phi = 0
+solid.trackersystem.4.1.0.phi_cover = 12
+solid.trackersystem.4.1.0.phi_offset = 2.2
+solid.trackersystem.4.1.0.reference = 0 0
+solid.trackersystem.4.1.0.has_div_segment = 0
+solid.trackersystem.4.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.4.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.4.2.0.rmin = 0.65
+solid.trackersystem.4.2.0.rmax = 1.43
+solid.trackersystem.4.2.0.dz = 0
+solid.trackersystem.4.2.0.phi = 0
+solid.trackersystem.4.2.0.phi_cover = 12
+solid.trackersystem.4.2.0.phi_offset = 2.2
+solid.trackersystem.4.2.0.reference = 0 0
+solid.trackersystem.4.2.0.has_div_segment = 0
+solid.trackersystem.4.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.4.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.4.3.0.rmin = 1.05
+solid.trackersystem.4.3.0.rmax = 2.3
+solid.trackersystem.4.3.0.dz = 0
+solid.trackersystem.4.3.0.phi = 0
+solid.trackersystem.4.3.0.phi_cover = 12
+solid.trackersystem.4.3.0.phi_offset = -0.8
+solid.trackersystem.4.3.0.reference = 0 0
+solid.trackersystem.4.3.0.has_div_segment = 0
+solid.trackersystem.4.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.4.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.4.4.0.rmin = 1.09
+solid.trackersystem.4.4.0.rmax = 2.37
+solid.trackersystem.4.4.0.dz = 0
+solid.trackersystem.4.4.0.phi = 0
+solid.trackersystem.4.4.0.phi_cover = 12
+solid.trackersystem.4.4.0.phi_offset = -0.8
+solid.trackersystem.4.4.0.reference = 0 0
+solid.trackersystem.4.4.0.has_div_segment = 0
+solid.trackersystem.4.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.4.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.5.0.0.rmin = 0.48
+solid.trackersystem.5.0.0.rmax = 1.22
+solid.trackersystem.5.0.0.dz = 0
+solid.trackersystem.5.0.0.phi = 0
+solid.trackersystem.5.0.0.phi_cover = 12
+solid.trackersystem.5.0.0.phi_offset = 3.2
+solid.trackersystem.5.0.0.reference = 0 0
+solid.trackersystem.5.0.0.has_div_segment = 0
+solid.trackersystem.5.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.5.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.5.1.0.rmin = 0.59
+solid.trackersystem.5.1.0.rmax = 1.43
+solid.trackersystem.5.1.0.dz = 0
+solid.trackersystem.5.1.0.phi = 0
+solid.trackersystem.5.1.0.phi_cover = 12
+solid.trackersystem.5.1.0.phi_offset = 2.2
+solid.trackersystem.5.1.0.reference = 0 0
+solid.trackersystem.5.1.0.has_div_segment = 0
+solid.trackersystem.5.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.5.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.5.2.0.rmin = 0.65
+solid.trackersystem.5.2.0.rmax = 1.43
+solid.trackersystem.5.2.0.dz = 0
+solid.trackersystem.5.2.0.phi = 0
+solid.trackersystem.5.2.0.phi_cover = 12
+solid.trackersystem.5.2.0.phi_offset = 2.2
+solid.trackersystem.5.2.0.reference = 0 0
+solid.trackersystem.5.2.0.has_div_segment = 0
+solid.trackersystem.5.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.5.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.5.3.0.rmin = 1.05
+solid.trackersystem.5.3.0.rmax = 2.3
+solid.trackersystem.5.3.0.dz = 0
+solid.trackersystem.5.3.0.phi = 0
+solid.trackersystem.5.3.0.phi_cover = 12
+solid.trackersystem.5.3.0.phi_offset = -0.8
+solid.trackersystem.5.3.0.reference = 0 0
+solid.trackersystem.5.3.0.has_div_segment = 0
+solid.trackersystem.5.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.5.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.5.4.0.rmin = 1.09
+solid.trackersystem.5.4.0.rmax = 2.37
+solid.trackersystem.5.4.0.dz = 0
+solid.trackersystem.5.4.0.phi = 0
+solid.trackersystem.5.4.0.phi_cover = 12
+solid.trackersystem.5.4.0.phi_offset = -0.8
+solid.trackersystem.5.4.0.reference = 0 0
+solid.trackersystem.5.4.0.has_div_segment = 0
+solid.trackersystem.5.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.5.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.6.0.0.rmin = 0.48
+solid.trackersystem.6.0.0.rmax = 1.22
+solid.trackersystem.6.0.0.dz = 0
+solid.trackersystem.6.0.0.phi = 0
+solid.trackersystem.6.0.0.phi_cover = 12
+solid.trackersystem.6.0.0.phi_offset = 3.2
+solid.trackersystem.6.0.0.reference = 0 0
+solid.trackersystem.6.0.0.has_div_segment = 0
+solid.trackersystem.6.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.6.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.6.1.0.rmin = 0.59
+solid.trackersystem.6.1.0.rmax = 1.43
+solid.trackersystem.6.1.0.dz = 0
+solid.trackersystem.6.1.0.phi = 0
+solid.trackersystem.6.1.0.phi_cover = 12
+solid.trackersystem.6.1.0.phi_offset = 2.2
+solid.trackersystem.6.1.0.reference = 0 0
+solid.trackersystem.6.1.0.has_div_segment = 0
+solid.trackersystem.6.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.6.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.6.2.0.rmin = 0.65
+solid.trackersystem.6.2.0.rmax = 1.43
+solid.trackersystem.6.2.0.dz = 0
+solid.trackersystem.6.2.0.phi = 0
+solid.trackersystem.6.2.0.phi_cover = 12
+solid.trackersystem.6.2.0.phi_offset = 2.2
+solid.trackersystem.6.2.0.reference = 0 0
+solid.trackersystem.6.2.0.has_div_segment = 0
+solid.trackersystem.6.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.6.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.6.3.0.rmin = 1.05
+solid.trackersystem.6.3.0.rmax = 2.3
+solid.trackersystem.6.3.0.dz = 0
+solid.trackersystem.6.3.0.phi = 0
+solid.trackersystem.6.3.0.phi_cover = 12
+solid.trackersystem.6.3.0.phi_offset = -0.8
+solid.trackersystem.6.3.0.reference = 0 0
+solid.trackersystem.6.3.0.has_div_segment = 0
+solid.trackersystem.6.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.6.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.6.4.0.rmin = 1.09
+solid.trackersystem.6.4.0.rmax = 2.37
+solid.trackersystem.6.4.0.dz = 0
+solid.trackersystem.6.4.0.phi = 0
+solid.trackersystem.6.4.0.phi_cover = 12
+solid.trackersystem.6.4.0.phi_offset = -0.8
+solid.trackersystem.6.4.0.reference = 0 0
+solid.trackersystem.6.4.0.has_div_segment = 0
+solid.trackersystem.6.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.6.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.7.0.0.rmin = 0.48
+solid.trackersystem.7.0.0.rmax = 1.22
+solid.trackersystem.7.0.0.dz = 0
+solid.trackersystem.7.0.0.phi = 0
+solid.trackersystem.7.0.0.phi_cover = 12
+solid.trackersystem.7.0.0.phi_offset = 3.2
+solid.trackersystem.7.0.0.reference = 0 0
+solid.trackersystem.7.0.0.has_div_segment = 0
+solid.trackersystem.7.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.7.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.7.1.0.rmin = 0.59
+solid.trackersystem.7.1.0.rmax = 1.43
+solid.trackersystem.7.1.0.dz = 0
+solid.trackersystem.7.1.0.phi = 0
+solid.trackersystem.7.1.0.phi_cover = 12
+solid.trackersystem.7.1.0.phi_offset = 2.2
+solid.trackersystem.7.1.0.reference = 0 0
+solid.trackersystem.7.1.0.has_div_segment = 0
+solid.trackersystem.7.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.7.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.7.2.0.rmin = 0.65
+solid.trackersystem.7.2.0.rmax = 1.43
+solid.trackersystem.7.2.0.dz = 0
+solid.trackersystem.7.2.0.phi = 0
+solid.trackersystem.7.2.0.phi_cover = 12
+solid.trackersystem.7.2.0.phi_offset = 2.2
+solid.trackersystem.7.2.0.reference = 0 0
+solid.trackersystem.7.2.0.has_div_segment = 0
+solid.trackersystem.7.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.7.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.7.3.0.rmin = 1.05
+solid.trackersystem.7.3.0.rmax = 2.3
+solid.trackersystem.7.3.0.dz = 0
+solid.trackersystem.7.3.0.phi = 0
+solid.trackersystem.7.3.0.phi_cover = 12
+solid.trackersystem.7.3.0.phi_offset = -0.8
+solid.trackersystem.7.3.0.reference = 0 0
+solid.trackersystem.7.3.0.has_div_segment = 0
+solid.trackersystem.7.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.7.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.7.4.0.rmin = 1.09
+solid.trackersystem.7.4.0.rmax = 2.37
+solid.trackersystem.7.4.0.dz = 0
+solid.trackersystem.7.4.0.phi = 0
+solid.trackersystem.7.4.0.phi_cover = 12
+solid.trackersystem.7.4.0.phi_offset = -0.8
+solid.trackersystem.7.4.0.reference = 0 0
+solid.trackersystem.7.4.0.has_div_segment = 0
+solid.trackersystem.7.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.7.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.8.0.0.rmin = 0.48
+solid.trackersystem.8.0.0.rmax = 1.22
+solid.trackersystem.8.0.0.dz = 0
+solid.trackersystem.8.0.0.phi = 0
+solid.trackersystem.8.0.0.phi_cover = 12
+solid.trackersystem.8.0.0.phi_offset = 3.2
+solid.trackersystem.8.0.0.reference = 0 0
+solid.trackersystem.8.0.0.has_div_segment = 0
+solid.trackersystem.8.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.8.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.8.1.0.rmin = 0.59
+solid.trackersystem.8.1.0.rmax = 1.43
+solid.trackersystem.8.1.0.dz = 0
+solid.trackersystem.8.1.0.phi = 0
+solid.trackersystem.8.1.0.phi_cover = 12
+solid.trackersystem.8.1.0.phi_offset = 2.2
+solid.trackersystem.8.1.0.reference = 0 0
+solid.trackersystem.8.1.0.has_div_segment = 0
+solid.trackersystem.8.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.8.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.8.2.0.rmin = 0.65
+solid.trackersystem.8.2.0.rmax = 1.43
+solid.trackersystem.8.2.0.dz = 0
+solid.trackersystem.8.2.0.phi = 0
+solid.trackersystem.8.2.0.phi_cover = 12
+solid.trackersystem.8.2.0.phi_offset = 2.2
+solid.trackersystem.8.2.0.reference = 0 0
+solid.trackersystem.8.2.0.has_div_segment = 0
+solid.trackersystem.8.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.8.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.8.3.0.rmin = 1.05
+solid.trackersystem.8.3.0.rmax = 2.3
+solid.trackersystem.8.3.0.dz = 0
+solid.trackersystem.8.3.0.phi = 0
+solid.trackersystem.8.3.0.phi_cover = 12
+solid.trackersystem.8.3.0.phi_offset = -0.8
+solid.trackersystem.8.3.0.reference = 0 0
+solid.trackersystem.8.3.0.has_div_segment = 0
+solid.trackersystem.8.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.8.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.8.4.0.rmin = 1.09
+solid.trackersystem.8.4.0.rmax = 2.37
+solid.trackersystem.8.4.0.dz = 0
+solid.trackersystem.8.4.0.phi = 0
+solid.trackersystem.8.4.0.phi_cover = 12
+solid.trackersystem.8.4.0.phi_offset = -0.8
+solid.trackersystem.8.4.0.reference = 0 0
+solid.trackersystem.8.4.0.has_div_segment = 0
+solid.trackersystem.8.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.8.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.9.0.0.rmin = 0.48
+solid.trackersystem.9.0.0.rmax = 1.22
+solid.trackersystem.9.0.0.dz = 0
+solid.trackersystem.9.0.0.phi = 0
+solid.trackersystem.9.0.0.phi_cover = 12
+solid.trackersystem.9.0.0.phi_offset = 3.2
+solid.trackersystem.9.0.0.reference = 0 0
+solid.trackersystem.9.0.0.has_div_segment = 0
+solid.trackersystem.9.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.9.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.9.1.0.rmin = 0.59
+solid.trackersystem.9.1.0.rmax = 1.43
+solid.trackersystem.9.1.0.dz = 0
+solid.trackersystem.9.1.0.phi = 0
+solid.trackersystem.9.1.0.phi_cover = 12
+solid.trackersystem.9.1.0.phi_offset = 2.2
+solid.trackersystem.9.1.0.reference = 0 0
+solid.trackersystem.9.1.0.has_div_segment = 0
+solid.trackersystem.9.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.9.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.9.2.0.rmin = 0.65
+solid.trackersystem.9.2.0.rmax = 1.43
+solid.trackersystem.9.2.0.dz = 0
+solid.trackersystem.9.2.0.phi = 0
+solid.trackersystem.9.2.0.phi_cover = 12
+solid.trackersystem.9.2.0.phi_offset = 2.2
+solid.trackersystem.9.2.0.reference = 0 0
+solid.trackersystem.9.2.0.has_div_segment = 0
+solid.trackersystem.9.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.9.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.9.3.0.rmin = 1.05
+solid.trackersystem.9.3.0.rmax = 2.3
+solid.trackersystem.9.3.0.dz = 0
+solid.trackersystem.9.3.0.phi = 0
+solid.trackersystem.9.3.0.phi_cover = 12
+solid.trackersystem.9.3.0.phi_offset = -0.8
+solid.trackersystem.9.3.0.reference = 0 0
+solid.trackersystem.9.3.0.has_div_segment = 0
+solid.trackersystem.9.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.9.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.9.4.0.rmin = 1.09
+solid.trackersystem.9.4.0.rmax = 2.37
+solid.trackersystem.9.4.0.dz = 0
+solid.trackersystem.9.4.0.phi = 0
+solid.trackersystem.9.4.0.phi_cover = 12
+solid.trackersystem.9.4.0.phi_offset = -0.8
+solid.trackersystem.9.4.0.reference = 0 0
+solid.trackersystem.9.4.0.has_div_segment = 0
+solid.trackersystem.9.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.9.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.10.0.0.rmin = 0.48
+solid.trackersystem.10.0.0.rmax = 1.22
+solid.trackersystem.10.0.0.dz = 0
+solid.trackersystem.10.0.0.phi = 0
+solid.trackersystem.10.0.0.phi_cover = 12
+solid.trackersystem.10.0.0.phi_offset = 3.2
+solid.trackersystem.10.0.0.reference = 0 0
+solid.trackersystem.10.0.0.has_div_segment = 0
+solid.trackersystem.10.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.10.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.10.1.0.rmin = 0.59
+solid.trackersystem.10.1.0.rmax = 1.43
+solid.trackersystem.10.1.0.dz = 0
+solid.trackersystem.10.1.0.phi = 0
+solid.trackersystem.10.1.0.phi_cover = 12
+solid.trackersystem.10.1.0.phi_offset = 2.2
+solid.trackersystem.10.1.0.reference = 0 0
+solid.trackersystem.10.1.0.has_div_segment = 0
+solid.trackersystem.10.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.10.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.10.2.0.rmin = 0.65
+solid.trackersystem.10.2.0.rmax = 1.43
+solid.trackersystem.10.2.0.dz = 0
+solid.trackersystem.10.2.0.phi = 0
+solid.trackersystem.10.2.0.phi_cover = 12
+solid.trackersystem.10.2.0.phi_offset = 2.2
+solid.trackersystem.10.2.0.reference = 0 0
+solid.trackersystem.10.2.0.has_div_segment = 0
+solid.trackersystem.10.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.10.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.10.3.0.rmin = 1.05
+solid.trackersystem.10.3.0.rmax = 2.3
+solid.trackersystem.10.3.0.dz = 0
+solid.trackersystem.10.3.0.phi = 0
+solid.trackersystem.10.3.0.phi_cover = 12
+solid.trackersystem.10.3.0.phi_offset = -0.8
+solid.trackersystem.10.3.0.reference = 0 0
+solid.trackersystem.10.3.0.has_div_segment = 0
+solid.trackersystem.10.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.10.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.10.4.0.rmin = 1.09
+solid.trackersystem.10.4.0.rmax = 2.37
+solid.trackersystem.10.4.0.dz = 0
+solid.trackersystem.10.4.0.phi = 0
+solid.trackersystem.10.4.0.phi_cover = 12
+solid.trackersystem.10.4.0.phi_offset = -0.8
+solid.trackersystem.10.4.0.reference = 0 0
+solid.trackersystem.10.4.0.has_div_segment = 0
+solid.trackersystem.10.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.10.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.11.0.0.rmin = 0.48
+solid.trackersystem.11.0.0.rmax = 1.22
+solid.trackersystem.11.0.0.dz = 0
+solid.trackersystem.11.0.0.phi = 0
+solid.trackersystem.11.0.0.phi_cover = 12
+solid.trackersystem.11.0.0.phi_offset = 3.2
+solid.trackersystem.11.0.0.reference = 0 0
+solid.trackersystem.11.0.0.has_div_segment = 0
+solid.trackersystem.11.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.11.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.11.1.0.rmin = 0.59
+solid.trackersystem.11.1.0.rmax = 1.43
+solid.trackersystem.11.1.0.dz = 0
+solid.trackersystem.11.1.0.phi = 0
+solid.trackersystem.11.1.0.phi_cover = 12
+solid.trackersystem.11.1.0.phi_offset = 2.2
+solid.trackersystem.11.1.0.reference = 0 0
+solid.trackersystem.11.1.0.has_div_segment = 0
+solid.trackersystem.11.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.11.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.11.2.0.rmin = 0.65
+solid.trackersystem.11.2.0.rmax = 1.43
+solid.trackersystem.11.2.0.dz = 0
+solid.trackersystem.11.2.0.phi = 0
+solid.trackersystem.11.2.0.phi_cover = 12
+solid.trackersystem.11.2.0.phi_offset = 2.2
+solid.trackersystem.11.2.0.reference = 0 0
+solid.trackersystem.11.2.0.has_div_segment = 0
+solid.trackersystem.11.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.11.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.11.3.0.rmin = 1.05
+solid.trackersystem.11.3.0.rmax = 2.3
+solid.trackersystem.11.3.0.dz = 0
+solid.trackersystem.11.3.0.phi = 0
+solid.trackersystem.11.3.0.phi_cover = 12
+solid.trackersystem.11.3.0.phi_offset = -0.8
+solid.trackersystem.11.3.0.reference = 0 0
+solid.trackersystem.11.3.0.has_div_segment = 0
+solid.trackersystem.11.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.11.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.11.4.0.rmin = 1.09
+solid.trackersystem.11.4.0.rmax = 2.37
+solid.trackersystem.11.4.0.dz = 0
+solid.trackersystem.11.4.0.phi = 0
+solid.trackersystem.11.4.0.phi_cover = 12
+solid.trackersystem.11.4.0.phi_offset = -0.8
+solid.trackersystem.11.4.0.reference = 0 0
+solid.trackersystem.11.4.0.has_div_segment = 0
+solid.trackersystem.11.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.11.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.12.0.0.rmin = 0.48
+solid.trackersystem.12.0.0.rmax = 1.22
+solid.trackersystem.12.0.0.dz = 0
+solid.trackersystem.12.0.0.phi = 0
+solid.trackersystem.12.0.0.phi_cover = 12
+solid.trackersystem.12.0.0.phi_offset = 3.2
+solid.trackersystem.12.0.0.reference = 0 0
+solid.trackersystem.12.0.0.has_div_segment = 0
+solid.trackersystem.12.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.12.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.12.1.0.rmin = 0.59
+solid.trackersystem.12.1.0.rmax = 1.43
+solid.trackersystem.12.1.0.dz = 0
+solid.trackersystem.12.1.0.phi = 0
+solid.trackersystem.12.1.0.phi_cover = 12
+solid.trackersystem.12.1.0.phi_offset = 2.2
+solid.trackersystem.12.1.0.reference = 0 0
+solid.trackersystem.12.1.0.has_div_segment = 0
+solid.trackersystem.12.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.12.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.12.2.0.rmin = 0.65
+solid.trackersystem.12.2.0.rmax = 1.43
+solid.trackersystem.12.2.0.dz = 0
+solid.trackersystem.12.2.0.phi = 0
+solid.trackersystem.12.2.0.phi_cover = 12
+solid.trackersystem.12.2.0.phi_offset = 2.2
+solid.trackersystem.12.2.0.reference = 0 0
+solid.trackersystem.12.2.0.has_div_segment = 0
+solid.trackersystem.12.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.12.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.12.3.0.rmin = 1.05
+solid.trackersystem.12.3.0.rmax = 2.3
+solid.trackersystem.12.3.0.dz = 0
+solid.trackersystem.12.3.0.phi = 0
+solid.trackersystem.12.3.0.phi_cover = 12
+solid.trackersystem.12.3.0.phi_offset = -0.8
+solid.trackersystem.12.3.0.reference = 0 0
+solid.trackersystem.12.3.0.has_div_segment = 0
+solid.trackersystem.12.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.12.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.12.4.0.rmin = 1.09
+solid.trackersystem.12.4.0.rmax = 2.37
+solid.trackersystem.12.4.0.dz = 0
+solid.trackersystem.12.4.0.phi = 0
+solid.trackersystem.12.4.0.phi_cover = 12
+solid.trackersystem.12.4.0.phi_offset = -0.8
+solid.trackersystem.12.4.0.reference = 0 0
+solid.trackersystem.12.4.0.has_div_segment = 0
+solid.trackersystem.12.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.12.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.13.0.0.rmin = 0.48
+solid.trackersystem.13.0.0.rmax = 1.22
+solid.trackersystem.13.0.0.dz = 0
+solid.trackersystem.13.0.0.phi = 0
+solid.trackersystem.13.0.0.phi_cover = 12
+solid.trackersystem.13.0.0.phi_offset = 3.2
+solid.trackersystem.13.0.0.reference = 0 0
+solid.trackersystem.13.0.0.has_div_segment = 0
+solid.trackersystem.13.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.13.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.13.1.0.rmin = 0.59
+solid.trackersystem.13.1.0.rmax = 1.43
+solid.trackersystem.13.1.0.dz = 0
+solid.trackersystem.13.1.0.phi = 0
+solid.trackersystem.13.1.0.phi_cover = 12
+solid.trackersystem.13.1.0.phi_offset = 2.2
+solid.trackersystem.13.1.0.reference = 0 0
+solid.trackersystem.13.1.0.has_div_segment = 0
+solid.trackersystem.13.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.13.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.13.2.0.rmin = 0.65
+solid.trackersystem.13.2.0.rmax = 1.43
+solid.trackersystem.13.2.0.dz = 0
+solid.trackersystem.13.2.0.phi = 0
+solid.trackersystem.13.2.0.phi_cover = 12
+solid.trackersystem.13.2.0.phi_offset = 2.2
+solid.trackersystem.13.2.0.reference = 0 0
+solid.trackersystem.13.2.0.has_div_segment = 0
+solid.trackersystem.13.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.13.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.13.3.0.rmin = 1.05
+solid.trackersystem.13.3.0.rmax = 2.3
+solid.trackersystem.13.3.0.dz = 0
+solid.trackersystem.13.3.0.phi = 0
+solid.trackersystem.13.3.0.phi_cover = 12
+solid.trackersystem.13.3.0.phi_offset = -0.8
+solid.trackersystem.13.3.0.reference = 0 0
+solid.trackersystem.13.3.0.has_div_segment = 0
+solid.trackersystem.13.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.13.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.13.4.0.rmin = 1.09
+solid.trackersystem.13.4.0.rmax = 2.37
+solid.trackersystem.13.4.0.dz = 0
+solid.trackersystem.13.4.0.phi = 0
+solid.trackersystem.13.4.0.phi_cover = 12
+solid.trackersystem.13.4.0.phi_offset = -0.8
+solid.trackersystem.13.4.0.reference = 0 0
+solid.trackersystem.13.4.0.has_div_segment = 0
+solid.trackersystem.13.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.13.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.14.0.0.rmin = 0.48
+solid.trackersystem.14.0.0.rmax = 1.22
+solid.trackersystem.14.0.0.dz = 0
+solid.trackersystem.14.0.0.phi = 0
+solid.trackersystem.14.0.0.phi_cover = 12
+solid.trackersystem.14.0.0.phi_offset = 3.2
+solid.trackersystem.14.0.0.reference = 0 0
+solid.trackersystem.14.0.0.has_div_segment = 0
+solid.trackersystem.14.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.14.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.14.1.0.rmin = 0.59
+solid.trackersystem.14.1.0.rmax = 1.43
+solid.trackersystem.14.1.0.dz = 0
+solid.trackersystem.14.1.0.phi = 0
+solid.trackersystem.14.1.0.phi_cover = 12
+solid.trackersystem.14.1.0.phi_offset = 2.2
+solid.trackersystem.14.1.0.reference = 0 0
+solid.trackersystem.14.1.0.has_div_segment = 0
+solid.trackersystem.14.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.14.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.14.2.0.rmin = 0.65
+solid.trackersystem.14.2.0.rmax = 1.43
+solid.trackersystem.14.2.0.dz = 0
+solid.trackersystem.14.2.0.phi = 0
+solid.trackersystem.14.2.0.phi_cover = 12
+solid.trackersystem.14.2.0.phi_offset = 2.2
+solid.trackersystem.14.2.0.reference = 0 0
+solid.trackersystem.14.2.0.has_div_segment = 0
+solid.trackersystem.14.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.14.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.14.3.0.rmin = 1.05
+solid.trackersystem.14.3.0.rmax = 2.3
+solid.trackersystem.14.3.0.dz = 0
+solid.trackersystem.14.3.0.phi = 0
+solid.trackersystem.14.3.0.phi_cover = 12
+solid.trackersystem.14.3.0.phi_offset = -0.8
+solid.trackersystem.14.3.0.reference = 0 0
+solid.trackersystem.14.3.0.has_div_segment = 0
+solid.trackersystem.14.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.14.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.14.4.0.rmin = 1.09
+solid.trackersystem.14.4.0.rmax = 2.37
+solid.trackersystem.14.4.0.dz = 0
+solid.trackersystem.14.4.0.phi = 0
+solid.trackersystem.14.4.0.phi_cover = 12
+solid.trackersystem.14.4.0.phi_offset = -0.8
+solid.trackersystem.14.4.0.reference = 0 0
+solid.trackersystem.14.4.0.has_div_segment = 0
+solid.trackersystem.14.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.14.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.15.0.0.rmin = 0.48
+solid.trackersystem.15.0.0.rmax = 1.22
+solid.trackersystem.15.0.0.dz = 0
+solid.trackersystem.15.0.0.phi = 0
+solid.trackersystem.15.0.0.phi_cover = 12
+solid.trackersystem.15.0.0.phi_offset = 3.2
+solid.trackersystem.15.0.0.reference = 0 0
+solid.trackersystem.15.0.0.has_div_segment = 0
+solid.trackersystem.15.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.15.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.15.1.0.rmin = 0.59
+solid.trackersystem.15.1.0.rmax = 1.43
+solid.trackersystem.15.1.0.dz = 0
+solid.trackersystem.15.1.0.phi = 0
+solid.trackersystem.15.1.0.phi_cover = 12
+solid.trackersystem.15.1.0.phi_offset = 2.2
+solid.trackersystem.15.1.0.reference = 0 0
+solid.trackersystem.15.1.0.has_div_segment = 0
+solid.trackersystem.15.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.15.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.15.2.0.rmin = 0.65
+solid.trackersystem.15.2.0.rmax = 1.43
+solid.trackersystem.15.2.0.dz = 0
+solid.trackersystem.15.2.0.phi = 0
+solid.trackersystem.15.2.0.phi_cover = 12
+solid.trackersystem.15.2.0.phi_offset = 2.2
+solid.trackersystem.15.2.0.reference = 0 0
+solid.trackersystem.15.2.0.has_div_segment = 0
+solid.trackersystem.15.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.15.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.15.3.0.rmin = 1.05
+solid.trackersystem.15.3.0.rmax = 2.3
+solid.trackersystem.15.3.0.dz = 0
+solid.trackersystem.15.3.0.phi = 0
+solid.trackersystem.15.3.0.phi_cover = 12
+solid.trackersystem.15.3.0.phi_offset = -0.8
+solid.trackersystem.15.3.0.reference = 0 0
+solid.trackersystem.15.3.0.has_div_segment = 0
+solid.trackersystem.15.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.15.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.15.4.0.rmin = 1.09
+solid.trackersystem.15.4.0.rmax = 2.37
+solid.trackersystem.15.4.0.dz = 0
+solid.trackersystem.15.4.0.phi = 0
+solid.trackersystem.15.4.0.phi_cover = 12
+solid.trackersystem.15.4.0.phi_offset = -0.8
+solid.trackersystem.15.4.0.reference = 0 0
+solid.trackersystem.15.4.0.has_div_segment = 0
+solid.trackersystem.15.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.15.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.16.0.0.rmin = 0.48
+solid.trackersystem.16.0.0.rmax = 1.22
+solid.trackersystem.16.0.0.dz = 0
+solid.trackersystem.16.0.0.phi = 0
+solid.trackersystem.16.0.0.phi_cover = 12
+solid.trackersystem.16.0.0.phi_offset = 3.2
+solid.trackersystem.16.0.0.reference = 0 0
+solid.trackersystem.16.0.0.has_div_segment = 0
+solid.trackersystem.16.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.16.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.16.1.0.rmin = 0.59
+solid.trackersystem.16.1.0.rmax = 1.43
+solid.trackersystem.16.1.0.dz = 0
+solid.trackersystem.16.1.0.phi = 0
+solid.trackersystem.16.1.0.phi_cover = 12
+solid.trackersystem.16.1.0.phi_offset = 2.2
+solid.trackersystem.16.1.0.reference = 0 0
+solid.trackersystem.16.1.0.has_div_segment = 0
+solid.trackersystem.16.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.16.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.16.2.0.rmin = 0.65
+solid.trackersystem.16.2.0.rmax = 1.43
+solid.trackersystem.16.2.0.dz = 0
+solid.trackersystem.16.2.0.phi = 0
+solid.trackersystem.16.2.0.phi_cover = 12
+solid.trackersystem.16.2.0.phi_offset = 2.2
+solid.trackersystem.16.2.0.reference = 0 0
+solid.trackersystem.16.2.0.has_div_segment = 0
+solid.trackersystem.16.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.16.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.16.3.0.rmin = 1.05
+solid.trackersystem.16.3.0.rmax = 2.3
+solid.trackersystem.16.3.0.dz = 0
+solid.trackersystem.16.3.0.phi = 0
+solid.trackersystem.16.3.0.phi_cover = 12
+solid.trackersystem.16.3.0.phi_offset = -0.8
+solid.trackersystem.16.3.0.reference = 0 0
+solid.trackersystem.16.3.0.has_div_segment = 0
+solid.trackersystem.16.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.16.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.16.4.0.rmin = 1.09
+solid.trackersystem.16.4.0.rmax = 2.37
+solid.trackersystem.16.4.0.dz = 0
+solid.trackersystem.16.4.0.phi = 0
+solid.trackersystem.16.4.0.phi_cover = 12
+solid.trackersystem.16.4.0.phi_offset = -0.8
+solid.trackersystem.16.4.0.reference = 0 0
+solid.trackersystem.16.4.0.has_div_segment = 0
+solid.trackersystem.16.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.16.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.17.0.0.rmin = 0.48
+solid.trackersystem.17.0.0.rmax = 1.22
+solid.trackersystem.17.0.0.dz = 0
+solid.trackersystem.17.0.0.phi = 0
+solid.trackersystem.17.0.0.phi_cover = 12
+solid.trackersystem.17.0.0.phi_offset = 3.2
+solid.trackersystem.17.0.0.reference = 0 0
+solid.trackersystem.17.0.0.has_div_segment = 0
+solid.trackersystem.17.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.17.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.17.1.0.rmin = 0.59
+solid.trackersystem.17.1.0.rmax = 1.43
+solid.trackersystem.17.1.0.dz = 0
+solid.trackersystem.17.1.0.phi = 0
+solid.trackersystem.17.1.0.phi_cover = 12
+solid.trackersystem.17.1.0.phi_offset = 2.2
+solid.trackersystem.17.1.0.reference = 0 0
+solid.trackersystem.17.1.0.has_div_segment = 0
+solid.trackersystem.17.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.17.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.17.2.0.rmin = 0.65
+solid.trackersystem.17.2.0.rmax = 1.43
+solid.trackersystem.17.2.0.dz = 0
+solid.trackersystem.17.2.0.phi = 0
+solid.trackersystem.17.2.0.phi_cover = 12
+solid.trackersystem.17.2.0.phi_offset = 2.2
+solid.trackersystem.17.2.0.reference = 0 0
+solid.trackersystem.17.2.0.has_div_segment = 0
+solid.trackersystem.17.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.17.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.17.3.0.rmin = 1.05
+solid.trackersystem.17.3.0.rmax = 2.3
+solid.trackersystem.17.3.0.dz = 0
+solid.trackersystem.17.3.0.phi = 0
+solid.trackersystem.17.3.0.phi_cover = 12
+solid.trackersystem.17.3.0.phi_offset = -0.8
+solid.trackersystem.17.3.0.reference = 0 0
+solid.trackersystem.17.3.0.has_div_segment = 0
+solid.trackersystem.17.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.17.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.17.4.0.rmin = 1.09
+solid.trackersystem.17.4.0.rmax = 2.37
+solid.trackersystem.17.4.0.dz = 0
+solid.trackersystem.17.4.0.phi = 0
+solid.trackersystem.17.4.0.phi_cover = 12
+solid.trackersystem.17.4.0.phi_offset = -0.8
+solid.trackersystem.17.4.0.reference = 0 0
+solid.trackersystem.17.4.0.has_div_segment = 0
+solid.trackersystem.17.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.17.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.18.0.0.rmin = 0.48
+solid.trackersystem.18.0.0.rmax = 1.22
+solid.trackersystem.18.0.0.dz = 0
+solid.trackersystem.18.0.0.phi = 0
+solid.trackersystem.18.0.0.phi_cover = 12
+solid.trackersystem.18.0.0.phi_offset = 3.2
+solid.trackersystem.18.0.0.reference = 0 0
+solid.trackersystem.18.0.0.has_div_segment = 0
+solid.trackersystem.18.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.18.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.18.1.0.rmin = 0.59
+solid.trackersystem.18.1.0.rmax = 1.43
+solid.trackersystem.18.1.0.dz = 0
+solid.trackersystem.18.1.0.phi = 0
+solid.trackersystem.18.1.0.phi_cover = 12
+solid.trackersystem.18.1.0.phi_offset = 2.2
+solid.trackersystem.18.1.0.reference = 0 0
+solid.trackersystem.18.1.0.has_div_segment = 0
+solid.trackersystem.18.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.18.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.18.2.0.rmin = 0.65
+solid.trackersystem.18.2.0.rmax = 1.43
+solid.trackersystem.18.2.0.dz = 0
+solid.trackersystem.18.2.0.phi = 0
+solid.trackersystem.18.2.0.phi_cover = 12
+solid.trackersystem.18.2.0.phi_offset = 2.2
+solid.trackersystem.18.2.0.reference = 0 0
+solid.trackersystem.18.2.0.has_div_segment = 0
+solid.trackersystem.18.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.18.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.18.3.0.rmin = 1.05
+solid.trackersystem.18.3.0.rmax = 2.3
+solid.trackersystem.18.3.0.dz = 0
+solid.trackersystem.18.3.0.phi = 0
+solid.trackersystem.18.3.0.phi_cover = 12
+solid.trackersystem.18.3.0.phi_offset = -0.8
+solid.trackersystem.18.3.0.reference = 0 0
+solid.trackersystem.18.3.0.has_div_segment = 0
+solid.trackersystem.18.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.18.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.18.4.0.rmin = 1.09
+solid.trackersystem.18.4.0.rmax = 2.37
+solid.trackersystem.18.4.0.dz = 0
+solid.trackersystem.18.4.0.phi = 0
+solid.trackersystem.18.4.0.phi_cover = 12
+solid.trackersystem.18.4.0.phi_offset = -0.8
+solid.trackersystem.18.4.0.reference = 0 0
+solid.trackersystem.18.4.0.has_div_segment = 0
+solid.trackersystem.18.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.18.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.19.0.0.rmin = 0.48
+solid.trackersystem.19.0.0.rmax = 1.22
+solid.trackersystem.19.0.0.dz = 0
+solid.trackersystem.19.0.0.phi = 0
+solid.trackersystem.19.0.0.phi_cover = 12
+solid.trackersystem.19.0.0.phi_offset = 3.2
+solid.trackersystem.19.0.0.reference = 0 0
+solid.trackersystem.19.0.0.has_div_segment = 0
+solid.trackersystem.19.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.19.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.19.1.0.rmin = 0.59
+solid.trackersystem.19.1.0.rmax = 1.43
+solid.trackersystem.19.1.0.dz = 0
+solid.trackersystem.19.1.0.phi = 0
+solid.trackersystem.19.1.0.phi_cover = 12
+solid.trackersystem.19.1.0.phi_offset = 2.2
+solid.trackersystem.19.1.0.reference = 0 0
+solid.trackersystem.19.1.0.has_div_segment = 0
+solid.trackersystem.19.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.19.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.19.2.0.rmin = 0.65
+solid.trackersystem.19.2.0.rmax = 1.43
+solid.trackersystem.19.2.0.dz = 0
+solid.trackersystem.19.2.0.phi = 0
+solid.trackersystem.19.2.0.phi_cover = 12
+solid.trackersystem.19.2.0.phi_offset = 2.2
+solid.trackersystem.19.2.0.reference = 0 0
+solid.trackersystem.19.2.0.has_div_segment = 0
+solid.trackersystem.19.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.19.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.19.3.0.rmin = 1.05
+solid.trackersystem.19.3.0.rmax = 2.3
+solid.trackersystem.19.3.0.dz = 0
+solid.trackersystem.19.3.0.phi = 0
+solid.trackersystem.19.3.0.phi_cover = 12
+solid.trackersystem.19.3.0.phi_offset = -0.8
+solid.trackersystem.19.3.0.reference = 0 0
+solid.trackersystem.19.3.0.has_div_segment = 0
+solid.trackersystem.19.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.19.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.19.4.0.rmin = 1.09
+solid.trackersystem.19.4.0.rmax = 2.37
+solid.trackersystem.19.4.0.dz = 0
+solid.trackersystem.19.4.0.phi = 0
+solid.trackersystem.19.4.0.phi_cover = 12
+solid.trackersystem.19.4.0.phi_offset = -0.8
+solid.trackersystem.19.4.0.reference = 0 0
+solid.trackersystem.19.4.0.has_div_segment = 0
+solid.trackersystem.19.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.19.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.20.0.0.rmin = 0.48
+solid.trackersystem.20.0.0.rmax = 1.22
+solid.trackersystem.20.0.0.dz = 0
+solid.trackersystem.20.0.0.phi = 0
+solid.trackersystem.20.0.0.phi_cover = 12
+solid.trackersystem.20.0.0.phi_offset = 3.2
+solid.trackersystem.20.0.0.reference = 0 0
+solid.trackersystem.20.0.0.has_div_segment = 0
+solid.trackersystem.20.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.20.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.20.1.0.rmin = 0.59
+solid.trackersystem.20.1.0.rmax = 1.43
+solid.trackersystem.20.1.0.dz = 0
+solid.trackersystem.20.1.0.phi = 0
+solid.trackersystem.20.1.0.phi_cover = 12
+solid.trackersystem.20.1.0.phi_offset = 2.2
+solid.trackersystem.20.1.0.reference = 0 0
+solid.trackersystem.20.1.0.has_div_segment = 0
+solid.trackersystem.20.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.20.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.20.2.0.rmin = 0.65
+solid.trackersystem.20.2.0.rmax = 1.43
+solid.trackersystem.20.2.0.dz = 0
+solid.trackersystem.20.2.0.phi = 0
+solid.trackersystem.20.2.0.phi_cover = 12
+solid.trackersystem.20.2.0.phi_offset = 2.2
+solid.trackersystem.20.2.0.reference = 0 0
+solid.trackersystem.20.2.0.has_div_segment = 0
+solid.trackersystem.20.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.20.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.20.3.0.rmin = 1.05
+solid.trackersystem.20.3.0.rmax = 2.3
+solid.trackersystem.20.3.0.dz = 0
+solid.trackersystem.20.3.0.phi = 0
+solid.trackersystem.20.3.0.phi_cover = 12
+solid.trackersystem.20.3.0.phi_offset = -0.8
+solid.trackersystem.20.3.0.reference = 0 0
+solid.trackersystem.20.3.0.has_div_segment = 0
+solid.trackersystem.20.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.20.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.20.4.0.rmin = 1.09
+solid.trackersystem.20.4.0.rmax = 2.37
+solid.trackersystem.20.4.0.dz = 0
+solid.trackersystem.20.4.0.phi = 0
+solid.trackersystem.20.4.0.phi_cover = 12
+solid.trackersystem.20.4.0.phi_offset = -0.8
+solid.trackersystem.20.4.0.reference = 0 0
+solid.trackersystem.20.4.0.has_div_segment = 0
+solid.trackersystem.20.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.20.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.21.0.0.rmin = 0.48
+solid.trackersystem.21.0.0.rmax = 1.22
+solid.trackersystem.21.0.0.dz = 0
+solid.trackersystem.21.0.0.phi = 0
+solid.trackersystem.21.0.0.phi_cover = 12
+solid.trackersystem.21.0.0.phi_offset = 3.2
+solid.trackersystem.21.0.0.reference = 0 0
+solid.trackersystem.21.0.0.has_div_segment = 0
+solid.trackersystem.21.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.21.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.21.1.0.rmin = 0.59
+solid.trackersystem.21.1.0.rmax = 1.43
+solid.trackersystem.21.1.0.dz = 0
+solid.trackersystem.21.1.0.phi = 0
+solid.trackersystem.21.1.0.phi_cover = 12
+solid.trackersystem.21.1.0.phi_offset = 2.2
+solid.trackersystem.21.1.0.reference = 0 0
+solid.trackersystem.21.1.0.has_div_segment = 0
+solid.trackersystem.21.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.21.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.21.2.0.rmin = 0.65
+solid.trackersystem.21.2.0.rmax = 1.43
+solid.trackersystem.21.2.0.dz = 0
+solid.trackersystem.21.2.0.phi = 0
+solid.trackersystem.21.2.0.phi_cover = 12
+solid.trackersystem.21.2.0.phi_offset = 2.2
+solid.trackersystem.21.2.0.reference = 0 0
+solid.trackersystem.21.2.0.has_div_segment = 0
+solid.trackersystem.21.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.21.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.21.3.0.rmin = 1.05
+solid.trackersystem.21.3.0.rmax = 2.3
+solid.trackersystem.21.3.0.dz = 0
+solid.trackersystem.21.3.0.phi = 0
+solid.trackersystem.21.3.0.phi_cover = 12
+solid.trackersystem.21.3.0.phi_offset = -0.8
+solid.trackersystem.21.3.0.reference = 0 0
+solid.trackersystem.21.3.0.has_div_segment = 0
+solid.trackersystem.21.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.21.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.21.4.0.rmin = 1.09
+solid.trackersystem.21.4.0.rmax = 2.37
+solid.trackersystem.21.4.0.dz = 0
+solid.trackersystem.21.4.0.phi = 0
+solid.trackersystem.21.4.0.phi_cover = 12
+solid.trackersystem.21.4.0.phi_offset = -0.8
+solid.trackersystem.21.4.0.reference = 0 0
+solid.trackersystem.21.4.0.has_div_segment = 0
+solid.trackersystem.21.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.21.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.22.0.0.rmin = 0.48
+solid.trackersystem.22.0.0.rmax = 1.22
+solid.trackersystem.22.0.0.dz = 0
+solid.trackersystem.22.0.0.phi = 0
+solid.trackersystem.22.0.0.phi_cover = 12
+solid.trackersystem.22.0.0.phi_offset = 3.2
+solid.trackersystem.22.0.0.reference = 0 0
+solid.trackersystem.22.0.0.has_div_segment = 0
+solid.trackersystem.22.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.22.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.22.1.0.rmin = 0.59
+solid.trackersystem.22.1.0.rmax = 1.43
+solid.trackersystem.22.1.0.dz = 0
+solid.trackersystem.22.1.0.phi = 0
+solid.trackersystem.22.1.0.phi_cover = 12
+solid.trackersystem.22.1.0.phi_offset = 2.2
+solid.trackersystem.22.1.0.reference = 0 0
+solid.trackersystem.22.1.0.has_div_segment = 0
+solid.trackersystem.22.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.22.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.22.2.0.rmin = 0.65
+solid.trackersystem.22.2.0.rmax = 1.43
+solid.trackersystem.22.2.0.dz = 0
+solid.trackersystem.22.2.0.phi = 0
+solid.trackersystem.22.2.0.phi_cover = 12
+solid.trackersystem.22.2.0.phi_offset = 2.2
+solid.trackersystem.22.2.0.reference = 0 0
+solid.trackersystem.22.2.0.has_div_segment = 0
+solid.trackersystem.22.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.22.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.22.3.0.rmin = 1.05
+solid.trackersystem.22.3.0.rmax = 2.3
+solid.trackersystem.22.3.0.dz = 0
+solid.trackersystem.22.3.0.phi = 0
+solid.trackersystem.22.3.0.phi_cover = 12
+solid.trackersystem.22.3.0.phi_offset = -0.8
+solid.trackersystem.22.3.0.reference = 0 0
+solid.trackersystem.22.3.0.has_div_segment = 0
+solid.trackersystem.22.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.22.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.22.4.0.rmin = 1.09
+solid.trackersystem.22.4.0.rmax = 2.37
+solid.trackersystem.22.4.0.dz = 0
+solid.trackersystem.22.4.0.phi = 0
+solid.trackersystem.22.4.0.phi_cover = 12
+solid.trackersystem.22.4.0.phi_offset = -0.8
+solid.trackersystem.22.4.0.reference = 0 0
+solid.trackersystem.22.4.0.has_div_segment = 0
+solid.trackersystem.22.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.22.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.23.0.0.rmin = 0.48
+solid.trackersystem.23.0.0.rmax = 1.22
+solid.trackersystem.23.0.0.dz = 0
+solid.trackersystem.23.0.0.phi = 0
+solid.trackersystem.23.0.0.phi_cover = 12
+solid.trackersystem.23.0.0.phi_offset = 3.2
+solid.trackersystem.23.0.0.reference = 0 0
+solid.trackersystem.23.0.0.has_div_segment = 0
+solid.trackersystem.23.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.23.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.23.1.0.rmin = 0.59
+solid.trackersystem.23.1.0.rmax = 1.43
+solid.trackersystem.23.1.0.dz = 0
+solid.trackersystem.23.1.0.phi = 0
+solid.trackersystem.23.1.0.phi_cover = 12
+solid.trackersystem.23.1.0.phi_offset = 2.2
+solid.trackersystem.23.1.0.reference = 0 0
+solid.trackersystem.23.1.0.has_div_segment = 0
+solid.trackersystem.23.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.23.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.23.2.0.rmin = 0.65
+solid.trackersystem.23.2.0.rmax = 1.43
+solid.trackersystem.23.2.0.dz = 0
+solid.trackersystem.23.2.0.phi = 0
+solid.trackersystem.23.2.0.phi_cover = 12
+solid.trackersystem.23.2.0.phi_offset = 2.2
+solid.trackersystem.23.2.0.reference = 0 0
+solid.trackersystem.23.2.0.has_div_segment = 0
+solid.trackersystem.23.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.23.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.23.3.0.rmin = 1.05
+solid.trackersystem.23.3.0.rmax = 2.3
+solid.trackersystem.23.3.0.dz = 0
+solid.trackersystem.23.3.0.phi = 0
+solid.trackersystem.23.3.0.phi_cover = 12
+solid.trackersystem.23.3.0.phi_offset = -0.8
+solid.trackersystem.23.3.0.reference = 0 0
+solid.trackersystem.23.3.0.has_div_segment = 0
+solid.trackersystem.23.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.23.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.23.4.0.rmin = 1.09
+solid.trackersystem.23.4.0.rmax = 2.37
+solid.trackersystem.23.4.0.dz = 0
+solid.trackersystem.23.4.0.phi = 0
+solid.trackersystem.23.4.0.phi_cover = 12
+solid.trackersystem.23.4.0.phi_offset = -0.8
+solid.trackersystem.23.4.0.reference = 0 0
+solid.trackersystem.23.4.0.has_div_segment = 0
+solid.trackersystem.23.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.23.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.24.0.0.rmin = 0.48
+solid.trackersystem.24.0.0.rmax = 1.22
+solid.trackersystem.24.0.0.dz = 0
+solid.trackersystem.24.0.0.phi = 0
+solid.trackersystem.24.0.0.phi_cover = 12
+solid.trackersystem.24.0.0.phi_offset = 3.2
+solid.trackersystem.24.0.0.reference = 0 0
+solid.trackersystem.24.0.0.has_div_segment = 0
+solid.trackersystem.24.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.24.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.24.1.0.rmin = 0.59
+solid.trackersystem.24.1.0.rmax = 1.43
+solid.trackersystem.24.1.0.dz = 0
+solid.trackersystem.24.1.0.phi = 0
+solid.trackersystem.24.1.0.phi_cover = 12
+solid.trackersystem.24.1.0.phi_offset = 2.2
+solid.trackersystem.24.1.0.reference = 0 0
+solid.trackersystem.24.1.0.has_div_segment = 0
+solid.trackersystem.24.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.24.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.24.2.0.rmin = 0.65
+solid.trackersystem.24.2.0.rmax = 1.43
+solid.trackersystem.24.2.0.dz = 0
+solid.trackersystem.24.2.0.phi = 0
+solid.trackersystem.24.2.0.phi_cover = 12
+solid.trackersystem.24.2.0.phi_offset = 2.2
+solid.trackersystem.24.2.0.reference = 0 0
+solid.trackersystem.24.2.0.has_div_segment = 0
+solid.trackersystem.24.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.24.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.24.3.0.rmin = 1.05
+solid.trackersystem.24.3.0.rmax = 2.3
+solid.trackersystem.24.3.0.dz = 0
+solid.trackersystem.24.3.0.phi = 0
+solid.trackersystem.24.3.0.phi_cover = 12
+solid.trackersystem.24.3.0.phi_offset = -0.8
+solid.trackersystem.24.3.0.reference = 0 0
+solid.trackersystem.24.3.0.has_div_segment = 0
+solid.trackersystem.24.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.24.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.24.4.0.rmin = 1.09
+solid.trackersystem.24.4.0.rmax = 2.37
+solid.trackersystem.24.4.0.dz = 0
+solid.trackersystem.24.4.0.phi = 0
+solid.trackersystem.24.4.0.phi_cover = 12
+solid.trackersystem.24.4.0.phi_offset = -0.8
+solid.trackersystem.24.4.0.reference = 0 0
+solid.trackersystem.24.4.0.has_div_segment = 0
+solid.trackersystem.24.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.24.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.25.0.0.rmin = 0.48
+solid.trackersystem.25.0.0.rmax = 1.22
+solid.trackersystem.25.0.0.dz = 0
+solid.trackersystem.25.0.0.phi = 0
+solid.trackersystem.25.0.0.phi_cover = 12
+solid.trackersystem.25.0.0.phi_offset = 3.2
+solid.trackersystem.25.0.0.reference = 0 0
+solid.trackersystem.25.0.0.has_div_segment = 0
+solid.trackersystem.25.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.25.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.25.1.0.rmin = 0.59
+solid.trackersystem.25.1.0.rmax = 1.43
+solid.trackersystem.25.1.0.dz = 0
+solid.trackersystem.25.1.0.phi = 0
+solid.trackersystem.25.1.0.phi_cover = 12
+solid.trackersystem.25.1.0.phi_offset = 2.2
+solid.trackersystem.25.1.0.reference = 0 0
+solid.trackersystem.25.1.0.has_div_segment = 0
+solid.trackersystem.25.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.25.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.25.2.0.rmin = 0.65
+solid.trackersystem.25.2.0.rmax = 1.43
+solid.trackersystem.25.2.0.dz = 0
+solid.trackersystem.25.2.0.phi = 0
+solid.trackersystem.25.2.0.phi_cover = 12
+solid.trackersystem.25.2.0.phi_offset = 2.2
+solid.trackersystem.25.2.0.reference = 0 0
+solid.trackersystem.25.2.0.has_div_segment = 0
+solid.trackersystem.25.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.25.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.25.3.0.rmin = 1.05
+solid.trackersystem.25.3.0.rmax = 2.3
+solid.trackersystem.25.3.0.dz = 0
+solid.trackersystem.25.3.0.phi = 0
+solid.trackersystem.25.3.0.phi_cover = 12
+solid.trackersystem.25.3.0.phi_offset = -0.8
+solid.trackersystem.25.3.0.reference = 0 0
+solid.trackersystem.25.3.0.has_div_segment = 0
+solid.trackersystem.25.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.25.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.25.4.0.rmin = 1.09
+solid.trackersystem.25.4.0.rmax = 2.37
+solid.trackersystem.25.4.0.dz = 0
+solid.trackersystem.25.4.0.phi = 0
+solid.trackersystem.25.4.0.phi_cover = 12
+solid.trackersystem.25.4.0.phi_offset = -0.8
+solid.trackersystem.25.4.0.reference = 0 0
+solid.trackersystem.25.4.0.has_div_segment = 0
+solid.trackersystem.25.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.25.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.26.0.0.rmin = 0.48
+solid.trackersystem.26.0.0.rmax = 1.22
+solid.trackersystem.26.0.0.dz = 0
+solid.trackersystem.26.0.0.phi = 0
+solid.trackersystem.26.0.0.phi_cover = 12
+solid.trackersystem.26.0.0.phi_offset = 3.2
+solid.trackersystem.26.0.0.reference = 0 0
+solid.trackersystem.26.0.0.has_div_segment = 0
+solid.trackersystem.26.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.26.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.26.1.0.rmin = 0.59
+solid.trackersystem.26.1.0.rmax = 1.43
+solid.trackersystem.26.1.0.dz = 0
+solid.trackersystem.26.1.0.phi = 0
+solid.trackersystem.26.1.0.phi_cover = 12
+solid.trackersystem.26.1.0.phi_offset = 2.2
+solid.trackersystem.26.1.0.reference = 0 0
+solid.trackersystem.26.1.0.has_div_segment = 0
+solid.trackersystem.26.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.26.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.26.2.0.rmin = 0.65
+solid.trackersystem.26.2.0.rmax = 1.43
+solid.trackersystem.26.2.0.dz = 0
+solid.trackersystem.26.2.0.phi = 0
+solid.trackersystem.26.2.0.phi_cover = 12
+solid.trackersystem.26.2.0.phi_offset = 2.2
+solid.trackersystem.26.2.0.reference = 0 0
+solid.trackersystem.26.2.0.has_div_segment = 0
+solid.trackersystem.26.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.26.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.26.3.0.rmin = 1.05
+solid.trackersystem.26.3.0.rmax = 2.3
+solid.trackersystem.26.3.0.dz = 0
+solid.trackersystem.26.3.0.phi = 0
+solid.trackersystem.26.3.0.phi_cover = 12
+solid.trackersystem.26.3.0.phi_offset = -0.8
+solid.trackersystem.26.3.0.reference = 0 0
+solid.trackersystem.26.3.0.has_div_segment = 0
+solid.trackersystem.26.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.26.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.26.4.0.rmin = 1.09
+solid.trackersystem.26.4.0.rmax = 2.37
+solid.trackersystem.26.4.0.dz = 0
+solid.trackersystem.26.4.0.phi = 0
+solid.trackersystem.26.4.0.phi_cover = 12
+solid.trackersystem.26.4.0.phi_offset = -0.8
+solid.trackersystem.26.4.0.reference = 0 0
+solid.trackersystem.26.4.0.has_div_segment = 0
+solid.trackersystem.26.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.26.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.27.0.0.rmin = 0.48
+solid.trackersystem.27.0.0.rmax = 1.22
+solid.trackersystem.27.0.0.dz = 0
+solid.trackersystem.27.0.0.phi = 0
+solid.trackersystem.27.0.0.phi_cover = 12
+solid.trackersystem.27.0.0.phi_offset = 3.2
+solid.trackersystem.27.0.0.reference = 0 0
+solid.trackersystem.27.0.0.has_div_segment = 0
+solid.trackersystem.27.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.27.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.27.1.0.rmin = 0.59
+solid.trackersystem.27.1.0.rmax = 1.43
+solid.trackersystem.27.1.0.dz = 0
+solid.trackersystem.27.1.0.phi = 0
+solid.trackersystem.27.1.0.phi_cover = 12
+solid.trackersystem.27.1.0.phi_offset = 2.2
+solid.trackersystem.27.1.0.reference = 0 0
+solid.trackersystem.27.1.0.has_div_segment = 0
+solid.trackersystem.27.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.27.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.27.2.0.rmin = 0.65
+solid.trackersystem.27.2.0.rmax = 1.43
+solid.trackersystem.27.2.0.dz = 0
+solid.trackersystem.27.2.0.phi = 0
+solid.trackersystem.27.2.0.phi_cover = 12
+solid.trackersystem.27.2.0.phi_offset = 2.2
+solid.trackersystem.27.2.0.reference = 0 0
+solid.trackersystem.27.2.0.has_div_segment = 0
+solid.trackersystem.27.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.27.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.27.3.0.rmin = 1.05
+solid.trackersystem.27.3.0.rmax = 2.3
+solid.trackersystem.27.3.0.dz = 0
+solid.trackersystem.27.3.0.phi = 0
+solid.trackersystem.27.3.0.phi_cover = 12
+solid.trackersystem.27.3.0.phi_offset = -0.8
+solid.trackersystem.27.3.0.reference = 0 0
+solid.trackersystem.27.3.0.has_div_segment = 0
+solid.trackersystem.27.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.27.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.27.4.0.rmin = 1.09
+solid.trackersystem.27.4.0.rmax = 2.37
+solid.trackersystem.27.4.0.dz = 0
+solid.trackersystem.27.4.0.phi = 0
+solid.trackersystem.27.4.0.phi_cover = 12
+solid.trackersystem.27.4.0.phi_offset = -0.8
+solid.trackersystem.27.4.0.reference = 0 0
+solid.trackersystem.27.4.0.has_div_segment = 0
+solid.trackersystem.27.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.27.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.28.0.0.rmin = 0.48
+solid.trackersystem.28.0.0.rmax = 1.22
+solid.trackersystem.28.0.0.dz = 0
+solid.trackersystem.28.0.0.phi = 0
+solid.trackersystem.28.0.0.phi_cover = 12
+solid.trackersystem.28.0.0.phi_offset = 3.2
+solid.trackersystem.28.0.0.reference = 0 0
+solid.trackersystem.28.0.0.has_div_segment = 0
+solid.trackersystem.28.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.28.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.28.1.0.rmin = 0.59
+solid.trackersystem.28.1.0.rmax = 1.43
+solid.trackersystem.28.1.0.dz = 0
+solid.trackersystem.28.1.0.phi = 0
+solid.trackersystem.28.1.0.phi_cover = 12
+solid.trackersystem.28.1.0.phi_offset = 2.2
+solid.trackersystem.28.1.0.reference = 0 0
+solid.trackersystem.28.1.0.has_div_segment = 0
+solid.trackersystem.28.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.28.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.28.2.0.rmin = 0.65
+solid.trackersystem.28.2.0.rmax = 1.43
+solid.trackersystem.28.2.0.dz = 0
+solid.trackersystem.28.2.0.phi = 0
+solid.trackersystem.28.2.0.phi_cover = 12
+solid.trackersystem.28.2.0.phi_offset = 2.2
+solid.trackersystem.28.2.0.reference = 0 0
+solid.trackersystem.28.2.0.has_div_segment = 0
+solid.trackersystem.28.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.28.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.28.3.0.rmin = 1.05
+solid.trackersystem.28.3.0.rmax = 2.3
+solid.trackersystem.28.3.0.dz = 0
+solid.trackersystem.28.3.0.phi = 0
+solid.trackersystem.28.3.0.phi_cover = 12
+solid.trackersystem.28.3.0.phi_offset = -0.8
+solid.trackersystem.28.3.0.reference = 0 0
+solid.trackersystem.28.3.0.has_div_segment = 0
+solid.trackersystem.28.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.28.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.28.4.0.rmin = 1.09
+solid.trackersystem.28.4.0.rmax = 2.37
+solid.trackersystem.28.4.0.dz = 0
+solid.trackersystem.28.4.0.phi = 0
+solid.trackersystem.28.4.0.phi_cover = 12
+solid.trackersystem.28.4.0.phi_offset = -0.8
+solid.trackersystem.28.4.0.reference = 0 0
+solid.trackersystem.28.4.0.has_div_segment = 0
+solid.trackersystem.28.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.28.4.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.29.0.0.rmin = 0.48
+solid.trackersystem.29.0.0.rmax = 1.22
+solid.trackersystem.29.0.0.dz = 0
+solid.trackersystem.29.0.0.phi = 0
+solid.trackersystem.29.0.0.phi_cover = 12
+solid.trackersystem.29.0.0.phi_offset = 3.2
+solid.trackersystem.29.0.0.reference = 0 0
+solid.trackersystem.29.0.0.has_div_segment = 0
+solid.trackersystem.29.0.0.div_segment_x = 0 0 0 0
+solid.trackersystem.29.0.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.29.1.0.rmin = 0.59
+solid.trackersystem.29.1.0.rmax = 1.43
+solid.trackersystem.29.1.0.dz = 0
+solid.trackersystem.29.1.0.phi = 0
+solid.trackersystem.29.1.0.phi_cover = 12
+solid.trackersystem.29.1.0.phi_offset = 2.2
+solid.trackersystem.29.1.0.reference = 0 0
+solid.trackersystem.29.1.0.has_div_segment = 0
+solid.trackersystem.29.1.0.div_segment_x = 0 0 0 0
+solid.trackersystem.29.1.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.29.2.0.rmin = 0.65
+solid.trackersystem.29.2.0.rmax = 1.43
+solid.trackersystem.29.2.0.dz = 0
+solid.trackersystem.29.2.0.phi = 0
+solid.trackersystem.29.2.0.phi_cover = 12
+solid.trackersystem.29.2.0.phi_offset = 2.2
+solid.trackersystem.29.2.0.reference = 0 0
+solid.trackersystem.29.2.0.has_div_segment = 0
+solid.trackersystem.29.2.0.div_segment_x = 0 0 0 0
+solid.trackersystem.29.2.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.29.3.0.rmin = 1.05
+solid.trackersystem.29.3.0.rmax = 2.3
+solid.trackersystem.29.3.0.dz = 0
+solid.trackersystem.29.3.0.phi = 0
+solid.trackersystem.29.3.0.phi_cover = 12
+solid.trackersystem.29.3.0.phi_offset = -0.8
+solid.trackersystem.29.3.0.reference = 0 0
+solid.trackersystem.29.3.0.has_div_segment = 0
+solid.trackersystem.29.3.0.div_segment_x = 0 0 0 0
+solid.trackersystem.29.3.0.div_segment_y = 0 0 0 0
+
+solid.trackersystem.29.4.0.rmin = 1.09
+solid.trackersystem.29.4.0.rmax = 2.37
+solid.trackersystem.29.4.0.dz = 0
+solid.trackersystem.29.4.0.phi = 0
+solid.trackersystem.29.4.0.phi_cover = 12
+solid.trackersystem.29.4.0.phi_offset = -0.8
+solid.trackersystem.29.4.0.reference = 0 0
+solid.trackersystem.29.4.0.has_div_segment = 0
+solid.trackersystem.29.4.0.div_segment_x = 0 0 0 0
+solid.trackersystem.29.4.0.div_segment_y = 0 0 0 0
+
+
+#-----------------------------------------------------------------
+# readout plane specific parameters
+#-----------------------------------------------------------------
+solid.trackersystem.0.0.0.0.start = -0.0885118
+solid.trackersystem.0.0.0.0.strip_angle = 84
+solid.trackersystem.0.0.0.0.nstrips = 634
+solid.trackersystem.0.0.0.0.n_divstrips = 0
+solid.trackersystem.0.0.0.0.div_start = 0
+solid.trackersystem.0.0.0.0.detmap = 0  0  0 633
+
+solid.trackersystem.0.0.0.1.start = -0.164688
+solid.trackersystem.0.0.0.1.strip_angle = 96
+solid.trackersystem.0.0.0.1.nstrips = 634
+solid.trackersystem.0.0.0.1.n_divstrips = 0
+solid.trackersystem.0.0.0.1.div_start = 0
+solid.trackersystem.0.0.0.1.detmap = 0  1  0 633
+
+solid.trackersystem.0.1.0.0.start = -0.105205
+solid.trackersystem.0.1.0.0.strip_angle = 84
+solid.trackersystem.0.1.0.0.nstrips = 743
+solid.trackersystem.0.1.0.0.n_divstrips = 0
+solid.trackersystem.0.1.0.0.div_start = 0
+solid.trackersystem.0.1.0.0.detmap = 0  2  0 742
+
+solid.trackersystem.0.1.0.1.start = -0.191595
+solid.trackersystem.0.1.0.1.strip_angle = 96
+solid.trackersystem.0.1.0.1.nstrips = 743
+solid.trackersystem.0.1.0.1.n_divstrips = 0
+solid.trackersystem.0.1.0.1.div_start = 0
+solid.trackersystem.0.1.0.1.detmap = 0  3  0 742
+
+solid.trackersystem.0.2.0.0.start = -0.108324
+solid.trackersystem.0.2.0.0.strip_angle = 84
+solid.trackersystem.0.2.0.0.nstrips = 743
+solid.trackersystem.0.2.0.0.n_divstrips = 0
+solid.trackersystem.0.2.0.0.div_start = 0
+solid.trackersystem.0.2.0.0.detmap = 0  4  0 742
+
+solid.trackersystem.0.2.0.1.start = -0.188476
+solid.trackersystem.0.2.0.1.strip_angle = 96
+solid.trackersystem.0.2.0.1.nstrips = 743
+solid.trackersystem.0.2.0.1.n_divstrips = 0
+solid.trackersystem.0.2.0.1.div_start = 0
+solid.trackersystem.0.2.0.1.detmap = 0  5  0 742
+
+solid.trackersystem.0.3.0.0.start = -0.174585
+solid.trackersystem.0.3.0.0.strip_angle = 84
+solid.trackersystem.0.3.0.0.nstrips = 1195
+solid.trackersystem.0.3.0.0.n_divstrips = 0
+solid.trackersystem.0.3.0.0.div_start = 0
+solid.trackersystem.0.3.0.0.detmap = 0  6  0 1194
+
+solid.trackersystem.0.3.0.1.start = -0.303015
+solid.trackersystem.0.3.0.1.strip_angle = 96
+solid.trackersystem.0.3.0.1.nstrips = 1195
+solid.trackersystem.0.3.0.1.n_divstrips = 0
+solid.trackersystem.0.3.0.1.div_start = 0
+solid.trackersystem.0.3.0.1.detmap = 0  7  0 1194
+
+solid.trackersystem.0.4.0.0.start = -0.180322
+solid.trackersystem.0.4.0.0.strip_angle = 84
+solid.trackersystem.0.4.0.0.nstrips = 1231
+solid.trackersystem.0.4.0.0.n_divstrips = 0
+solid.trackersystem.0.4.0.0.div_start = 0
+solid.trackersystem.0.4.0.0.detmap = 0  8  0 1230
+
+solid.trackersystem.0.4.0.1.start = -0.311678
+solid.trackersystem.0.4.0.1.strip_angle = 96
+solid.trackersystem.0.4.0.1.nstrips = 1231
+solid.trackersystem.0.4.0.1.n_divstrips = 0
+solid.trackersystem.0.4.0.1.div_start = 0
+solid.trackersystem.0.4.0.1.detmap = 0  9  0 1230
+
+solid.trackersystem.1.0.0.0.start = -0.0885118
+solid.trackersystem.1.0.0.0.strip_angle = 84
+solid.trackersystem.1.0.0.0.nstrips = 634
+solid.trackersystem.1.0.0.0.n_divstrips = 0
+solid.trackersystem.1.0.0.0.div_start = 0
+solid.trackersystem.1.0.0.0.detmap = 0  10 0 633
+
+solid.trackersystem.1.0.0.1.start = -0.164688
+solid.trackersystem.1.0.0.1.strip_angle = 96
+solid.trackersystem.1.0.0.1.nstrips = 634
+solid.trackersystem.1.0.0.1.n_divstrips = 0
+solid.trackersystem.1.0.0.1.div_start = 0
+solid.trackersystem.1.0.0.1.detmap = 0  11 0 633
+
+solid.trackersystem.1.1.0.0.start = -0.105205
+solid.trackersystem.1.1.0.0.strip_angle = 84
+solid.trackersystem.1.1.0.0.nstrips = 743
+solid.trackersystem.1.1.0.0.n_divstrips = 0
+solid.trackersystem.1.1.0.0.div_start = 0
+solid.trackersystem.1.1.0.0.detmap = 0  12 0 742
+
+solid.trackersystem.1.1.0.1.start = -0.191595
+solid.trackersystem.1.1.0.1.strip_angle = 96
+solid.trackersystem.1.1.0.1.nstrips = 743
+solid.trackersystem.1.1.0.1.n_divstrips = 0
+solid.trackersystem.1.1.0.1.div_start = 0
+solid.trackersystem.1.1.0.1.detmap = 0  13 0 742
+
+solid.trackersystem.1.2.0.0.start = -0.108324
+solid.trackersystem.1.2.0.0.strip_angle = 84
+solid.trackersystem.1.2.0.0.nstrips = 743
+solid.trackersystem.1.2.0.0.n_divstrips = 0
+solid.trackersystem.1.2.0.0.div_start = 0
+solid.trackersystem.1.2.0.0.detmap = 0  14 0 742
+
+solid.trackersystem.1.2.0.1.start = -0.188476
+solid.trackersystem.1.2.0.1.strip_angle = 96
+solid.trackersystem.1.2.0.1.nstrips = 743
+solid.trackersystem.1.2.0.1.n_divstrips = 0
+solid.trackersystem.1.2.0.1.div_start = 0
+solid.trackersystem.1.2.0.1.detmap = 0  15 0 742
+
+solid.trackersystem.1.3.0.0.start = -0.174585
+solid.trackersystem.1.3.0.0.strip_angle = 84
+solid.trackersystem.1.3.0.0.nstrips = 1195
+solid.trackersystem.1.3.0.0.n_divstrips = 0
+solid.trackersystem.1.3.0.0.div_start = 0
+solid.trackersystem.1.3.0.0.detmap = 0  16 0 1194
+
+solid.trackersystem.1.3.0.1.start = -0.303015
+solid.trackersystem.1.3.0.1.strip_angle = 96
+solid.trackersystem.1.3.0.1.nstrips = 1195
+solid.trackersystem.1.3.0.1.n_divstrips = 0
+solid.trackersystem.1.3.0.1.div_start = 0
+solid.trackersystem.1.3.0.1.detmap = 0  17 0 1194
+
+solid.trackersystem.1.4.0.0.start = -0.180322
+solid.trackersystem.1.4.0.0.strip_angle = 84
+solid.trackersystem.1.4.0.0.nstrips = 1231
+solid.trackersystem.1.4.0.0.n_divstrips = 0
+solid.trackersystem.1.4.0.0.div_start = 0
+solid.trackersystem.1.4.0.0.detmap = 0  18 0 1230
+
+solid.trackersystem.1.4.0.1.start = -0.311678
+solid.trackersystem.1.4.0.1.strip_angle = 96
+solid.trackersystem.1.4.0.1.nstrips = 1231
+solid.trackersystem.1.4.0.1.n_divstrips = 0
+solid.trackersystem.1.4.0.1.div_start = 0
+solid.trackersystem.1.4.0.1.detmap = 0  19 0 1230
+
+solid.trackersystem.2.0.0.0.start = -0.0885118
+solid.trackersystem.2.0.0.0.strip_angle = 84
+solid.trackersystem.2.0.0.0.nstrips = 634
+solid.trackersystem.2.0.0.0.n_divstrips = 0
+solid.trackersystem.2.0.0.0.div_start = 0
+solid.trackersystem.2.0.0.0.detmap = 0  20 0 633
+
+solid.trackersystem.2.0.0.1.start = -0.164688
+solid.trackersystem.2.0.0.1.strip_angle = 96
+solid.trackersystem.2.0.0.1.nstrips = 634
+solid.trackersystem.2.0.0.1.n_divstrips = 0
+solid.trackersystem.2.0.0.1.div_start = 0
+solid.trackersystem.2.0.0.1.detmap = 0  21 0 633
+
+solid.trackersystem.2.1.0.0.start = -0.105205
+solid.trackersystem.2.1.0.0.strip_angle = 84
+solid.trackersystem.2.1.0.0.nstrips = 743
+solid.trackersystem.2.1.0.0.n_divstrips = 0
+solid.trackersystem.2.1.0.0.div_start = 0
+solid.trackersystem.2.1.0.0.detmap = 0  22 0 742
+
+solid.trackersystem.2.1.0.1.start = -0.191595
+solid.trackersystem.2.1.0.1.strip_angle = 96
+solid.trackersystem.2.1.0.1.nstrips = 743
+solid.trackersystem.2.1.0.1.n_divstrips = 0
+solid.trackersystem.2.1.0.1.div_start = 0
+solid.trackersystem.2.1.0.1.detmap = 0  23 0 742
+
+solid.trackersystem.2.2.0.0.start = -0.108324
+solid.trackersystem.2.2.0.0.strip_angle = 84
+solid.trackersystem.2.2.0.0.nstrips = 743
+solid.trackersystem.2.2.0.0.n_divstrips = 0
+solid.trackersystem.2.2.0.0.div_start = 0
+solid.trackersystem.2.2.0.0.detmap = 0  24 0 742
+
+solid.trackersystem.2.2.0.1.start = -0.188476
+solid.trackersystem.2.2.0.1.strip_angle = 96
+solid.trackersystem.2.2.0.1.nstrips = 743
+solid.trackersystem.2.2.0.1.n_divstrips = 0
+solid.trackersystem.2.2.0.1.div_start = 0
+solid.trackersystem.2.2.0.1.detmap = 0  25 0 742
+
+solid.trackersystem.2.3.0.0.start = -0.174585
+solid.trackersystem.2.3.0.0.strip_angle = 84
+solid.trackersystem.2.3.0.0.nstrips = 1195
+solid.trackersystem.2.3.0.0.n_divstrips = 0
+solid.trackersystem.2.3.0.0.div_start = 0
+solid.trackersystem.2.3.0.0.detmap = 0  26 0 1194
+
+solid.trackersystem.2.3.0.1.start = -0.303015
+solid.trackersystem.2.3.0.1.strip_angle = 96
+solid.trackersystem.2.3.0.1.nstrips = 1195
+solid.trackersystem.2.3.0.1.n_divstrips = 0
+solid.trackersystem.2.3.0.1.div_start = 0
+solid.trackersystem.2.3.0.1.detmap = 0  27 0 1194
+
+solid.trackersystem.2.4.0.0.start = -0.180322
+solid.trackersystem.2.4.0.0.strip_angle = 84
+solid.trackersystem.2.4.0.0.nstrips = 1231
+solid.trackersystem.2.4.0.0.n_divstrips = 0
+solid.trackersystem.2.4.0.0.div_start = 0
+solid.trackersystem.2.4.0.0.detmap = 0  28 0 1230
+
+solid.trackersystem.2.4.0.1.start = -0.311678
+solid.trackersystem.2.4.0.1.strip_angle = 96
+solid.trackersystem.2.4.0.1.nstrips = 1231
+solid.trackersystem.2.4.0.1.n_divstrips = 0
+solid.trackersystem.2.4.0.1.div_start = 0
+solid.trackersystem.2.4.0.1.detmap = 0  29 0 1230
+
+solid.trackersystem.3.0.0.0.start = -0.0885118
+solid.trackersystem.3.0.0.0.strip_angle = 84
+solid.trackersystem.3.0.0.0.nstrips = 634
+solid.trackersystem.3.0.0.0.n_divstrips = 0
+solid.trackersystem.3.0.0.0.div_start = 0
+solid.trackersystem.3.0.0.0.detmap = 1  0  0 633
+
+solid.trackersystem.3.0.0.1.start = -0.164688
+solid.trackersystem.3.0.0.1.strip_angle = 96
+solid.trackersystem.3.0.0.1.nstrips = 634
+solid.trackersystem.3.0.0.1.n_divstrips = 0
+solid.trackersystem.3.0.0.1.div_start = 0
+solid.trackersystem.3.0.0.1.detmap = 1  1  0 633
+
+solid.trackersystem.3.1.0.0.start = -0.105205
+solid.trackersystem.3.1.0.0.strip_angle = 84
+solid.trackersystem.3.1.0.0.nstrips = 743
+solid.trackersystem.3.1.0.0.n_divstrips = 0
+solid.trackersystem.3.1.0.0.div_start = 0
+solid.trackersystem.3.1.0.0.detmap = 1  2  0 742
+
+solid.trackersystem.3.1.0.1.start = -0.191595
+solid.trackersystem.3.1.0.1.strip_angle = 96
+solid.trackersystem.3.1.0.1.nstrips = 743
+solid.trackersystem.3.1.0.1.n_divstrips = 0
+solid.trackersystem.3.1.0.1.div_start = 0
+solid.trackersystem.3.1.0.1.detmap = 1  3  0 742
+
+solid.trackersystem.3.2.0.0.start = -0.108324
+solid.trackersystem.3.2.0.0.strip_angle = 84
+solid.trackersystem.3.2.0.0.nstrips = 743
+solid.trackersystem.3.2.0.0.n_divstrips = 0
+solid.trackersystem.3.2.0.0.div_start = 0
+solid.trackersystem.3.2.0.0.detmap = 1  4  0 742
+
+solid.trackersystem.3.2.0.1.start = -0.188476
+solid.trackersystem.3.2.0.1.strip_angle = 96
+solid.trackersystem.3.2.0.1.nstrips = 743
+solid.trackersystem.3.2.0.1.n_divstrips = 0
+solid.trackersystem.3.2.0.1.div_start = 0
+solid.trackersystem.3.2.0.1.detmap = 1  5  0 742
+
+solid.trackersystem.3.3.0.0.start = -0.174585
+solid.trackersystem.3.3.0.0.strip_angle = 84
+solid.trackersystem.3.3.0.0.nstrips = 1195
+solid.trackersystem.3.3.0.0.n_divstrips = 0
+solid.trackersystem.3.3.0.0.div_start = 0
+solid.trackersystem.3.3.0.0.detmap = 1  6  0 1194
+
+solid.trackersystem.3.3.0.1.start = -0.303015
+solid.trackersystem.3.3.0.1.strip_angle = 96
+solid.trackersystem.3.3.0.1.nstrips = 1195
+solid.trackersystem.3.3.0.1.n_divstrips = 0
+solid.trackersystem.3.3.0.1.div_start = 0
+solid.trackersystem.3.3.0.1.detmap = 1  7  0 1194
+
+solid.trackersystem.3.4.0.0.start = -0.180322
+solid.trackersystem.3.4.0.0.strip_angle = 84
+solid.trackersystem.3.4.0.0.nstrips = 1231
+solid.trackersystem.3.4.0.0.n_divstrips = 0
+solid.trackersystem.3.4.0.0.div_start = 0
+solid.trackersystem.3.4.0.0.detmap = 1  8  0 1230
+
+solid.trackersystem.3.4.0.1.start = -0.311678
+solid.trackersystem.3.4.0.1.strip_angle = 96
+solid.trackersystem.3.4.0.1.nstrips = 1231
+solid.trackersystem.3.4.0.1.n_divstrips = 0
+solid.trackersystem.3.4.0.1.div_start = 0
+solid.trackersystem.3.4.0.1.detmap = 1  9  0 1230
+
+solid.trackersystem.4.0.0.0.start = -0.0885118
+solid.trackersystem.4.0.0.0.strip_angle = 84
+solid.trackersystem.4.0.0.0.nstrips = 634
+solid.trackersystem.4.0.0.0.n_divstrips = 0
+solid.trackersystem.4.0.0.0.div_start = 0
+solid.trackersystem.4.0.0.0.detmap = 1  10 0 633
+
+solid.trackersystem.4.0.0.1.start = -0.164688
+solid.trackersystem.4.0.0.1.strip_angle = 96
+solid.trackersystem.4.0.0.1.nstrips = 634
+solid.trackersystem.4.0.0.1.n_divstrips = 0
+solid.trackersystem.4.0.0.1.div_start = 0
+solid.trackersystem.4.0.0.1.detmap = 1  11 0 633
+
+solid.trackersystem.4.1.0.0.start = -0.105205
+solid.trackersystem.4.1.0.0.strip_angle = 84
+solid.trackersystem.4.1.0.0.nstrips = 743
+solid.trackersystem.4.1.0.0.n_divstrips = 0
+solid.trackersystem.4.1.0.0.div_start = 0
+solid.trackersystem.4.1.0.0.detmap = 1  12 0 742
+
+solid.trackersystem.4.1.0.1.start = -0.191595
+solid.trackersystem.4.1.0.1.strip_angle = 96
+solid.trackersystem.4.1.0.1.nstrips = 743
+solid.trackersystem.4.1.0.1.n_divstrips = 0
+solid.trackersystem.4.1.0.1.div_start = 0
+solid.trackersystem.4.1.0.1.detmap = 1  13 0 742
+
+solid.trackersystem.4.2.0.0.start = -0.108324
+solid.trackersystem.4.2.0.0.strip_angle = 84
+solid.trackersystem.4.2.0.0.nstrips = 743
+solid.trackersystem.4.2.0.0.n_divstrips = 0
+solid.trackersystem.4.2.0.0.div_start = 0
+solid.trackersystem.4.2.0.0.detmap = 1  14 0 742
+
+solid.trackersystem.4.2.0.1.start = -0.188476
+solid.trackersystem.4.2.0.1.strip_angle = 96
+solid.trackersystem.4.2.0.1.nstrips = 743
+solid.trackersystem.4.2.0.1.n_divstrips = 0
+solid.trackersystem.4.2.0.1.div_start = 0
+solid.trackersystem.4.2.0.1.detmap = 1  15 0 742
+
+solid.trackersystem.4.3.0.0.start = -0.174585
+solid.trackersystem.4.3.0.0.strip_angle = 84
+solid.trackersystem.4.3.0.0.nstrips = 1195
+solid.trackersystem.4.3.0.0.n_divstrips = 0
+solid.trackersystem.4.3.0.0.div_start = 0
+solid.trackersystem.4.3.0.0.detmap = 1  16 0 1194
+
+solid.trackersystem.4.3.0.1.start = -0.303015
+solid.trackersystem.4.3.0.1.strip_angle = 96
+solid.trackersystem.4.3.0.1.nstrips = 1195
+solid.trackersystem.4.3.0.1.n_divstrips = 0
+solid.trackersystem.4.3.0.1.div_start = 0
+solid.trackersystem.4.3.0.1.detmap = 1  17 0 1194
+
+solid.trackersystem.4.4.0.0.start = -0.180322
+solid.trackersystem.4.4.0.0.strip_angle = 84
+solid.trackersystem.4.4.0.0.nstrips = 1231
+solid.trackersystem.4.4.0.0.n_divstrips = 0
+solid.trackersystem.4.4.0.0.div_start = 0
+solid.trackersystem.4.4.0.0.detmap = 1  18 0 1230
+
+solid.trackersystem.4.4.0.1.start = -0.311678
+solid.trackersystem.4.4.0.1.strip_angle = 96
+solid.trackersystem.4.4.0.1.nstrips = 1231
+solid.trackersystem.4.4.0.1.n_divstrips = 0
+solid.trackersystem.4.4.0.1.div_start = 0
+solid.trackersystem.4.4.0.1.detmap = 1  19 0 1230
+
+solid.trackersystem.5.0.0.0.start = -0.0885118
+solid.trackersystem.5.0.0.0.strip_angle = 84
+solid.trackersystem.5.0.0.0.nstrips = 634
+solid.trackersystem.5.0.0.0.n_divstrips = 0
+solid.trackersystem.5.0.0.0.div_start = 0
+solid.trackersystem.5.0.0.0.detmap = 1  20 0 633
+
+solid.trackersystem.5.0.0.1.start = -0.164688
+solid.trackersystem.5.0.0.1.strip_angle = 96
+solid.trackersystem.5.0.0.1.nstrips = 634
+solid.trackersystem.5.0.0.1.n_divstrips = 0
+solid.trackersystem.5.0.0.1.div_start = 0
+solid.trackersystem.5.0.0.1.detmap = 1  21 0 633
+
+solid.trackersystem.5.1.0.0.start = -0.105205
+solid.trackersystem.5.1.0.0.strip_angle = 84
+solid.trackersystem.5.1.0.0.nstrips = 743
+solid.trackersystem.5.1.0.0.n_divstrips = 0
+solid.trackersystem.5.1.0.0.div_start = 0
+solid.trackersystem.5.1.0.0.detmap = 1  22 0 742
+
+solid.trackersystem.5.1.0.1.start = -0.191595
+solid.trackersystem.5.1.0.1.strip_angle = 96
+solid.trackersystem.5.1.0.1.nstrips = 743
+solid.trackersystem.5.1.0.1.n_divstrips = 0
+solid.trackersystem.5.1.0.1.div_start = 0
+solid.trackersystem.5.1.0.1.detmap = 1  23 0 742
+
+solid.trackersystem.5.2.0.0.start = -0.108324
+solid.trackersystem.5.2.0.0.strip_angle = 84
+solid.trackersystem.5.2.0.0.nstrips = 743
+solid.trackersystem.5.2.0.0.n_divstrips = 0
+solid.trackersystem.5.2.0.0.div_start = 0
+solid.trackersystem.5.2.0.0.detmap = 1  24 0 742
+
+solid.trackersystem.5.2.0.1.start = -0.188476
+solid.trackersystem.5.2.0.1.strip_angle = 96
+solid.trackersystem.5.2.0.1.nstrips = 743
+solid.trackersystem.5.2.0.1.n_divstrips = 0
+solid.trackersystem.5.2.0.1.div_start = 0
+solid.trackersystem.5.2.0.1.detmap = 1  25 0 742
+
+solid.trackersystem.5.3.0.0.start = -0.174585
+solid.trackersystem.5.3.0.0.strip_angle = 84
+solid.trackersystem.5.3.0.0.nstrips = 1195
+solid.trackersystem.5.3.0.0.n_divstrips = 0
+solid.trackersystem.5.3.0.0.div_start = 0
+solid.trackersystem.5.3.0.0.detmap = 1  26 0 1194
+
+solid.trackersystem.5.3.0.1.start = -0.303015
+solid.trackersystem.5.3.0.1.strip_angle = 96
+solid.trackersystem.5.3.0.1.nstrips = 1195
+solid.trackersystem.5.3.0.1.n_divstrips = 0
+solid.trackersystem.5.3.0.1.div_start = 0
+solid.trackersystem.5.3.0.1.detmap = 1  27 0 1194
+
+solid.trackersystem.5.4.0.0.start = -0.180322
+solid.trackersystem.5.4.0.0.strip_angle = 84
+solid.trackersystem.5.4.0.0.nstrips = 1231
+solid.trackersystem.5.4.0.0.n_divstrips = 0
+solid.trackersystem.5.4.0.0.div_start = 0
+solid.trackersystem.5.4.0.0.detmap = 1  28 0 1230
+
+solid.trackersystem.5.4.0.1.start = -0.311678
+solid.trackersystem.5.4.0.1.strip_angle = 96
+solid.trackersystem.5.4.0.1.nstrips = 1231
+solid.trackersystem.5.4.0.1.n_divstrips = 0
+solid.trackersystem.5.4.0.1.div_start = 0
+solid.trackersystem.5.4.0.1.detmap = 1  29 0 1230
+
+solid.trackersystem.6.0.0.0.start = -0.0885118
+solid.trackersystem.6.0.0.0.strip_angle = 84
+solid.trackersystem.6.0.0.0.nstrips = 634
+solid.trackersystem.6.0.0.0.n_divstrips = 0
+solid.trackersystem.6.0.0.0.div_start = 0
+solid.trackersystem.6.0.0.0.detmap = 2  0  0 633
+
+solid.trackersystem.6.0.0.1.start = -0.164688
+solid.trackersystem.6.0.0.1.strip_angle = 96
+solid.trackersystem.6.0.0.1.nstrips = 634
+solid.trackersystem.6.0.0.1.n_divstrips = 0
+solid.trackersystem.6.0.0.1.div_start = 0
+solid.trackersystem.6.0.0.1.detmap = 2  1  0 633
+
+solid.trackersystem.6.1.0.0.start = -0.105205
+solid.trackersystem.6.1.0.0.strip_angle = 84
+solid.trackersystem.6.1.0.0.nstrips = 743
+solid.trackersystem.6.1.0.0.n_divstrips = 0
+solid.trackersystem.6.1.0.0.div_start = 0
+solid.trackersystem.6.1.0.0.detmap = 2  2  0 742
+
+solid.trackersystem.6.1.0.1.start = -0.191595
+solid.trackersystem.6.1.0.1.strip_angle = 96
+solid.trackersystem.6.1.0.1.nstrips = 743
+solid.trackersystem.6.1.0.1.n_divstrips = 0
+solid.trackersystem.6.1.0.1.div_start = 0
+solid.trackersystem.6.1.0.1.detmap = 2  3  0 742
+
+solid.trackersystem.6.2.0.0.start = -0.108324
+solid.trackersystem.6.2.0.0.strip_angle = 84
+solid.trackersystem.6.2.0.0.nstrips = 743
+solid.trackersystem.6.2.0.0.n_divstrips = 0
+solid.trackersystem.6.2.0.0.div_start = 0
+solid.trackersystem.6.2.0.0.detmap = 2  4  0 742
+
+solid.trackersystem.6.2.0.1.start = -0.188476
+solid.trackersystem.6.2.0.1.strip_angle = 96
+solid.trackersystem.6.2.0.1.nstrips = 743
+solid.trackersystem.6.2.0.1.n_divstrips = 0
+solid.trackersystem.6.2.0.1.div_start = 0
+solid.trackersystem.6.2.0.1.detmap = 2  5  0 742
+
+solid.trackersystem.6.3.0.0.start = -0.174585
+solid.trackersystem.6.3.0.0.strip_angle = 84
+solid.trackersystem.6.3.0.0.nstrips = 1195
+solid.trackersystem.6.3.0.0.n_divstrips = 0
+solid.trackersystem.6.3.0.0.div_start = 0
+solid.trackersystem.6.3.0.0.detmap = 2  6  0 1194
+
+solid.trackersystem.6.3.0.1.start = -0.303015
+solid.trackersystem.6.3.0.1.strip_angle = 96
+solid.trackersystem.6.3.0.1.nstrips = 1195
+solid.trackersystem.6.3.0.1.n_divstrips = 0
+solid.trackersystem.6.3.0.1.div_start = 0
+solid.trackersystem.6.3.0.1.detmap = 2  7  0 1194
+
+solid.trackersystem.6.4.0.0.start = -0.180322
+solid.trackersystem.6.4.0.0.strip_angle = 84
+solid.trackersystem.6.4.0.0.nstrips = 1231
+solid.trackersystem.6.4.0.0.n_divstrips = 0
+solid.trackersystem.6.4.0.0.div_start = 0
+solid.trackersystem.6.4.0.0.detmap = 2  8  0 1230
+
+solid.trackersystem.6.4.0.1.start = -0.311678
+solid.trackersystem.6.4.0.1.strip_angle = 96
+solid.trackersystem.6.4.0.1.nstrips = 1231
+solid.trackersystem.6.4.0.1.n_divstrips = 0
+solid.trackersystem.6.4.0.1.div_start = 0
+solid.trackersystem.6.4.0.1.detmap = 2  9  0 1230
+
+solid.trackersystem.7.0.0.0.start = -0.0885118
+solid.trackersystem.7.0.0.0.strip_angle = 84
+solid.trackersystem.7.0.0.0.nstrips = 634
+solid.trackersystem.7.0.0.0.n_divstrips = 0
+solid.trackersystem.7.0.0.0.div_start = 0
+solid.trackersystem.7.0.0.0.detmap = 2  10 0 633
+
+solid.trackersystem.7.0.0.1.start = -0.164688
+solid.trackersystem.7.0.0.1.strip_angle = 96
+solid.trackersystem.7.0.0.1.nstrips = 634
+solid.trackersystem.7.0.0.1.n_divstrips = 0
+solid.trackersystem.7.0.0.1.div_start = 0
+solid.trackersystem.7.0.0.1.detmap = 2  11 0 633
+
+solid.trackersystem.7.1.0.0.start = -0.105205
+solid.trackersystem.7.1.0.0.strip_angle = 84
+solid.trackersystem.7.1.0.0.nstrips = 743
+solid.trackersystem.7.1.0.0.n_divstrips = 0
+solid.trackersystem.7.1.0.0.div_start = 0
+solid.trackersystem.7.1.0.0.detmap = 2  12 0 742
+
+solid.trackersystem.7.1.0.1.start = -0.191595
+solid.trackersystem.7.1.0.1.strip_angle = 96
+solid.trackersystem.7.1.0.1.nstrips = 743
+solid.trackersystem.7.1.0.1.n_divstrips = 0
+solid.trackersystem.7.1.0.1.div_start = 0
+solid.trackersystem.7.1.0.1.detmap = 2  13 0 742
+
+solid.trackersystem.7.2.0.0.start = -0.108324
+solid.trackersystem.7.2.0.0.strip_angle = 84
+solid.trackersystem.7.2.0.0.nstrips = 743
+solid.trackersystem.7.2.0.0.n_divstrips = 0
+solid.trackersystem.7.2.0.0.div_start = 0
+solid.trackersystem.7.2.0.0.detmap = 2  14 0 742
+
+solid.trackersystem.7.2.0.1.start = -0.188476
+solid.trackersystem.7.2.0.1.strip_angle = 96
+solid.trackersystem.7.2.0.1.nstrips = 743
+solid.trackersystem.7.2.0.1.n_divstrips = 0
+solid.trackersystem.7.2.0.1.div_start = 0
+solid.trackersystem.7.2.0.1.detmap = 2  15 0 742
+
+solid.trackersystem.7.3.0.0.start = -0.174585
+solid.trackersystem.7.3.0.0.strip_angle = 84
+solid.trackersystem.7.3.0.0.nstrips = 1195
+solid.trackersystem.7.3.0.0.n_divstrips = 0
+solid.trackersystem.7.3.0.0.div_start = 0
+solid.trackersystem.7.3.0.0.detmap = 2  16 0 1194
+
+solid.trackersystem.7.3.0.1.start = -0.303015
+solid.trackersystem.7.3.0.1.strip_angle = 96
+solid.trackersystem.7.3.0.1.nstrips = 1195
+solid.trackersystem.7.3.0.1.n_divstrips = 0
+solid.trackersystem.7.3.0.1.div_start = 0
+solid.trackersystem.7.3.0.1.detmap = 2  17 0 1194
+
+solid.trackersystem.7.4.0.0.start = -0.180322
+solid.trackersystem.7.4.0.0.strip_angle = 84
+solid.trackersystem.7.4.0.0.nstrips = 1231
+solid.trackersystem.7.4.0.0.n_divstrips = 0
+solid.trackersystem.7.4.0.0.div_start = 0
+solid.trackersystem.7.4.0.0.detmap = 2  18 0 1230
+
+solid.trackersystem.7.4.0.1.start = -0.311678
+solid.trackersystem.7.4.0.1.strip_angle = 96
+solid.trackersystem.7.4.0.1.nstrips = 1231
+solid.trackersystem.7.4.0.1.n_divstrips = 0
+solid.trackersystem.7.4.0.1.div_start = 0
+solid.trackersystem.7.4.0.1.detmap = 2  19 0 1230
+
+solid.trackersystem.8.0.0.0.start = -0.0885118
+solid.trackersystem.8.0.0.0.strip_angle = 84
+solid.trackersystem.8.0.0.0.nstrips = 634
+solid.trackersystem.8.0.0.0.n_divstrips = 0
+solid.trackersystem.8.0.0.0.div_start = 0
+solid.trackersystem.8.0.0.0.detmap = 2  20 0 633
+
+solid.trackersystem.8.0.0.1.start = -0.164688
+solid.trackersystem.8.0.0.1.strip_angle = 96
+solid.trackersystem.8.0.0.1.nstrips = 634
+solid.trackersystem.8.0.0.1.n_divstrips = 0
+solid.trackersystem.8.0.0.1.div_start = 0
+solid.trackersystem.8.0.0.1.detmap = 2  21 0 633
+
+solid.trackersystem.8.1.0.0.start = -0.105205
+solid.trackersystem.8.1.0.0.strip_angle = 84
+solid.trackersystem.8.1.0.0.nstrips = 743
+solid.trackersystem.8.1.0.0.n_divstrips = 0
+solid.trackersystem.8.1.0.0.div_start = 0
+solid.trackersystem.8.1.0.0.detmap = 2  22 0 742
+
+solid.trackersystem.8.1.0.1.start = -0.191595
+solid.trackersystem.8.1.0.1.strip_angle = 96
+solid.trackersystem.8.1.0.1.nstrips = 743
+solid.trackersystem.8.1.0.1.n_divstrips = 0
+solid.trackersystem.8.1.0.1.div_start = 0
+solid.trackersystem.8.1.0.1.detmap = 2  23 0 742
+
+solid.trackersystem.8.2.0.0.start = -0.108324
+solid.trackersystem.8.2.0.0.strip_angle = 84
+solid.trackersystem.8.2.0.0.nstrips = 743
+solid.trackersystem.8.2.0.0.n_divstrips = 0
+solid.trackersystem.8.2.0.0.div_start = 0
+solid.trackersystem.8.2.0.0.detmap = 2  24 0 742
+
+solid.trackersystem.8.2.0.1.start = -0.188476
+solid.trackersystem.8.2.0.1.strip_angle = 96
+solid.trackersystem.8.2.0.1.nstrips = 743
+solid.trackersystem.8.2.0.1.n_divstrips = 0
+solid.trackersystem.8.2.0.1.div_start = 0
+solid.trackersystem.8.2.0.1.detmap = 2  25 0 742
+
+solid.trackersystem.8.3.0.0.start = -0.174585
+solid.trackersystem.8.3.0.0.strip_angle = 84
+solid.trackersystem.8.3.0.0.nstrips = 1195
+solid.trackersystem.8.3.0.0.n_divstrips = 0
+solid.trackersystem.8.3.0.0.div_start = 0
+solid.trackersystem.8.3.0.0.detmap = 2  26 0 1194
+
+solid.trackersystem.8.3.0.1.start = -0.303015
+solid.trackersystem.8.3.0.1.strip_angle = 96
+solid.trackersystem.8.3.0.1.nstrips = 1195
+solid.trackersystem.8.3.0.1.n_divstrips = 0
+solid.trackersystem.8.3.0.1.div_start = 0
+solid.trackersystem.8.3.0.1.detmap = 2  27 0 1194
+
+solid.trackersystem.8.4.0.0.start = -0.180322
+solid.trackersystem.8.4.0.0.strip_angle = 84
+solid.trackersystem.8.4.0.0.nstrips = 1231
+solid.trackersystem.8.4.0.0.n_divstrips = 0
+solid.trackersystem.8.4.0.0.div_start = 0
+solid.trackersystem.8.4.0.0.detmap = 2  28 0 1230
+
+solid.trackersystem.8.4.0.1.start = -0.311678
+solid.trackersystem.8.4.0.1.strip_angle = 96
+solid.trackersystem.8.4.0.1.nstrips = 1231
+solid.trackersystem.8.4.0.1.n_divstrips = 0
+solid.trackersystem.8.4.0.1.div_start = 0
+solid.trackersystem.8.4.0.1.detmap = 2  29 0 1230
+
+solid.trackersystem.9.0.0.0.start = -0.0885118
+solid.trackersystem.9.0.0.0.strip_angle = 84
+solid.trackersystem.9.0.0.0.nstrips = 634
+solid.trackersystem.9.0.0.0.n_divstrips = 0
+solid.trackersystem.9.0.0.0.div_start = 0
+solid.trackersystem.9.0.0.0.detmap = 3  0  0 633
+
+solid.trackersystem.9.0.0.1.start = -0.164688
+solid.trackersystem.9.0.0.1.strip_angle = 96
+solid.trackersystem.9.0.0.1.nstrips = 634
+solid.trackersystem.9.0.0.1.n_divstrips = 0
+solid.trackersystem.9.0.0.1.div_start = 0
+solid.trackersystem.9.0.0.1.detmap = 3  1  0 633
+
+solid.trackersystem.9.1.0.0.start = -0.105205
+solid.trackersystem.9.1.0.0.strip_angle = 84
+solid.trackersystem.9.1.0.0.nstrips = 743
+solid.trackersystem.9.1.0.0.n_divstrips = 0
+solid.trackersystem.9.1.0.0.div_start = 0
+solid.trackersystem.9.1.0.0.detmap = 3  2  0 742
+
+solid.trackersystem.9.1.0.1.start = -0.191595
+solid.trackersystem.9.1.0.1.strip_angle = 96
+solid.trackersystem.9.1.0.1.nstrips = 743
+solid.trackersystem.9.1.0.1.n_divstrips = 0
+solid.trackersystem.9.1.0.1.div_start = 0
+solid.trackersystem.9.1.0.1.detmap = 3  3  0 742
+
+solid.trackersystem.9.2.0.0.start = -0.108324
+solid.trackersystem.9.2.0.0.strip_angle = 84
+solid.trackersystem.9.2.0.0.nstrips = 743
+solid.trackersystem.9.2.0.0.n_divstrips = 0
+solid.trackersystem.9.2.0.0.div_start = 0
+solid.trackersystem.9.2.0.0.detmap = 3  4  0 742
+
+solid.trackersystem.9.2.0.1.start = -0.188476
+solid.trackersystem.9.2.0.1.strip_angle = 96
+solid.trackersystem.9.2.0.1.nstrips = 743
+solid.trackersystem.9.2.0.1.n_divstrips = 0
+solid.trackersystem.9.2.0.1.div_start = 0
+solid.trackersystem.9.2.0.1.detmap = 3  5  0 742
+
+solid.trackersystem.9.3.0.0.start = -0.174585
+solid.trackersystem.9.3.0.0.strip_angle = 84
+solid.trackersystem.9.3.0.0.nstrips = 1195
+solid.trackersystem.9.3.0.0.n_divstrips = 0
+solid.trackersystem.9.3.0.0.div_start = 0
+solid.trackersystem.9.3.0.0.detmap = 3  6  0 1194
+
+solid.trackersystem.9.3.0.1.start = -0.303015
+solid.trackersystem.9.3.0.1.strip_angle = 96
+solid.trackersystem.9.3.0.1.nstrips = 1195
+solid.trackersystem.9.3.0.1.n_divstrips = 0
+solid.trackersystem.9.3.0.1.div_start = 0
+solid.trackersystem.9.3.0.1.detmap = 3  7  0 1194
+
+solid.trackersystem.9.4.0.0.start = -0.180322
+solid.trackersystem.9.4.0.0.strip_angle = 84
+solid.trackersystem.9.4.0.0.nstrips = 1231
+solid.trackersystem.9.4.0.0.n_divstrips = 0
+solid.trackersystem.9.4.0.0.div_start = 0
+solid.trackersystem.9.4.0.0.detmap = 3  8  0 1230
+
+solid.trackersystem.9.4.0.1.start = -0.311678
+solid.trackersystem.9.4.0.1.strip_angle = 96
+solid.trackersystem.9.4.0.1.nstrips = 1231
+solid.trackersystem.9.4.0.1.n_divstrips = 0
+solid.trackersystem.9.4.0.1.div_start = 0
+solid.trackersystem.9.4.0.1.detmap = 3  9  0 1230
+
+solid.trackersystem.10.0.0.0.start = -0.0885118
+solid.trackersystem.10.0.0.0.strip_angle = 84
+solid.trackersystem.10.0.0.0.nstrips = 634
+solid.trackersystem.10.0.0.0.n_divstrips = 0
+solid.trackersystem.10.0.0.0.div_start = 0
+solid.trackersystem.10.0.0.0.detmap = 3  10 0 633
+
+solid.trackersystem.10.0.0.1.start = -0.164688
+solid.trackersystem.10.0.0.1.strip_angle = 96
+solid.trackersystem.10.0.0.1.nstrips = 634
+solid.trackersystem.10.0.0.1.n_divstrips = 0
+solid.trackersystem.10.0.0.1.div_start = 0
+solid.trackersystem.10.0.0.1.detmap = 3  11 0 633
+
+solid.trackersystem.10.1.0.0.start = -0.105205
+solid.trackersystem.10.1.0.0.strip_angle = 84
+solid.trackersystem.10.1.0.0.nstrips = 743
+solid.trackersystem.10.1.0.0.n_divstrips = 0
+solid.trackersystem.10.1.0.0.div_start = 0
+solid.trackersystem.10.1.0.0.detmap = 3  12 0 742
+
+solid.trackersystem.10.1.0.1.start = -0.191595
+solid.trackersystem.10.1.0.1.strip_angle = 96
+solid.trackersystem.10.1.0.1.nstrips = 743
+solid.trackersystem.10.1.0.1.n_divstrips = 0
+solid.trackersystem.10.1.0.1.div_start = 0
+solid.trackersystem.10.1.0.1.detmap = 3  13 0 742
+
+solid.trackersystem.10.2.0.0.start = -0.108324
+solid.trackersystem.10.2.0.0.strip_angle = 84
+solid.trackersystem.10.2.0.0.nstrips = 743
+solid.trackersystem.10.2.0.0.n_divstrips = 0
+solid.trackersystem.10.2.0.0.div_start = 0
+solid.trackersystem.10.2.0.0.detmap = 3  14 0 742
+
+solid.trackersystem.10.2.0.1.start = -0.188476
+solid.trackersystem.10.2.0.1.strip_angle = 96
+solid.trackersystem.10.2.0.1.nstrips = 743
+solid.trackersystem.10.2.0.1.n_divstrips = 0
+solid.trackersystem.10.2.0.1.div_start = 0
+solid.trackersystem.10.2.0.1.detmap = 3  15 0 742
+
+solid.trackersystem.10.3.0.0.start = -0.174585
+solid.trackersystem.10.3.0.0.strip_angle = 84
+solid.trackersystem.10.3.0.0.nstrips = 1195
+solid.trackersystem.10.3.0.0.n_divstrips = 0
+solid.trackersystem.10.3.0.0.div_start = 0
+solid.trackersystem.10.3.0.0.detmap = 3  16 0 1194
+
+solid.trackersystem.10.3.0.1.start = -0.303015
+solid.trackersystem.10.3.0.1.strip_angle = 96
+solid.trackersystem.10.3.0.1.nstrips = 1195
+solid.trackersystem.10.3.0.1.n_divstrips = 0
+solid.trackersystem.10.3.0.1.div_start = 0
+solid.trackersystem.10.3.0.1.detmap = 3  17 0 1194
+
+solid.trackersystem.10.4.0.0.start = -0.180322
+solid.trackersystem.10.4.0.0.strip_angle = 84
+solid.trackersystem.10.4.0.0.nstrips = 1231
+solid.trackersystem.10.4.0.0.n_divstrips = 0
+solid.trackersystem.10.4.0.0.div_start = 0
+solid.trackersystem.10.4.0.0.detmap = 3  18 0 1230
+
+solid.trackersystem.10.4.0.1.start = -0.311678
+solid.trackersystem.10.4.0.1.strip_angle = 96
+solid.trackersystem.10.4.0.1.nstrips = 1231
+solid.trackersystem.10.4.0.1.n_divstrips = 0
+solid.trackersystem.10.4.0.1.div_start = 0
+solid.trackersystem.10.4.0.1.detmap = 3  19 0 1230
+
+solid.trackersystem.11.0.0.0.start = -0.0885118
+solid.trackersystem.11.0.0.0.strip_angle = 84
+solid.trackersystem.11.0.0.0.nstrips = 634
+solid.trackersystem.11.0.0.0.n_divstrips = 0
+solid.trackersystem.11.0.0.0.div_start = 0
+solid.trackersystem.11.0.0.0.detmap = 3  20 0 633
+
+solid.trackersystem.11.0.0.1.start = -0.164688
+solid.trackersystem.11.0.0.1.strip_angle = 96
+solid.trackersystem.11.0.0.1.nstrips = 634
+solid.trackersystem.11.0.0.1.n_divstrips = 0
+solid.trackersystem.11.0.0.1.div_start = 0
+solid.trackersystem.11.0.0.1.detmap = 3  21 0 633
+
+solid.trackersystem.11.1.0.0.start = -0.105205
+solid.trackersystem.11.1.0.0.strip_angle = 84
+solid.trackersystem.11.1.0.0.nstrips = 743
+solid.trackersystem.11.1.0.0.n_divstrips = 0
+solid.trackersystem.11.1.0.0.div_start = 0
+solid.trackersystem.11.1.0.0.detmap = 3  22 0 742
+
+solid.trackersystem.11.1.0.1.start = -0.191595
+solid.trackersystem.11.1.0.1.strip_angle = 96
+solid.trackersystem.11.1.0.1.nstrips = 743
+solid.trackersystem.11.1.0.1.n_divstrips = 0
+solid.trackersystem.11.1.0.1.div_start = 0
+solid.trackersystem.11.1.0.1.detmap = 3  23 0 742
+
+solid.trackersystem.11.2.0.0.start = -0.108324
+solid.trackersystem.11.2.0.0.strip_angle = 84
+solid.trackersystem.11.2.0.0.nstrips = 743
+solid.trackersystem.11.2.0.0.n_divstrips = 0
+solid.trackersystem.11.2.0.0.div_start = 0
+solid.trackersystem.11.2.0.0.detmap = 3  24 0 742
+
+solid.trackersystem.11.2.0.1.start = -0.188476
+solid.trackersystem.11.2.0.1.strip_angle = 96
+solid.trackersystem.11.2.0.1.nstrips = 743
+solid.trackersystem.11.2.0.1.n_divstrips = 0
+solid.trackersystem.11.2.0.1.div_start = 0
+solid.trackersystem.11.2.0.1.detmap = 3  25 0 742
+
+solid.trackersystem.11.3.0.0.start = -0.174585
+solid.trackersystem.11.3.0.0.strip_angle = 84
+solid.trackersystem.11.3.0.0.nstrips = 1195
+solid.trackersystem.11.3.0.0.n_divstrips = 0
+solid.trackersystem.11.3.0.0.div_start = 0
+solid.trackersystem.11.3.0.0.detmap = 3  26 0 1194
+
+solid.trackersystem.11.3.0.1.start = -0.303015
+solid.trackersystem.11.3.0.1.strip_angle = 96
+solid.trackersystem.11.3.0.1.nstrips = 1195
+solid.trackersystem.11.3.0.1.n_divstrips = 0
+solid.trackersystem.11.3.0.1.div_start = 0
+solid.trackersystem.11.3.0.1.detmap = 3  27 0 1194
+
+solid.trackersystem.11.4.0.0.start = -0.180322
+solid.trackersystem.11.4.0.0.strip_angle = 84
+solid.trackersystem.11.4.0.0.nstrips = 1231
+solid.trackersystem.11.4.0.0.n_divstrips = 0
+solid.trackersystem.11.4.0.0.div_start = 0
+solid.trackersystem.11.4.0.0.detmap = 3  28 0 1230
+
+solid.trackersystem.11.4.0.1.start = -0.311678
+solid.trackersystem.11.4.0.1.strip_angle = 96
+solid.trackersystem.11.4.0.1.nstrips = 1231
+solid.trackersystem.11.4.0.1.n_divstrips = 0
+solid.trackersystem.11.4.0.1.div_start = 0
+solid.trackersystem.11.4.0.1.detmap = 3  29 0 1230
+
+solid.trackersystem.12.0.0.0.start = -0.0885118
+solid.trackersystem.12.0.0.0.strip_angle = 84
+solid.trackersystem.12.0.0.0.nstrips = 634
+solid.trackersystem.12.0.0.0.n_divstrips = 0
+solid.trackersystem.12.0.0.0.div_start = 0
+solid.trackersystem.12.0.0.0.detmap = 4  0  0 633
+
+solid.trackersystem.12.0.0.1.start = -0.164688
+solid.trackersystem.12.0.0.1.strip_angle = 96
+solid.trackersystem.12.0.0.1.nstrips = 634
+solid.trackersystem.12.0.0.1.n_divstrips = 0
+solid.trackersystem.12.0.0.1.div_start = 0
+solid.trackersystem.12.0.0.1.detmap = 4  1  0 633
+
+solid.trackersystem.12.1.0.0.start = -0.105205
+solid.trackersystem.12.1.0.0.strip_angle = 84
+solid.trackersystem.12.1.0.0.nstrips = 743
+solid.trackersystem.12.1.0.0.n_divstrips = 0
+solid.trackersystem.12.1.0.0.div_start = 0
+solid.trackersystem.12.1.0.0.detmap = 4  2  0 742
+
+solid.trackersystem.12.1.0.1.start = -0.191595
+solid.trackersystem.12.1.0.1.strip_angle = 96
+solid.trackersystem.12.1.0.1.nstrips = 743
+solid.trackersystem.12.1.0.1.n_divstrips = 0
+solid.trackersystem.12.1.0.1.div_start = 0
+solid.trackersystem.12.1.0.1.detmap = 4  3  0 742
+
+solid.trackersystem.12.2.0.0.start = -0.108324
+solid.trackersystem.12.2.0.0.strip_angle = 84
+solid.trackersystem.12.2.0.0.nstrips = 743
+solid.trackersystem.12.2.0.0.n_divstrips = 0
+solid.trackersystem.12.2.0.0.div_start = 0
+solid.trackersystem.12.2.0.0.detmap = 4  4  0 742
+
+solid.trackersystem.12.2.0.1.start = -0.188476
+solid.trackersystem.12.2.0.1.strip_angle = 96
+solid.trackersystem.12.2.0.1.nstrips = 743
+solid.trackersystem.12.2.0.1.n_divstrips = 0
+solid.trackersystem.12.2.0.1.div_start = 0
+solid.trackersystem.12.2.0.1.detmap = 4  5  0 742
+
+solid.trackersystem.12.3.0.0.start = -0.174585
+solid.trackersystem.12.3.0.0.strip_angle = 84
+solid.trackersystem.12.3.0.0.nstrips = 1195
+solid.trackersystem.12.3.0.0.n_divstrips = 0
+solid.trackersystem.12.3.0.0.div_start = 0
+solid.trackersystem.12.3.0.0.detmap = 4  6  0 1194
+
+solid.trackersystem.12.3.0.1.start = -0.303015
+solid.trackersystem.12.3.0.1.strip_angle = 96
+solid.trackersystem.12.3.0.1.nstrips = 1195
+solid.trackersystem.12.3.0.1.n_divstrips = 0
+solid.trackersystem.12.3.0.1.div_start = 0
+solid.trackersystem.12.3.0.1.detmap = 4  7  0 1194
+
+solid.trackersystem.12.4.0.0.start = -0.180322
+solid.trackersystem.12.4.0.0.strip_angle = 84
+solid.trackersystem.12.4.0.0.nstrips = 1231
+solid.trackersystem.12.4.0.0.n_divstrips = 0
+solid.trackersystem.12.4.0.0.div_start = 0
+solid.trackersystem.12.4.0.0.detmap = 4  8  0 1230
+
+solid.trackersystem.12.4.0.1.start = -0.311678
+solid.trackersystem.12.4.0.1.strip_angle = 96
+solid.trackersystem.12.4.0.1.nstrips = 1231
+solid.trackersystem.12.4.0.1.n_divstrips = 0
+solid.trackersystem.12.4.0.1.div_start = 0
+solid.trackersystem.12.4.0.1.detmap = 4  9  0 1230
+
+solid.trackersystem.13.0.0.0.start = -0.0885118
+solid.trackersystem.13.0.0.0.strip_angle = 84
+solid.trackersystem.13.0.0.0.nstrips = 634
+solid.trackersystem.13.0.0.0.n_divstrips = 0
+solid.trackersystem.13.0.0.0.div_start = 0
+solid.trackersystem.13.0.0.0.detmap = 4  10 0 633
+
+solid.trackersystem.13.0.0.1.start = -0.164688
+solid.trackersystem.13.0.0.1.strip_angle = 96
+solid.trackersystem.13.0.0.1.nstrips = 634
+solid.trackersystem.13.0.0.1.n_divstrips = 0
+solid.trackersystem.13.0.0.1.div_start = 0
+solid.trackersystem.13.0.0.1.detmap = 4  11 0 633
+
+solid.trackersystem.13.1.0.0.start = -0.105205
+solid.trackersystem.13.1.0.0.strip_angle = 84
+solid.trackersystem.13.1.0.0.nstrips = 743
+solid.trackersystem.13.1.0.0.n_divstrips = 0
+solid.trackersystem.13.1.0.0.div_start = 0
+solid.trackersystem.13.1.0.0.detmap = 4  12 0 742
+
+solid.trackersystem.13.1.0.1.start = -0.191595
+solid.trackersystem.13.1.0.1.strip_angle = 96
+solid.trackersystem.13.1.0.1.nstrips = 743
+solid.trackersystem.13.1.0.1.n_divstrips = 0
+solid.trackersystem.13.1.0.1.div_start = 0
+solid.trackersystem.13.1.0.1.detmap = 4  13 0 742
+
+solid.trackersystem.13.2.0.0.start = -0.108324
+solid.trackersystem.13.2.0.0.strip_angle = 84
+solid.trackersystem.13.2.0.0.nstrips = 743
+solid.trackersystem.13.2.0.0.n_divstrips = 0
+solid.trackersystem.13.2.0.0.div_start = 0
+solid.trackersystem.13.2.0.0.detmap = 4  14 0 742
+
+solid.trackersystem.13.2.0.1.start = -0.188476
+solid.trackersystem.13.2.0.1.strip_angle = 96
+solid.trackersystem.13.2.0.1.nstrips = 743
+solid.trackersystem.13.2.0.1.n_divstrips = 0
+solid.trackersystem.13.2.0.1.div_start = 0
+solid.trackersystem.13.2.0.1.detmap = 4  15 0 742
+
+solid.trackersystem.13.3.0.0.start = -0.174585
+solid.trackersystem.13.3.0.0.strip_angle = 84
+solid.trackersystem.13.3.0.0.nstrips = 1195
+solid.trackersystem.13.3.0.0.n_divstrips = 0
+solid.trackersystem.13.3.0.0.div_start = 0
+solid.trackersystem.13.3.0.0.detmap = 4  16 0 1194
+
+solid.trackersystem.13.3.0.1.start = -0.303015
+solid.trackersystem.13.3.0.1.strip_angle = 96
+solid.trackersystem.13.3.0.1.nstrips = 1195
+solid.trackersystem.13.3.0.1.n_divstrips = 0
+solid.trackersystem.13.3.0.1.div_start = 0
+solid.trackersystem.13.3.0.1.detmap = 4  17 0 1194
+
+solid.trackersystem.13.4.0.0.start = -0.180322
+solid.trackersystem.13.4.0.0.strip_angle = 84
+solid.trackersystem.13.4.0.0.nstrips = 1231
+solid.trackersystem.13.4.0.0.n_divstrips = 0
+solid.trackersystem.13.4.0.0.div_start = 0
+solid.trackersystem.13.4.0.0.detmap = 4  18 0 1230
+
+solid.trackersystem.13.4.0.1.start = -0.311678
+solid.trackersystem.13.4.0.1.strip_angle = 96
+solid.trackersystem.13.4.0.1.nstrips = 1231
+solid.trackersystem.13.4.0.1.n_divstrips = 0
+solid.trackersystem.13.4.0.1.div_start = 0
+solid.trackersystem.13.4.0.1.detmap = 4  19 0 1230
+
+solid.trackersystem.14.0.0.0.start = -0.0885118
+solid.trackersystem.14.0.0.0.strip_angle = 84
+solid.trackersystem.14.0.0.0.nstrips = 634
+solid.trackersystem.14.0.0.0.n_divstrips = 0
+solid.trackersystem.14.0.0.0.div_start = 0
+solid.trackersystem.14.0.0.0.detmap = 4  20 0 633
+
+solid.trackersystem.14.0.0.1.start = -0.164688
+solid.trackersystem.14.0.0.1.strip_angle = 96
+solid.trackersystem.14.0.0.1.nstrips = 634
+solid.trackersystem.14.0.0.1.n_divstrips = 0
+solid.trackersystem.14.0.0.1.div_start = 0
+solid.trackersystem.14.0.0.1.detmap = 4  21 0 633
+
+solid.trackersystem.14.1.0.0.start = -0.105205
+solid.trackersystem.14.1.0.0.strip_angle = 84
+solid.trackersystem.14.1.0.0.nstrips = 743
+solid.trackersystem.14.1.0.0.n_divstrips = 0
+solid.trackersystem.14.1.0.0.div_start = 0
+solid.trackersystem.14.1.0.0.detmap = 4  22 0 742
+
+solid.trackersystem.14.1.0.1.start = -0.191595
+solid.trackersystem.14.1.0.1.strip_angle = 96
+solid.trackersystem.14.1.0.1.nstrips = 743
+solid.trackersystem.14.1.0.1.n_divstrips = 0
+solid.trackersystem.14.1.0.1.div_start = 0
+solid.trackersystem.14.1.0.1.detmap = 4  23 0 742
+
+solid.trackersystem.14.2.0.0.start = -0.108324
+solid.trackersystem.14.2.0.0.strip_angle = 84
+solid.trackersystem.14.2.0.0.nstrips = 743
+solid.trackersystem.14.2.0.0.n_divstrips = 0
+solid.trackersystem.14.2.0.0.div_start = 0
+solid.trackersystem.14.2.0.0.detmap = 4  24 0 742
+
+solid.trackersystem.14.2.0.1.start = -0.188476
+solid.trackersystem.14.2.0.1.strip_angle = 96
+solid.trackersystem.14.2.0.1.nstrips = 743
+solid.trackersystem.14.2.0.1.n_divstrips = 0
+solid.trackersystem.14.2.0.1.div_start = 0
+solid.trackersystem.14.2.0.1.detmap = 4  25 0 742
+
+solid.trackersystem.14.3.0.0.start = -0.174585
+solid.trackersystem.14.3.0.0.strip_angle = 84
+solid.trackersystem.14.3.0.0.nstrips = 1195
+solid.trackersystem.14.3.0.0.n_divstrips = 0
+solid.trackersystem.14.3.0.0.div_start = 0
+solid.trackersystem.14.3.0.0.detmap = 4  26 0 1194
+
+solid.trackersystem.14.3.0.1.start = -0.303015
+solid.trackersystem.14.3.0.1.strip_angle = 96
+solid.trackersystem.14.3.0.1.nstrips = 1195
+solid.trackersystem.14.3.0.1.n_divstrips = 0
+solid.trackersystem.14.3.0.1.div_start = 0
+solid.trackersystem.14.3.0.1.detmap = 4  27 0 1194
+
+solid.trackersystem.14.4.0.0.start = -0.180322
+solid.trackersystem.14.4.0.0.strip_angle = 84
+solid.trackersystem.14.4.0.0.nstrips = 1231
+solid.trackersystem.14.4.0.0.n_divstrips = 0
+solid.trackersystem.14.4.0.0.div_start = 0
+solid.trackersystem.14.4.0.0.detmap = 4  28 0 1230
+
+solid.trackersystem.14.4.0.1.start = -0.311678
+solid.trackersystem.14.4.0.1.strip_angle = 96
+solid.trackersystem.14.4.0.1.nstrips = 1231
+solid.trackersystem.14.4.0.1.n_divstrips = 0
+solid.trackersystem.14.4.0.1.div_start = 0
+solid.trackersystem.14.4.0.1.detmap = 4  29 0 1230
+
+solid.trackersystem.15.0.0.0.start = -0.0885118
+solid.trackersystem.15.0.0.0.strip_angle = 84
+solid.trackersystem.15.0.0.0.nstrips = 634
+solid.trackersystem.15.0.0.0.n_divstrips = 0
+solid.trackersystem.15.0.0.0.div_start = 0
+solid.trackersystem.15.0.0.0.detmap = 5  0  0 633
+
+solid.trackersystem.15.0.0.1.start = -0.164688
+solid.trackersystem.15.0.0.1.strip_angle = 96
+solid.trackersystem.15.0.0.1.nstrips = 634
+solid.trackersystem.15.0.0.1.n_divstrips = 0
+solid.trackersystem.15.0.0.1.div_start = 0
+solid.trackersystem.15.0.0.1.detmap = 5  1  0 633
+
+solid.trackersystem.15.1.0.0.start = -0.105205
+solid.trackersystem.15.1.0.0.strip_angle = 84
+solid.trackersystem.15.1.0.0.nstrips = 743
+solid.trackersystem.15.1.0.0.n_divstrips = 0
+solid.trackersystem.15.1.0.0.div_start = 0
+solid.trackersystem.15.1.0.0.detmap = 5  2  0 742
+
+solid.trackersystem.15.1.0.1.start = -0.191595
+solid.trackersystem.15.1.0.1.strip_angle = 96
+solid.trackersystem.15.1.0.1.nstrips = 743
+solid.trackersystem.15.1.0.1.n_divstrips = 0
+solid.trackersystem.15.1.0.1.div_start = 0
+solid.trackersystem.15.1.0.1.detmap = 5  3  0 742
+
+solid.trackersystem.15.2.0.0.start = -0.108324
+solid.trackersystem.15.2.0.0.strip_angle = 84
+solid.trackersystem.15.2.0.0.nstrips = 743
+solid.trackersystem.15.2.0.0.n_divstrips = 0
+solid.trackersystem.15.2.0.0.div_start = 0
+solid.trackersystem.15.2.0.0.detmap = 5  4  0 742
+
+solid.trackersystem.15.2.0.1.start = -0.188476
+solid.trackersystem.15.2.0.1.strip_angle = 96
+solid.trackersystem.15.2.0.1.nstrips = 743
+solid.trackersystem.15.2.0.1.n_divstrips = 0
+solid.trackersystem.15.2.0.1.div_start = 0
+solid.trackersystem.15.2.0.1.detmap = 5  5  0 742
+
+solid.trackersystem.15.3.0.0.start = -0.174585
+solid.trackersystem.15.3.0.0.strip_angle = 84
+solid.trackersystem.15.3.0.0.nstrips = 1195
+solid.trackersystem.15.3.0.0.n_divstrips = 0
+solid.trackersystem.15.3.0.0.div_start = 0
+solid.trackersystem.15.3.0.0.detmap = 5  6  0 1194
+
+solid.trackersystem.15.3.0.1.start = -0.303015
+solid.trackersystem.15.3.0.1.strip_angle = 96
+solid.trackersystem.15.3.0.1.nstrips = 1195
+solid.trackersystem.15.3.0.1.n_divstrips = 0
+solid.trackersystem.15.3.0.1.div_start = 0
+solid.trackersystem.15.3.0.1.detmap = 5  7  0 1194
+
+solid.trackersystem.15.4.0.0.start = -0.180322
+solid.trackersystem.15.4.0.0.strip_angle = 84
+solid.trackersystem.15.4.0.0.nstrips = 1231
+solid.trackersystem.15.4.0.0.n_divstrips = 0
+solid.trackersystem.15.4.0.0.div_start = 0
+solid.trackersystem.15.4.0.0.detmap = 5  8  0 1230
+
+solid.trackersystem.15.4.0.1.start = -0.311678
+solid.trackersystem.15.4.0.1.strip_angle = 96
+solid.trackersystem.15.4.0.1.nstrips = 1231
+solid.trackersystem.15.4.0.1.n_divstrips = 0
+solid.trackersystem.15.4.0.1.div_start = 0
+solid.trackersystem.15.4.0.1.detmap = 5  9  0 1230
+
+solid.trackersystem.16.0.0.0.start = -0.0885118
+solid.trackersystem.16.0.0.0.strip_angle = 84
+solid.trackersystem.16.0.0.0.nstrips = 634
+solid.trackersystem.16.0.0.0.n_divstrips = 0
+solid.trackersystem.16.0.0.0.div_start = 0
+solid.trackersystem.16.0.0.0.detmap = 5  10 0 633
+
+solid.trackersystem.16.0.0.1.start = -0.164688
+solid.trackersystem.16.0.0.1.strip_angle = 96
+solid.trackersystem.16.0.0.1.nstrips = 634
+solid.trackersystem.16.0.0.1.n_divstrips = 0
+solid.trackersystem.16.0.0.1.div_start = 0
+solid.trackersystem.16.0.0.1.detmap = 5  11 0 633
+
+solid.trackersystem.16.1.0.0.start = -0.105205
+solid.trackersystem.16.1.0.0.strip_angle = 84
+solid.trackersystem.16.1.0.0.nstrips = 743
+solid.trackersystem.16.1.0.0.n_divstrips = 0
+solid.trackersystem.16.1.0.0.div_start = 0
+solid.trackersystem.16.1.0.0.detmap = 5  12 0 742
+
+solid.trackersystem.16.1.0.1.start = -0.191595
+solid.trackersystem.16.1.0.1.strip_angle = 96
+solid.trackersystem.16.1.0.1.nstrips = 743
+solid.trackersystem.16.1.0.1.n_divstrips = 0
+solid.trackersystem.16.1.0.1.div_start = 0
+solid.trackersystem.16.1.0.1.detmap = 5  13 0 742
+
+solid.trackersystem.16.2.0.0.start = -0.108324
+solid.trackersystem.16.2.0.0.strip_angle = 84
+solid.trackersystem.16.2.0.0.nstrips = 743
+solid.trackersystem.16.2.0.0.n_divstrips = 0
+solid.trackersystem.16.2.0.0.div_start = 0
+solid.trackersystem.16.2.0.0.detmap = 5  14 0 742
+
+solid.trackersystem.16.2.0.1.start = -0.188476
+solid.trackersystem.16.2.0.1.strip_angle = 96
+solid.trackersystem.16.2.0.1.nstrips = 743
+solid.trackersystem.16.2.0.1.n_divstrips = 0
+solid.trackersystem.16.2.0.1.div_start = 0
+solid.trackersystem.16.2.0.1.detmap = 5  15 0 742
+
+solid.trackersystem.16.3.0.0.start = -0.174585
+solid.trackersystem.16.3.0.0.strip_angle = 84
+solid.trackersystem.16.3.0.0.nstrips = 1195
+solid.trackersystem.16.3.0.0.n_divstrips = 0
+solid.trackersystem.16.3.0.0.div_start = 0
+solid.trackersystem.16.3.0.0.detmap = 5  16 0 1194
+
+solid.trackersystem.16.3.0.1.start = -0.303015
+solid.trackersystem.16.3.0.1.strip_angle = 96
+solid.trackersystem.16.3.0.1.nstrips = 1195
+solid.trackersystem.16.3.0.1.n_divstrips = 0
+solid.trackersystem.16.3.0.1.div_start = 0
+solid.trackersystem.16.3.0.1.detmap = 5  17 0 1194
+
+solid.trackersystem.16.4.0.0.start = -0.180322
+solid.trackersystem.16.4.0.0.strip_angle = 84
+solid.trackersystem.16.4.0.0.nstrips = 1231
+solid.trackersystem.16.4.0.0.n_divstrips = 0
+solid.trackersystem.16.4.0.0.div_start = 0
+solid.trackersystem.16.4.0.0.detmap = 5  18 0 1230
+
+solid.trackersystem.16.4.0.1.start = -0.311678
+solid.trackersystem.16.4.0.1.strip_angle = 96
+solid.trackersystem.16.4.0.1.nstrips = 1231
+solid.trackersystem.16.4.0.1.n_divstrips = 0
+solid.trackersystem.16.4.0.1.div_start = 0
+solid.trackersystem.16.4.0.1.detmap = 5  19 0 1230
+
+solid.trackersystem.17.0.0.0.start = -0.0885118
+solid.trackersystem.17.0.0.0.strip_angle = 84
+solid.trackersystem.17.0.0.0.nstrips = 634
+solid.trackersystem.17.0.0.0.n_divstrips = 0
+solid.trackersystem.17.0.0.0.div_start = 0
+solid.trackersystem.17.0.0.0.detmap = 5  20 0 633
+
+solid.trackersystem.17.0.0.1.start = -0.164688
+solid.trackersystem.17.0.0.1.strip_angle = 96
+solid.trackersystem.17.0.0.1.nstrips = 634
+solid.trackersystem.17.0.0.1.n_divstrips = 0
+solid.trackersystem.17.0.0.1.div_start = 0
+solid.trackersystem.17.0.0.1.detmap = 5  21 0 633
+
+solid.trackersystem.17.1.0.0.start = -0.105205
+solid.trackersystem.17.1.0.0.strip_angle = 84
+solid.trackersystem.17.1.0.0.nstrips = 743
+solid.trackersystem.17.1.0.0.n_divstrips = 0
+solid.trackersystem.17.1.0.0.div_start = 0
+solid.trackersystem.17.1.0.0.detmap = 5  22 0 742
+
+solid.trackersystem.17.1.0.1.start = -0.191595
+solid.trackersystem.17.1.0.1.strip_angle = 96
+solid.trackersystem.17.1.0.1.nstrips = 743
+solid.trackersystem.17.1.0.1.n_divstrips = 0
+solid.trackersystem.17.1.0.1.div_start = 0
+solid.trackersystem.17.1.0.1.detmap = 5  23 0 742
+
+solid.trackersystem.17.2.0.0.start = -0.108324
+solid.trackersystem.17.2.0.0.strip_angle = 84
+solid.trackersystem.17.2.0.0.nstrips = 743
+solid.trackersystem.17.2.0.0.n_divstrips = 0
+solid.trackersystem.17.2.0.0.div_start = 0
+solid.trackersystem.17.2.0.0.detmap = 5  24 0 742
+
+solid.trackersystem.17.2.0.1.start = -0.188476
+solid.trackersystem.17.2.0.1.strip_angle = 96
+solid.trackersystem.17.2.0.1.nstrips = 743
+solid.trackersystem.17.2.0.1.n_divstrips = 0
+solid.trackersystem.17.2.0.1.div_start = 0
+solid.trackersystem.17.2.0.1.detmap = 5  25 0 742
+
+solid.trackersystem.17.3.0.0.start = -0.174585
+solid.trackersystem.17.3.0.0.strip_angle = 84
+solid.trackersystem.17.3.0.0.nstrips = 1195
+solid.trackersystem.17.3.0.0.n_divstrips = 0
+solid.trackersystem.17.3.0.0.div_start = 0
+solid.trackersystem.17.3.0.0.detmap = 5  26 0 1194
+
+solid.trackersystem.17.3.0.1.start = -0.303015
+solid.trackersystem.17.3.0.1.strip_angle = 96
+solid.trackersystem.17.3.0.1.nstrips = 1195
+solid.trackersystem.17.3.0.1.n_divstrips = 0
+solid.trackersystem.17.3.0.1.div_start = 0
+solid.trackersystem.17.3.0.1.detmap = 5  27 0 1194
+
+solid.trackersystem.17.4.0.0.start = -0.180322
+solid.trackersystem.17.4.0.0.strip_angle = 84
+solid.trackersystem.17.4.0.0.nstrips = 1231
+solid.trackersystem.17.4.0.0.n_divstrips = 0
+solid.trackersystem.17.4.0.0.div_start = 0
+solid.trackersystem.17.4.0.0.detmap = 5  28 0 1230
+
+solid.trackersystem.17.4.0.1.start = -0.311678
+solid.trackersystem.17.4.0.1.strip_angle = 96
+solid.trackersystem.17.4.0.1.nstrips = 1231
+solid.trackersystem.17.4.0.1.n_divstrips = 0
+solid.trackersystem.17.4.0.1.div_start = 0
+solid.trackersystem.17.4.0.1.detmap = 5  29 0 1230
+
+solid.trackersystem.18.0.0.0.start = -0.0885118
+solid.trackersystem.18.0.0.0.strip_angle = 84
+solid.trackersystem.18.0.0.0.nstrips = 634
+solid.trackersystem.18.0.0.0.n_divstrips = 0
+solid.trackersystem.18.0.0.0.div_start = 0
+solid.trackersystem.18.0.0.0.detmap = 6  0  0 633
+
+solid.trackersystem.18.0.0.1.start = -0.164688
+solid.trackersystem.18.0.0.1.strip_angle = 96
+solid.trackersystem.18.0.0.1.nstrips = 634
+solid.trackersystem.18.0.0.1.n_divstrips = 0
+solid.trackersystem.18.0.0.1.div_start = 0
+solid.trackersystem.18.0.0.1.detmap = 6  1  0 633
+
+solid.trackersystem.18.1.0.0.start = -0.105205
+solid.trackersystem.18.1.0.0.strip_angle = 84
+solid.trackersystem.18.1.0.0.nstrips = 743
+solid.trackersystem.18.1.0.0.n_divstrips = 0
+solid.trackersystem.18.1.0.0.div_start = 0
+solid.trackersystem.18.1.0.0.detmap = 6  2  0 742
+
+solid.trackersystem.18.1.0.1.start = -0.191595
+solid.trackersystem.18.1.0.1.strip_angle = 96
+solid.trackersystem.18.1.0.1.nstrips = 743
+solid.trackersystem.18.1.0.1.n_divstrips = 0
+solid.trackersystem.18.1.0.1.div_start = 0
+solid.trackersystem.18.1.0.1.detmap = 6  3  0 742
+
+solid.trackersystem.18.2.0.0.start = -0.108324
+solid.trackersystem.18.2.0.0.strip_angle = 84
+solid.trackersystem.18.2.0.0.nstrips = 743
+solid.trackersystem.18.2.0.0.n_divstrips = 0
+solid.trackersystem.18.2.0.0.div_start = 0
+solid.trackersystem.18.2.0.0.detmap = 6  4  0 742
+
+solid.trackersystem.18.2.0.1.start = -0.188476
+solid.trackersystem.18.2.0.1.strip_angle = 96
+solid.trackersystem.18.2.0.1.nstrips = 743
+solid.trackersystem.18.2.0.1.n_divstrips = 0
+solid.trackersystem.18.2.0.1.div_start = 0
+solid.trackersystem.18.2.0.1.detmap = 6  5  0 742
+
+solid.trackersystem.18.3.0.0.start = -0.174585
+solid.trackersystem.18.3.0.0.strip_angle = 84
+solid.trackersystem.18.3.0.0.nstrips = 1195
+solid.trackersystem.18.3.0.0.n_divstrips = 0
+solid.trackersystem.18.3.0.0.div_start = 0
+solid.trackersystem.18.3.0.0.detmap = 6  6  0 1194
+
+solid.trackersystem.18.3.0.1.start = -0.303015
+solid.trackersystem.18.3.0.1.strip_angle = 96
+solid.trackersystem.18.3.0.1.nstrips = 1195
+solid.trackersystem.18.3.0.1.n_divstrips = 0
+solid.trackersystem.18.3.0.1.div_start = 0
+solid.trackersystem.18.3.0.1.detmap = 6  7  0 1194
+
+solid.trackersystem.18.4.0.0.start = -0.180322
+solid.trackersystem.18.4.0.0.strip_angle = 84
+solid.trackersystem.18.4.0.0.nstrips = 1231
+solid.trackersystem.18.4.0.0.n_divstrips = 0
+solid.trackersystem.18.4.0.0.div_start = 0
+solid.trackersystem.18.4.0.0.detmap = 6  8  0 1230
+
+solid.trackersystem.18.4.0.1.start = -0.311678
+solid.trackersystem.18.4.0.1.strip_angle = 96
+solid.trackersystem.18.4.0.1.nstrips = 1231
+solid.trackersystem.18.4.0.1.n_divstrips = 0
+solid.trackersystem.18.4.0.1.div_start = 0
+solid.trackersystem.18.4.0.1.detmap = 6  9  0 1230
+
+solid.trackersystem.19.0.0.0.start = -0.0885118
+solid.trackersystem.19.0.0.0.strip_angle = 84
+solid.trackersystem.19.0.0.0.nstrips = 634
+solid.trackersystem.19.0.0.0.n_divstrips = 0
+solid.trackersystem.19.0.0.0.div_start = 0
+solid.trackersystem.19.0.0.0.detmap = 6  10 0 633
+
+solid.trackersystem.19.0.0.1.start = -0.164688
+solid.trackersystem.19.0.0.1.strip_angle = 96
+solid.trackersystem.19.0.0.1.nstrips = 634
+solid.trackersystem.19.0.0.1.n_divstrips = 0
+solid.trackersystem.19.0.0.1.div_start = 0
+solid.trackersystem.19.0.0.1.detmap = 6  11 0 633
+
+solid.trackersystem.19.1.0.0.start = -0.105205
+solid.trackersystem.19.1.0.0.strip_angle = 84
+solid.trackersystem.19.1.0.0.nstrips = 743
+solid.trackersystem.19.1.0.0.n_divstrips = 0
+solid.trackersystem.19.1.0.0.div_start = 0
+solid.trackersystem.19.1.0.0.detmap = 6  12 0 742
+
+solid.trackersystem.19.1.0.1.start = -0.191595
+solid.trackersystem.19.1.0.1.strip_angle = 96
+solid.trackersystem.19.1.0.1.nstrips = 743
+solid.trackersystem.19.1.0.1.n_divstrips = 0
+solid.trackersystem.19.1.0.1.div_start = 0
+solid.trackersystem.19.1.0.1.detmap = 6  13 0 742
+
+solid.trackersystem.19.2.0.0.start = -0.108324
+solid.trackersystem.19.2.0.0.strip_angle = 84
+solid.trackersystem.19.2.0.0.nstrips = 743
+solid.trackersystem.19.2.0.0.n_divstrips = 0
+solid.trackersystem.19.2.0.0.div_start = 0
+solid.trackersystem.19.2.0.0.detmap = 6  14 0 742
+
+solid.trackersystem.19.2.0.1.start = -0.188476
+solid.trackersystem.19.2.0.1.strip_angle = 96
+solid.trackersystem.19.2.0.1.nstrips = 743
+solid.trackersystem.19.2.0.1.n_divstrips = 0
+solid.trackersystem.19.2.0.1.div_start = 0
+solid.trackersystem.19.2.0.1.detmap = 6  15 0 742
+
+solid.trackersystem.19.3.0.0.start = -0.174585
+solid.trackersystem.19.3.0.0.strip_angle = 84
+solid.trackersystem.19.3.0.0.nstrips = 1195
+solid.trackersystem.19.3.0.0.n_divstrips = 0
+solid.trackersystem.19.3.0.0.div_start = 0
+solid.trackersystem.19.3.0.0.detmap = 6  16 0 1194
+
+solid.trackersystem.19.3.0.1.start = -0.303015
+solid.trackersystem.19.3.0.1.strip_angle = 96
+solid.trackersystem.19.3.0.1.nstrips = 1195
+solid.trackersystem.19.3.0.1.n_divstrips = 0
+solid.trackersystem.19.3.0.1.div_start = 0
+solid.trackersystem.19.3.0.1.detmap = 6  17 0 1194
+
+solid.trackersystem.19.4.0.0.start = -0.180322
+solid.trackersystem.19.4.0.0.strip_angle = 84
+solid.trackersystem.19.4.0.0.nstrips = 1231
+solid.trackersystem.19.4.0.0.n_divstrips = 0
+solid.trackersystem.19.4.0.0.div_start = 0
+solid.trackersystem.19.4.0.0.detmap = 6  18 0 1230
+
+solid.trackersystem.19.4.0.1.start = -0.311678
+solid.trackersystem.19.4.0.1.strip_angle = 96
+solid.trackersystem.19.4.0.1.nstrips = 1231
+solid.trackersystem.19.4.0.1.n_divstrips = 0
+solid.trackersystem.19.4.0.1.div_start = 0
+solid.trackersystem.19.4.0.1.detmap = 6  19 0 1230
+
+solid.trackersystem.20.0.0.0.start = -0.0885118
+solid.trackersystem.20.0.0.0.strip_angle = 84
+solid.trackersystem.20.0.0.0.nstrips = 634
+solid.trackersystem.20.0.0.0.n_divstrips = 0
+solid.trackersystem.20.0.0.0.div_start = 0
+solid.trackersystem.20.0.0.0.detmap = 6  20 0 633
+
+solid.trackersystem.20.0.0.1.start = -0.164688
+solid.trackersystem.20.0.0.1.strip_angle = 96
+solid.trackersystem.20.0.0.1.nstrips = 634
+solid.trackersystem.20.0.0.1.n_divstrips = 0
+solid.trackersystem.20.0.0.1.div_start = 0
+solid.trackersystem.20.0.0.1.detmap = 6  21 0 633
+
+solid.trackersystem.20.1.0.0.start = -0.105205
+solid.trackersystem.20.1.0.0.strip_angle = 84
+solid.trackersystem.20.1.0.0.nstrips = 743
+solid.trackersystem.20.1.0.0.n_divstrips = 0
+solid.trackersystem.20.1.0.0.div_start = 0
+solid.trackersystem.20.1.0.0.detmap = 6  22 0 742
+
+solid.trackersystem.20.1.0.1.start = -0.191595
+solid.trackersystem.20.1.0.1.strip_angle = 96
+solid.trackersystem.20.1.0.1.nstrips = 743
+solid.trackersystem.20.1.0.1.n_divstrips = 0
+solid.trackersystem.20.1.0.1.div_start = 0
+solid.trackersystem.20.1.0.1.detmap = 6  23 0 742
+
+solid.trackersystem.20.2.0.0.start = -0.108324
+solid.trackersystem.20.2.0.0.strip_angle = 84
+solid.trackersystem.20.2.0.0.nstrips = 743
+solid.trackersystem.20.2.0.0.n_divstrips = 0
+solid.trackersystem.20.2.0.0.div_start = 0
+solid.trackersystem.20.2.0.0.detmap = 6  24 0 742
+
+solid.trackersystem.20.2.0.1.start = -0.188476
+solid.trackersystem.20.2.0.1.strip_angle = 96
+solid.trackersystem.20.2.0.1.nstrips = 743
+solid.trackersystem.20.2.0.1.n_divstrips = 0
+solid.trackersystem.20.2.0.1.div_start = 0
+solid.trackersystem.20.2.0.1.detmap = 6  25 0 742
+
+solid.trackersystem.20.3.0.0.start = -0.174585
+solid.trackersystem.20.3.0.0.strip_angle = 84
+solid.trackersystem.20.3.0.0.nstrips = 1195
+solid.trackersystem.20.3.0.0.n_divstrips = 0
+solid.trackersystem.20.3.0.0.div_start = 0
+solid.trackersystem.20.3.0.0.detmap = 6  26 0 1194
+
+solid.trackersystem.20.3.0.1.start = -0.303015
+solid.trackersystem.20.3.0.1.strip_angle = 96
+solid.trackersystem.20.3.0.1.nstrips = 1195
+solid.trackersystem.20.3.0.1.n_divstrips = 0
+solid.trackersystem.20.3.0.1.div_start = 0
+solid.trackersystem.20.3.0.1.detmap = 6  27 0 1194
+
+solid.trackersystem.20.4.0.0.start = -0.180322
+solid.trackersystem.20.4.0.0.strip_angle = 84
+solid.trackersystem.20.4.0.0.nstrips = 1231
+solid.trackersystem.20.4.0.0.n_divstrips = 0
+solid.trackersystem.20.4.0.0.div_start = 0
+solid.trackersystem.20.4.0.0.detmap = 6  28 0 1230
+
+solid.trackersystem.20.4.0.1.start = -0.311678
+solid.trackersystem.20.4.0.1.strip_angle = 96
+solid.trackersystem.20.4.0.1.nstrips = 1231
+solid.trackersystem.20.4.0.1.n_divstrips = 0
+solid.trackersystem.20.4.0.1.div_start = 0
+solid.trackersystem.20.4.0.1.detmap = 6  29 0 1230
+
+solid.trackersystem.21.0.0.0.start = -0.0885118
+solid.trackersystem.21.0.0.0.strip_angle = 84
+solid.trackersystem.21.0.0.0.nstrips = 634
+solid.trackersystem.21.0.0.0.n_divstrips = 0
+solid.trackersystem.21.0.0.0.div_start = 0
+solid.trackersystem.21.0.0.0.detmap = 7  0  0 633
+
+solid.trackersystem.21.0.0.1.start = -0.164688
+solid.trackersystem.21.0.0.1.strip_angle = 96
+solid.trackersystem.21.0.0.1.nstrips = 634
+solid.trackersystem.21.0.0.1.n_divstrips = 0
+solid.trackersystem.21.0.0.1.div_start = 0
+solid.trackersystem.21.0.0.1.detmap = 7  1  0 633
+
+solid.trackersystem.21.1.0.0.start = -0.105205
+solid.trackersystem.21.1.0.0.strip_angle = 84
+solid.trackersystem.21.1.0.0.nstrips = 743
+solid.trackersystem.21.1.0.0.n_divstrips = 0
+solid.trackersystem.21.1.0.0.div_start = 0
+solid.trackersystem.21.1.0.0.detmap = 7  2  0 742
+
+solid.trackersystem.21.1.0.1.start = -0.191595
+solid.trackersystem.21.1.0.1.strip_angle = 96
+solid.trackersystem.21.1.0.1.nstrips = 743
+solid.trackersystem.21.1.0.1.n_divstrips = 0
+solid.trackersystem.21.1.0.1.div_start = 0
+solid.trackersystem.21.1.0.1.detmap = 7  3  0 742
+
+solid.trackersystem.21.2.0.0.start = -0.108324
+solid.trackersystem.21.2.0.0.strip_angle = 84
+solid.trackersystem.21.2.0.0.nstrips = 743
+solid.trackersystem.21.2.0.0.n_divstrips = 0
+solid.trackersystem.21.2.0.0.div_start = 0
+solid.trackersystem.21.2.0.0.detmap = 7  4  0 742
+
+solid.trackersystem.21.2.0.1.start = -0.188476
+solid.trackersystem.21.2.0.1.strip_angle = 96
+solid.trackersystem.21.2.0.1.nstrips = 743
+solid.trackersystem.21.2.0.1.n_divstrips = 0
+solid.trackersystem.21.2.0.1.div_start = 0
+solid.trackersystem.21.2.0.1.detmap = 7  5  0 742
+
+solid.trackersystem.21.3.0.0.start = -0.174585
+solid.trackersystem.21.3.0.0.strip_angle = 84
+solid.trackersystem.21.3.0.0.nstrips = 1195
+solid.trackersystem.21.3.0.0.n_divstrips = 0
+solid.trackersystem.21.3.0.0.div_start = 0
+solid.trackersystem.21.3.0.0.detmap = 7  6  0 1194
+
+solid.trackersystem.21.3.0.1.start = -0.303015
+solid.trackersystem.21.3.0.1.strip_angle = 96
+solid.trackersystem.21.3.0.1.nstrips = 1195
+solid.trackersystem.21.3.0.1.n_divstrips = 0
+solid.trackersystem.21.3.0.1.div_start = 0
+solid.trackersystem.21.3.0.1.detmap = 7  7  0 1194
+
+solid.trackersystem.21.4.0.0.start = -0.180322
+solid.trackersystem.21.4.0.0.strip_angle = 84
+solid.trackersystem.21.4.0.0.nstrips = 1231
+solid.trackersystem.21.4.0.0.n_divstrips = 0
+solid.trackersystem.21.4.0.0.div_start = 0
+solid.trackersystem.21.4.0.0.detmap = 7  8  0 1230
+
+solid.trackersystem.21.4.0.1.start = -0.311678
+solid.trackersystem.21.4.0.1.strip_angle = 96
+solid.trackersystem.21.4.0.1.nstrips = 1231
+solid.trackersystem.21.4.0.1.n_divstrips = 0
+solid.trackersystem.21.4.0.1.div_start = 0
+solid.trackersystem.21.4.0.1.detmap = 7  9  0 1230
+
+solid.trackersystem.22.0.0.0.start = -0.0885118
+solid.trackersystem.22.0.0.0.strip_angle = 84
+solid.trackersystem.22.0.0.0.nstrips = 634
+solid.trackersystem.22.0.0.0.n_divstrips = 0
+solid.trackersystem.22.0.0.0.div_start = 0
+solid.trackersystem.22.0.0.0.detmap = 7  10 0 633
+
+solid.trackersystem.22.0.0.1.start = -0.164688
+solid.trackersystem.22.0.0.1.strip_angle = 96
+solid.trackersystem.22.0.0.1.nstrips = 634
+solid.trackersystem.22.0.0.1.n_divstrips = 0
+solid.trackersystem.22.0.0.1.div_start = 0
+solid.trackersystem.22.0.0.1.detmap = 7  11 0 633
+
+solid.trackersystem.22.1.0.0.start = -0.105205
+solid.trackersystem.22.1.0.0.strip_angle = 84
+solid.trackersystem.22.1.0.0.nstrips = 743
+solid.trackersystem.22.1.0.0.n_divstrips = 0
+solid.trackersystem.22.1.0.0.div_start = 0
+solid.trackersystem.22.1.0.0.detmap = 7  12 0 742
+
+solid.trackersystem.22.1.0.1.start = -0.191595
+solid.trackersystem.22.1.0.1.strip_angle = 96
+solid.trackersystem.22.1.0.1.nstrips = 743
+solid.trackersystem.22.1.0.1.n_divstrips = 0
+solid.trackersystem.22.1.0.1.div_start = 0
+solid.trackersystem.22.1.0.1.detmap = 7  13 0 742
+
+solid.trackersystem.22.2.0.0.start = -0.108324
+solid.trackersystem.22.2.0.0.strip_angle = 84
+solid.trackersystem.22.2.0.0.nstrips = 743
+solid.trackersystem.22.2.0.0.n_divstrips = 0
+solid.trackersystem.22.2.0.0.div_start = 0
+solid.trackersystem.22.2.0.0.detmap = 7  14 0 742
+
+solid.trackersystem.22.2.0.1.start = -0.188476
+solid.trackersystem.22.2.0.1.strip_angle = 96
+solid.trackersystem.22.2.0.1.nstrips = 743
+solid.trackersystem.22.2.0.1.n_divstrips = 0
+solid.trackersystem.22.2.0.1.div_start = 0
+solid.trackersystem.22.2.0.1.detmap = 7  15 0 742
+
+solid.trackersystem.22.3.0.0.start = -0.174585
+solid.trackersystem.22.3.0.0.strip_angle = 84
+solid.trackersystem.22.3.0.0.nstrips = 1195
+solid.trackersystem.22.3.0.0.n_divstrips = 0
+solid.trackersystem.22.3.0.0.div_start = 0
+solid.trackersystem.22.3.0.0.detmap = 7  16 0 1194
+
+solid.trackersystem.22.3.0.1.start = -0.303015
+solid.trackersystem.22.3.0.1.strip_angle = 96
+solid.trackersystem.22.3.0.1.nstrips = 1195
+solid.trackersystem.22.3.0.1.n_divstrips = 0
+solid.trackersystem.22.3.0.1.div_start = 0
+solid.trackersystem.22.3.0.1.detmap = 7  17 0 1194
+
+solid.trackersystem.22.4.0.0.start = -0.180322
+solid.trackersystem.22.4.0.0.strip_angle = 84
+solid.trackersystem.22.4.0.0.nstrips = 1231
+solid.trackersystem.22.4.0.0.n_divstrips = 0
+solid.trackersystem.22.4.0.0.div_start = 0
+solid.trackersystem.22.4.0.0.detmap = 7  18 0 1230
+
+solid.trackersystem.22.4.0.1.start = -0.311678
+solid.trackersystem.22.4.0.1.strip_angle = 96
+solid.trackersystem.22.4.0.1.nstrips = 1231
+solid.trackersystem.22.4.0.1.n_divstrips = 0
+solid.trackersystem.22.4.0.1.div_start = 0
+solid.trackersystem.22.4.0.1.detmap = 7  19 0 1230
+
+solid.trackersystem.23.0.0.0.start = -0.0885118
+solid.trackersystem.23.0.0.0.strip_angle = 84
+solid.trackersystem.23.0.0.0.nstrips = 634
+solid.trackersystem.23.0.0.0.n_divstrips = 0
+solid.trackersystem.23.0.0.0.div_start = 0
+solid.trackersystem.23.0.0.0.detmap = 7  20 0 633
+
+solid.trackersystem.23.0.0.1.start = -0.164688
+solid.trackersystem.23.0.0.1.strip_angle = 96
+solid.trackersystem.23.0.0.1.nstrips = 634
+solid.trackersystem.23.0.0.1.n_divstrips = 0
+solid.trackersystem.23.0.0.1.div_start = 0
+solid.trackersystem.23.0.0.1.detmap = 7  21 0 633
+
+solid.trackersystem.23.1.0.0.start = -0.105205
+solid.trackersystem.23.1.0.0.strip_angle = 84
+solid.trackersystem.23.1.0.0.nstrips = 743
+solid.trackersystem.23.1.0.0.n_divstrips = 0
+solid.trackersystem.23.1.0.0.div_start = 0
+solid.trackersystem.23.1.0.0.detmap = 7  22 0 742
+
+solid.trackersystem.23.1.0.1.start = -0.191595
+solid.trackersystem.23.1.0.1.strip_angle = 96
+solid.trackersystem.23.1.0.1.nstrips = 743
+solid.trackersystem.23.1.0.1.n_divstrips = 0
+solid.trackersystem.23.1.0.1.div_start = 0
+solid.trackersystem.23.1.0.1.detmap = 7  23 0 742
+
+solid.trackersystem.23.2.0.0.start = -0.108324
+solid.trackersystem.23.2.0.0.strip_angle = 84
+solid.trackersystem.23.2.0.0.nstrips = 743
+solid.trackersystem.23.2.0.0.n_divstrips = 0
+solid.trackersystem.23.2.0.0.div_start = 0
+solid.trackersystem.23.2.0.0.detmap = 7  24 0 742
+
+solid.trackersystem.23.2.0.1.start = -0.188476
+solid.trackersystem.23.2.0.1.strip_angle = 96
+solid.trackersystem.23.2.0.1.nstrips = 743
+solid.trackersystem.23.2.0.1.n_divstrips = 0
+solid.trackersystem.23.2.0.1.div_start = 0
+solid.trackersystem.23.2.0.1.detmap = 7  25 0 742
+
+solid.trackersystem.23.3.0.0.start = -0.174585
+solid.trackersystem.23.3.0.0.strip_angle = 84
+solid.trackersystem.23.3.0.0.nstrips = 1195
+solid.trackersystem.23.3.0.0.n_divstrips = 0
+solid.trackersystem.23.3.0.0.div_start = 0
+solid.trackersystem.23.3.0.0.detmap = 7  26 0 1194
+
+solid.trackersystem.23.3.0.1.start = -0.303015
+solid.trackersystem.23.3.0.1.strip_angle = 96
+solid.trackersystem.23.3.0.1.nstrips = 1195
+solid.trackersystem.23.3.0.1.n_divstrips = 0
+solid.trackersystem.23.3.0.1.div_start = 0
+solid.trackersystem.23.3.0.1.detmap = 7  27 0 1194
+
+solid.trackersystem.23.4.0.0.start = -0.180322
+solid.trackersystem.23.4.0.0.strip_angle = 84
+solid.trackersystem.23.4.0.0.nstrips = 1231
+solid.trackersystem.23.4.0.0.n_divstrips = 0
+solid.trackersystem.23.4.0.0.div_start = 0
+solid.trackersystem.23.4.0.0.detmap = 7  28 0 1230
+
+solid.trackersystem.23.4.0.1.start = -0.311678
+solid.trackersystem.23.4.0.1.strip_angle = 96
+solid.trackersystem.23.4.0.1.nstrips = 1231
+solid.trackersystem.23.4.0.1.n_divstrips = 0
+solid.trackersystem.23.4.0.1.div_start = 0
+solid.trackersystem.23.4.0.1.detmap = 7  29 0 1230
+
+solid.trackersystem.24.0.0.0.start = -0.0885118
+solid.trackersystem.24.0.0.0.strip_angle = 84
+solid.trackersystem.24.0.0.0.nstrips = 634
+solid.trackersystem.24.0.0.0.n_divstrips = 0
+solid.trackersystem.24.0.0.0.div_start = 0
+solid.trackersystem.24.0.0.0.detmap = 8  0  0 633
+
+solid.trackersystem.24.0.0.1.start = -0.164688
+solid.trackersystem.24.0.0.1.strip_angle = 96
+solid.trackersystem.24.0.0.1.nstrips = 634
+solid.trackersystem.24.0.0.1.n_divstrips = 0
+solid.trackersystem.24.0.0.1.div_start = 0
+solid.trackersystem.24.0.0.1.detmap = 8  1  0 633
+
+solid.trackersystem.24.1.0.0.start = -0.105205
+solid.trackersystem.24.1.0.0.strip_angle = 84
+solid.trackersystem.24.1.0.0.nstrips = 743
+solid.trackersystem.24.1.0.0.n_divstrips = 0
+solid.trackersystem.24.1.0.0.div_start = 0
+solid.trackersystem.24.1.0.0.detmap = 8  2  0 742
+
+solid.trackersystem.24.1.0.1.start = -0.191595
+solid.trackersystem.24.1.0.1.strip_angle = 96
+solid.trackersystem.24.1.0.1.nstrips = 743
+solid.trackersystem.24.1.0.1.n_divstrips = 0
+solid.trackersystem.24.1.0.1.div_start = 0
+solid.trackersystem.24.1.0.1.detmap = 8  3  0 742
+
+solid.trackersystem.24.2.0.0.start = -0.108324
+solid.trackersystem.24.2.0.0.strip_angle = 84
+solid.trackersystem.24.2.0.0.nstrips = 743
+solid.trackersystem.24.2.0.0.n_divstrips = 0
+solid.trackersystem.24.2.0.0.div_start = 0
+solid.trackersystem.24.2.0.0.detmap = 8  4  0 742
+
+solid.trackersystem.24.2.0.1.start = -0.188476
+solid.trackersystem.24.2.0.1.strip_angle = 96
+solid.trackersystem.24.2.0.1.nstrips = 743
+solid.trackersystem.24.2.0.1.n_divstrips = 0
+solid.trackersystem.24.2.0.1.div_start = 0
+solid.trackersystem.24.2.0.1.detmap = 8  5  0 742
+
+solid.trackersystem.24.3.0.0.start = -0.174585
+solid.trackersystem.24.3.0.0.strip_angle = 84
+solid.trackersystem.24.3.0.0.nstrips = 1195
+solid.trackersystem.24.3.0.0.n_divstrips = 0
+solid.trackersystem.24.3.0.0.div_start = 0
+solid.trackersystem.24.3.0.0.detmap = 8  6  0 1194
+
+solid.trackersystem.24.3.0.1.start = -0.303015
+solid.trackersystem.24.3.0.1.strip_angle = 96
+solid.trackersystem.24.3.0.1.nstrips = 1195
+solid.trackersystem.24.3.0.1.n_divstrips = 0
+solid.trackersystem.24.3.0.1.div_start = 0
+solid.trackersystem.24.3.0.1.detmap = 8  7  0 1194
+
+solid.trackersystem.24.4.0.0.start = -0.180322
+solid.trackersystem.24.4.0.0.strip_angle = 84
+solid.trackersystem.24.4.0.0.nstrips = 1231
+solid.trackersystem.24.4.0.0.n_divstrips = 0
+solid.trackersystem.24.4.0.0.div_start = 0
+solid.trackersystem.24.4.0.0.detmap = 8  8  0 1230
+
+solid.trackersystem.24.4.0.1.start = -0.311678
+solid.trackersystem.24.4.0.1.strip_angle = 96
+solid.trackersystem.24.4.0.1.nstrips = 1231
+solid.trackersystem.24.4.0.1.n_divstrips = 0
+solid.trackersystem.24.4.0.1.div_start = 0
+solid.trackersystem.24.4.0.1.detmap = 8  9  0 1230
+
+solid.trackersystem.25.0.0.0.start = -0.0885118
+solid.trackersystem.25.0.0.0.strip_angle = 84
+solid.trackersystem.25.0.0.0.nstrips = 634
+solid.trackersystem.25.0.0.0.n_divstrips = 0
+solid.trackersystem.25.0.0.0.div_start = 0
+solid.trackersystem.25.0.0.0.detmap = 8  10 0 633
+
+solid.trackersystem.25.0.0.1.start = -0.164688
+solid.trackersystem.25.0.0.1.strip_angle = 96
+solid.trackersystem.25.0.0.1.nstrips = 634
+solid.trackersystem.25.0.0.1.n_divstrips = 0
+solid.trackersystem.25.0.0.1.div_start = 0
+solid.trackersystem.25.0.0.1.detmap = 8  11 0 633
+
+solid.trackersystem.25.1.0.0.start = -0.105205
+solid.trackersystem.25.1.0.0.strip_angle = 84
+solid.trackersystem.25.1.0.0.nstrips = 743
+solid.trackersystem.25.1.0.0.n_divstrips = 0
+solid.trackersystem.25.1.0.0.div_start = 0
+solid.trackersystem.25.1.0.0.detmap = 8  12 0 742
+
+solid.trackersystem.25.1.0.1.start = -0.191595
+solid.trackersystem.25.1.0.1.strip_angle = 96
+solid.trackersystem.25.1.0.1.nstrips = 743
+solid.trackersystem.25.1.0.1.n_divstrips = 0
+solid.trackersystem.25.1.0.1.div_start = 0
+solid.trackersystem.25.1.0.1.detmap = 8  13 0 742
+
+solid.trackersystem.25.2.0.0.start = -0.108324
+solid.trackersystem.25.2.0.0.strip_angle = 84
+solid.trackersystem.25.2.0.0.nstrips = 743
+solid.trackersystem.25.2.0.0.n_divstrips = 0
+solid.trackersystem.25.2.0.0.div_start = 0
+solid.trackersystem.25.2.0.0.detmap = 8  14 0 742
+
+solid.trackersystem.25.2.0.1.start = -0.188476
+solid.trackersystem.25.2.0.1.strip_angle = 96
+solid.trackersystem.25.2.0.1.nstrips = 743
+solid.trackersystem.25.2.0.1.n_divstrips = 0
+solid.trackersystem.25.2.0.1.div_start = 0
+solid.trackersystem.25.2.0.1.detmap = 8  15 0 742
+
+solid.trackersystem.25.3.0.0.start = -0.174585
+solid.trackersystem.25.3.0.0.strip_angle = 84
+solid.trackersystem.25.3.0.0.nstrips = 1195
+solid.trackersystem.25.3.0.0.n_divstrips = 0
+solid.trackersystem.25.3.0.0.div_start = 0
+solid.trackersystem.25.3.0.0.detmap = 8  16 0 1194
+
+solid.trackersystem.25.3.0.1.start = -0.303015
+solid.trackersystem.25.3.0.1.strip_angle = 96
+solid.trackersystem.25.3.0.1.nstrips = 1195
+solid.trackersystem.25.3.0.1.n_divstrips = 0
+solid.trackersystem.25.3.0.1.div_start = 0
+solid.trackersystem.25.3.0.1.detmap = 8  17 0 1194
+
+solid.trackersystem.25.4.0.0.start = -0.180322
+solid.trackersystem.25.4.0.0.strip_angle = 84
+solid.trackersystem.25.4.0.0.nstrips = 1231
+solid.trackersystem.25.4.0.0.n_divstrips = 0
+solid.trackersystem.25.4.0.0.div_start = 0
+solid.trackersystem.25.4.0.0.detmap = 8  18 0 1230
+
+solid.trackersystem.25.4.0.1.start = -0.311678
+solid.trackersystem.25.4.0.1.strip_angle = 96
+solid.trackersystem.25.4.0.1.nstrips = 1231
+solid.trackersystem.25.4.0.1.n_divstrips = 0
+solid.trackersystem.25.4.0.1.div_start = 0
+solid.trackersystem.25.4.0.1.detmap = 8  19 0 1230
+
+solid.trackersystem.26.0.0.0.start = -0.0885118
+solid.trackersystem.26.0.0.0.strip_angle = 84
+solid.trackersystem.26.0.0.0.nstrips = 634
+solid.trackersystem.26.0.0.0.n_divstrips = 0
+solid.trackersystem.26.0.0.0.div_start = 0
+solid.trackersystem.26.0.0.0.detmap = 8  20 0 633
+
+solid.trackersystem.26.0.0.1.start = -0.164688
+solid.trackersystem.26.0.0.1.strip_angle = 96
+solid.trackersystem.26.0.0.1.nstrips = 634
+solid.trackersystem.26.0.0.1.n_divstrips = 0
+solid.trackersystem.26.0.0.1.div_start = 0
+solid.trackersystem.26.0.0.1.detmap = 8  21 0 633
+
+solid.trackersystem.26.1.0.0.start = -0.105205
+solid.trackersystem.26.1.0.0.strip_angle = 84
+solid.trackersystem.26.1.0.0.nstrips = 743
+solid.trackersystem.26.1.0.0.n_divstrips = 0
+solid.trackersystem.26.1.0.0.div_start = 0
+solid.trackersystem.26.1.0.0.detmap = 8  22 0 742
+
+solid.trackersystem.26.1.0.1.start = -0.191595
+solid.trackersystem.26.1.0.1.strip_angle = 96
+solid.trackersystem.26.1.0.1.nstrips = 743
+solid.trackersystem.26.1.0.1.n_divstrips = 0
+solid.trackersystem.26.1.0.1.div_start = 0
+solid.trackersystem.26.1.0.1.detmap = 8  23 0 742
+
+solid.trackersystem.26.2.0.0.start = -0.108324
+solid.trackersystem.26.2.0.0.strip_angle = 84
+solid.trackersystem.26.2.0.0.nstrips = 743
+solid.trackersystem.26.2.0.0.n_divstrips = 0
+solid.trackersystem.26.2.0.0.div_start = 0
+solid.trackersystem.26.2.0.0.detmap = 8  24 0 742
+
+solid.trackersystem.26.2.0.1.start = -0.188476
+solid.trackersystem.26.2.0.1.strip_angle = 96
+solid.trackersystem.26.2.0.1.nstrips = 743
+solid.trackersystem.26.2.0.1.n_divstrips = 0
+solid.trackersystem.26.2.0.1.div_start = 0
+solid.trackersystem.26.2.0.1.detmap = 8  25 0 742
+
+solid.trackersystem.26.3.0.0.start = -0.174585
+solid.trackersystem.26.3.0.0.strip_angle = 84
+solid.trackersystem.26.3.0.0.nstrips = 1195
+solid.trackersystem.26.3.0.0.n_divstrips = 0
+solid.trackersystem.26.3.0.0.div_start = 0
+solid.trackersystem.26.3.0.0.detmap = 8  26 0 1194
+
+solid.trackersystem.26.3.0.1.start = -0.303015
+solid.trackersystem.26.3.0.1.strip_angle = 96
+solid.trackersystem.26.3.0.1.nstrips = 1195
+solid.trackersystem.26.3.0.1.n_divstrips = 0
+solid.trackersystem.26.3.0.1.div_start = 0
+solid.trackersystem.26.3.0.1.detmap = 8  27 0 1194
+
+solid.trackersystem.26.4.0.0.start = -0.180322
+solid.trackersystem.26.4.0.0.strip_angle = 84
+solid.trackersystem.26.4.0.0.nstrips = 1231
+solid.trackersystem.26.4.0.0.n_divstrips = 0
+solid.trackersystem.26.4.0.0.div_start = 0
+solid.trackersystem.26.4.0.0.detmap = 8  28 0 1230
+
+solid.trackersystem.26.4.0.1.start = -0.311678
+solid.trackersystem.26.4.0.1.strip_angle = 96
+solid.trackersystem.26.4.0.1.nstrips = 1231
+solid.trackersystem.26.4.0.1.n_divstrips = 0
+solid.trackersystem.26.4.0.1.div_start = 0
+solid.trackersystem.26.4.0.1.detmap = 8  29 0 1230
+
+solid.trackersystem.27.0.0.0.start = -0.0885118
+solid.trackersystem.27.0.0.0.strip_angle = 84
+solid.trackersystem.27.0.0.0.nstrips = 634
+solid.trackersystem.27.0.0.0.n_divstrips = 0
+solid.trackersystem.27.0.0.0.div_start = 0
+solid.trackersystem.27.0.0.0.detmap = 9  0  0 633
+
+solid.trackersystem.27.0.0.1.start = -0.164688
+solid.trackersystem.27.0.0.1.strip_angle = 96
+solid.trackersystem.27.0.0.1.nstrips = 634
+solid.trackersystem.27.0.0.1.n_divstrips = 0
+solid.trackersystem.27.0.0.1.div_start = 0
+solid.trackersystem.27.0.0.1.detmap = 9  1  0 633
+
+solid.trackersystem.27.1.0.0.start = -0.105205
+solid.trackersystem.27.1.0.0.strip_angle = 84
+solid.trackersystem.27.1.0.0.nstrips = 743
+solid.trackersystem.27.1.0.0.n_divstrips = 0
+solid.trackersystem.27.1.0.0.div_start = 0
+solid.trackersystem.27.1.0.0.detmap = 9  2  0 742
+
+solid.trackersystem.27.1.0.1.start = -0.191595
+solid.trackersystem.27.1.0.1.strip_angle = 96
+solid.trackersystem.27.1.0.1.nstrips = 743
+solid.trackersystem.27.1.0.1.n_divstrips = 0
+solid.trackersystem.27.1.0.1.div_start = 0
+solid.trackersystem.27.1.0.1.detmap = 9  3  0 742
+
+solid.trackersystem.27.2.0.0.start = -0.108324
+solid.trackersystem.27.2.0.0.strip_angle = 84
+solid.trackersystem.27.2.0.0.nstrips = 743
+solid.trackersystem.27.2.0.0.n_divstrips = 0
+solid.trackersystem.27.2.0.0.div_start = 0
+solid.trackersystem.27.2.0.0.detmap = 9  4  0 742
+
+solid.trackersystem.27.2.0.1.start = -0.188476
+solid.trackersystem.27.2.0.1.strip_angle = 96
+solid.trackersystem.27.2.0.1.nstrips = 743
+solid.trackersystem.27.2.0.1.n_divstrips = 0
+solid.trackersystem.27.2.0.1.div_start = 0
+solid.trackersystem.27.2.0.1.detmap = 9  5  0 742
+
+solid.trackersystem.27.3.0.0.start = -0.174585
+solid.trackersystem.27.3.0.0.strip_angle = 84
+solid.trackersystem.27.3.0.0.nstrips = 1195
+solid.trackersystem.27.3.0.0.n_divstrips = 0
+solid.trackersystem.27.3.0.0.div_start = 0
+solid.trackersystem.27.3.0.0.detmap = 9  6  0 1194
+
+solid.trackersystem.27.3.0.1.start = -0.303015
+solid.trackersystem.27.3.0.1.strip_angle = 96
+solid.trackersystem.27.3.0.1.nstrips = 1195
+solid.trackersystem.27.3.0.1.n_divstrips = 0
+solid.trackersystem.27.3.0.1.div_start = 0
+solid.trackersystem.27.3.0.1.detmap = 9  7  0 1194
+
+solid.trackersystem.27.4.0.0.start = -0.180322
+solid.trackersystem.27.4.0.0.strip_angle = 84
+solid.trackersystem.27.4.0.0.nstrips = 1231
+solid.trackersystem.27.4.0.0.n_divstrips = 0
+solid.trackersystem.27.4.0.0.div_start = 0
+solid.trackersystem.27.4.0.0.detmap = 9  8  0 1230
+
+solid.trackersystem.27.4.0.1.start = -0.311678
+solid.trackersystem.27.4.0.1.strip_angle = 96
+solid.trackersystem.27.4.0.1.nstrips = 1231
+solid.trackersystem.27.4.0.1.n_divstrips = 0
+solid.trackersystem.27.4.0.1.div_start = 0
+solid.trackersystem.27.4.0.1.detmap = 9  9  0 1230
+
+solid.trackersystem.28.0.0.0.start = -0.0885118
+solid.trackersystem.28.0.0.0.strip_angle = 84
+solid.trackersystem.28.0.0.0.nstrips = 634
+solid.trackersystem.28.0.0.0.n_divstrips = 0
+solid.trackersystem.28.0.0.0.div_start = 0
+solid.trackersystem.28.0.0.0.detmap = 9  10 0 633
+
+solid.trackersystem.28.0.0.1.start = -0.164688
+solid.trackersystem.28.0.0.1.strip_angle = 96
+solid.trackersystem.28.0.0.1.nstrips = 634
+solid.trackersystem.28.0.0.1.n_divstrips = 0
+solid.trackersystem.28.0.0.1.div_start = 0
+solid.trackersystem.28.0.0.1.detmap = 9  11 0 633
+
+solid.trackersystem.28.1.0.0.start = -0.105205
+solid.trackersystem.28.1.0.0.strip_angle = 84
+solid.trackersystem.28.1.0.0.nstrips = 743
+solid.trackersystem.28.1.0.0.n_divstrips = 0
+solid.trackersystem.28.1.0.0.div_start = 0
+solid.trackersystem.28.1.0.0.detmap = 9  12 0 742
+
+solid.trackersystem.28.1.0.1.start = -0.191595
+solid.trackersystem.28.1.0.1.strip_angle = 96
+solid.trackersystem.28.1.0.1.nstrips = 743
+solid.trackersystem.28.1.0.1.n_divstrips = 0
+solid.trackersystem.28.1.0.1.div_start = 0
+solid.trackersystem.28.1.0.1.detmap = 9  13 0 742
+
+solid.trackersystem.28.2.0.0.start = -0.108324
+solid.trackersystem.28.2.0.0.strip_angle = 84
+solid.trackersystem.28.2.0.0.nstrips = 743
+solid.trackersystem.28.2.0.0.n_divstrips = 0
+solid.trackersystem.28.2.0.0.div_start = 0
+solid.trackersystem.28.2.0.0.detmap = 9  14 0 742
+
+solid.trackersystem.28.2.0.1.start = -0.188476
+solid.trackersystem.28.2.0.1.strip_angle = 96
+solid.trackersystem.28.2.0.1.nstrips = 743
+solid.trackersystem.28.2.0.1.n_divstrips = 0
+solid.trackersystem.28.2.0.1.div_start = 0
+solid.trackersystem.28.2.0.1.detmap = 9  15 0 742
+
+solid.trackersystem.28.3.0.0.start = -0.174585
+solid.trackersystem.28.3.0.0.strip_angle = 84
+solid.trackersystem.28.3.0.0.nstrips = 1195
+solid.trackersystem.28.3.0.0.n_divstrips = 0
+solid.trackersystem.28.3.0.0.div_start = 0
+solid.trackersystem.28.3.0.0.detmap = 9  16 0 1194
+
+solid.trackersystem.28.3.0.1.start = -0.303015
+solid.trackersystem.28.3.0.1.strip_angle = 96
+solid.trackersystem.28.3.0.1.nstrips = 1195
+solid.trackersystem.28.3.0.1.n_divstrips = 0
+solid.trackersystem.28.3.0.1.div_start = 0
+solid.trackersystem.28.3.0.1.detmap = 9  17 0 1194
+
+solid.trackersystem.28.4.0.0.start = -0.180322
+solid.trackersystem.28.4.0.0.strip_angle = 84
+solid.trackersystem.28.4.0.0.nstrips = 1231
+solid.trackersystem.28.4.0.0.n_divstrips = 0
+solid.trackersystem.28.4.0.0.div_start = 0
+solid.trackersystem.28.4.0.0.detmap = 9  18 0 1230
+
+solid.trackersystem.28.4.0.1.start = -0.311678
+solid.trackersystem.28.4.0.1.strip_angle = 96
+solid.trackersystem.28.4.0.1.nstrips = 1231
+solid.trackersystem.28.4.0.1.n_divstrips = 0
+solid.trackersystem.28.4.0.1.div_start = 0
+solid.trackersystem.28.4.0.1.detmap = 9  19 0 1230
+
+solid.trackersystem.29.0.0.0.start = -0.0885118
+solid.trackersystem.29.0.0.0.strip_angle = 84
+solid.trackersystem.29.0.0.0.nstrips = 634
+solid.trackersystem.29.0.0.0.n_divstrips = 0
+solid.trackersystem.29.0.0.0.div_start = 0
+solid.trackersystem.29.0.0.0.detmap = 9  20 0 633
+
+solid.trackersystem.29.0.0.1.start = -0.164688
+solid.trackersystem.29.0.0.1.strip_angle = 96
+solid.trackersystem.29.0.0.1.nstrips = 634
+solid.trackersystem.29.0.0.1.n_divstrips = 0
+solid.trackersystem.29.0.0.1.div_start = 0
+solid.trackersystem.29.0.0.1.detmap = 9  21 0 633
+
+solid.trackersystem.29.1.0.0.start = -0.105205
+solid.trackersystem.29.1.0.0.strip_angle = 84
+solid.trackersystem.29.1.0.0.nstrips = 743
+solid.trackersystem.29.1.0.0.n_divstrips = 0
+solid.trackersystem.29.1.0.0.div_start = 0
+solid.trackersystem.29.1.0.0.detmap = 9  22 0 742
+
+solid.trackersystem.29.1.0.1.start = -0.191595
+solid.trackersystem.29.1.0.1.strip_angle = 96
+solid.trackersystem.29.1.0.1.nstrips = 743
+solid.trackersystem.29.1.0.1.n_divstrips = 0
+solid.trackersystem.29.1.0.1.div_start = 0
+solid.trackersystem.29.1.0.1.detmap = 9  23 0 742
+
+solid.trackersystem.29.2.0.0.start = -0.108324
+solid.trackersystem.29.2.0.0.strip_angle = 84
+solid.trackersystem.29.2.0.0.nstrips = 743
+solid.trackersystem.29.2.0.0.n_divstrips = 0
+solid.trackersystem.29.2.0.0.div_start = 0
+solid.trackersystem.29.2.0.0.detmap = 9  24 0 742
+
+solid.trackersystem.29.2.0.1.start = -0.188476
+solid.trackersystem.29.2.0.1.strip_angle = 96
+solid.trackersystem.29.2.0.1.nstrips = 743
+solid.trackersystem.29.2.0.1.n_divstrips = 0
+solid.trackersystem.29.2.0.1.div_start = 0
+solid.trackersystem.29.2.0.1.detmap = 9  25 0 742
+
+solid.trackersystem.29.3.0.0.start = -0.174585
+solid.trackersystem.29.3.0.0.strip_angle = 84
+solid.trackersystem.29.3.0.0.nstrips = 1195
+solid.trackersystem.29.3.0.0.n_divstrips = 0
+solid.trackersystem.29.3.0.0.div_start = 0
+solid.trackersystem.29.3.0.0.detmap = 9  26 0 1194
+
+solid.trackersystem.29.3.0.1.start = -0.303015
+solid.trackersystem.29.3.0.1.strip_angle = 96
+solid.trackersystem.29.3.0.1.nstrips = 1195
+solid.trackersystem.29.3.0.1.n_divstrips = 0
+solid.trackersystem.29.3.0.1.div_start = 0
+solid.trackersystem.29.3.0.1.detmap = 9  27 0 1194
+
+solid.trackersystem.29.4.0.0.start = -0.180322
+solid.trackersystem.29.4.0.0.strip_angle = 84
+solid.trackersystem.29.4.0.0.nstrips = 1231
+solid.trackersystem.29.4.0.0.n_divstrips = 0
+solid.trackersystem.29.4.0.0.div_start = 0
+solid.trackersystem.29.4.0.0.detmap = 9  28 0 1230
+
+solid.trackersystem.29.4.0.1.start = -0.311678
+solid.trackersystem.29.4.0.1.strip_angle = 96
+solid.trackersystem.29.4.0.1.nstrips = 1231
+solid.trackersystem.29.4.0.1.n_divstrips = 0
+solid.trackersystem.29.4.0.1.div_start = 0
+solid.trackersystem.29.4.0.1.detmap = 9  29 0 1230
+
