@@ -203,7 +203,7 @@ void Digitize_pvdis_5gem_qgsp( const char *filename = NULL,
     
     if( ddd->GetEvent()->GetNclust() > 0 ) {
       nwritten++;
-      ddd->FillTree();
+      ddd->FillTree(*dds);
     }
     
      if( interactive ) {

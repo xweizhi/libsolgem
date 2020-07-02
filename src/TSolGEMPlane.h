@@ -2,6 +2,9 @@
 #define __TSOLGEMPLANE_H
 
 #include <cmath>
+#include <vector>
+
+#include "TMath.h"
 
 #include "THaSubDetector.h"
 #include "TSolWedge.h"
@@ -49,6 +52,9 @@ class TClonesArray;
 // The origin and phi0 are specified in the lab frame. The size is in the
 // wedge frame.
 
+// Strips are numbered 0 to fNStrips-1. Strip number increases with
+// increasing x in strip frame.
+
 class TSolGEMPlane : public THaSubDetector {
     public:
         TSolGEMPlane ();
@@ -66,12 +72,20 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t GetAngle() const {return fWedge->GetAngle();}; // rotation angle between lab and wedge frame
 
 	Int_t    GetNStrips()  const { return fNStrips; }
+	Int_t    GetNDividedStrips()  const { return fNDiv; }
+	Int_t    GetFirstDividedStrip()  const { return fSDiv0; }
 	Double_t GetSPitch()   const { return fSPitch; } // in meters
 	Double_t GetSAngle()   const; // Angle (rad) between horizontal axis
 	                              // in wedge frame
                                       // and normal to strips in dir of
 	                              // increasing strip position
-	Double_t GetSAngleComp() const { return 2*atan(1) - GetSAngle(); }
+	Double_t GetSAngleComp() const { return TMath::Pi() - GetSAngle(); }
+
+	// Conversions between strip, substrip and index
+	Int_t GetIndex (Int_t ist, Int_t iss) const { 
+	  return iss == 1 ? GetNStrips()+(ist-GetFirstDividedStrip()) : ist; }
+	Int_t GetStrip (Int_t idx) const { return idx >= GetNStrips() ? GetFirstDividedStrip() + idx - GetNStrips() : idx; }
+	Int_t GetSubstrip (Int_t idx) const { return idx >= GetNStrips() ? 1 : 0; }
 
 	// Frame conversions
 	void LabToPlane (Double_t& x, Double_t& y) const {fWedge->LabToWedge (x, y);};  // input and output in meters
@@ -86,9 +100,13 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t StriptoProj( Double_t s );
 	Double_t StripNumtoProj( Int_t s );
 
-	// Edges of strip, in strip frame, in meters
+	// Edges, centers of strip, in strip frame, in meters
 	Double_t GetStripLowerEdge (UInt_t is) const;
 	Double_t GetStripUpperEdge (UInt_t is) const;
+	Double_t GetStripCenter (UInt_t is) const;
+
+	Bool_t IsDivided (UInt_t is) const;        // Whether strip is divided
+        Double_t GetYDiv (UInt_t is) const;        // Division point of strip
 
         // Strip number corresponding to x-coordinate
         Int_t GetStripUnchecked( Double_t x )  const;
@@ -97,6 +115,8 @@ class TSolGEMPlane : public THaSubDetector {
 	// Strip number corresponding to coordinates x, y in 
 	// strip frame, or -1 if outside (2-d) bounds
 	Int_t GetStrip (Double_t x, Double_t y) const;
+        // Division number corresponding to strip is and coordinate y in strip frame
+        Int_t GetDivision (UInt_t is, Double_t y) const;
 
 	void Print() const;
 	void SetRotations();
@@ -107,7 +127,7 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t fSAngle;        // Strip angle (measurement direction)
 	Int_t    fNStrips;  // Number of strips
 	Double_t fSPitch;   // Strip pitch (m)
-	Double_t fSBeg;     // X coordinate of lower edge of first strip
+	Double_t fSBeg;     // X coordinate of outer edge of longest strip (abs)
 	TSolWedge* fWedge;  // Wedge geometry
 
 	// Trig functions for rotations
@@ -115,6 +135,11 @@ class TSolGEMPlane : public THaSubDetector {
 	Double_t fCWS; // ... wedge to strip
 	Double_t fSLS; // sin...
 	Double_t fSWS;
+
+	// Table of divided strips
+	UInt_t    fNDiv;     // number of divided strips
+	UInt_t    fSDiv0;    // first divided strip
+        Double_t*  fYDiv;
 	
     public:
 	ClassDef(TSolGEMPlane,0)

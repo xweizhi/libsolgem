@@ -3,6 +3,7 @@
 
 #include "THaDetector.h"
 #include "TSolWedge.h"
+#include "TSolPolygon.h"
 #include "TVector3.h"
 #include <vector>
 #include <sstream>
@@ -29,14 +30,6 @@ class TSolGEMPlane;
 
 // The origin and phi0 are specified in the lab frame. The size is in the
 // wedge frame.
-
-//hv sector of a GEM detector, use four lines to determine a boundary
-//of the HV sector, which is a rectangle, four lines are determined in the tracker frame where
-//x axis is along the symmetric axis of the chamber and the two lines along 
-// the side of the chamber can extend to the origin
-
-//TODO the side of the rectangle must be parallel to the x and y axis of the tracker frame
-//may need to generalize it to any shape, this is just to save time now -- Weizhi
 
 
 class TSolGEMChamber : public THaDetector {
@@ -80,21 +73,7 @@ class TSolGEMChamber : public THaDetector {
   
   Double_t fFrameWidth;  //GEM frame width, used in dead area calculation
   
-  struct HVSector{
-    Double_t xmin;
-    Double_t xmax;
-    Double_t ymin;
-    Double_t ymax;
-    HVSector() {}
-    HVSector(Double_t& x1, Double_t& x2, Double_t& y1, Double_t y2)
-    : xmin(x1), xmax(x2), ymin(y1), ymax(y2) {} 
-    Bool_t Contains(const Double_t& x, const Double_t& y){
-        //x and y must be already in the tracker frame
-        if (x < xmax && x > xmin && y < ymax && y > ymin) return true;
-        else return false;
-    }
-  };
-  std::vector<HVSector> fHVSectorOff;
+  std::vector<TSolPolygon> fHVSectorOff; // polygonal dead areas
   TVector3 fVector3;
 
   ClassDef(TSolGEMChamber,0)

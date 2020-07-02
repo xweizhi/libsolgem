@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <cassert>
+#include <iomanip>
+
 
 using namespace std;
 
@@ -19,6 +21,7 @@ TSolGEMPlane::TSolGEMPlane()
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
+  fYDiv = NULL;
   return;
 }
 
@@ -28,6 +31,7 @@ TSolGEMPlane::TSolGEMPlane( const char *name, const char *desc,
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
+  fYDiv = NULL;
   return;
 }
 
@@ -35,6 +39,7 @@ TSolGEMPlane::~TSolGEMPlane()
 {
   //  delete fClusters;
   delete fWedge;
+  delete[] fYDiv;
 }
 
 Int_t 
@@ -114,10 +119,12 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       depth = -999.0;
     }
 
+  vector<Double_t> DivSegment (4);
   const DBRequest request[] = 
     {
       {"stripangle",  &fSAngle,      kDouble, 0, 1},
       {"pitch",       &fSPitch,      kDouble, 0, 1},
+      {"divsegment",  &DivSegment,   kDoubleV, 0, 1},
       {"z0",          &z0,           kDouble, 0, 1},
       {"depth",       &depth,        kDouble, 0, 1},
       {0}
@@ -133,28 +140,82 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
   fOrigin[2] = z0;
   fSize[2] = depth;
   
+  Double_t rorigin = sqrt (fOrigin[0]*fOrigin[0]+fOrigin[1]*fOrigin[1]);
+  fSBeg = rorigin * sin (fWedge->GetDPhi()/2);
+
   // Get numbers of strips
 
-  Double_t xs0 = (GetSize())[0];
-  Double_t ys0 = (GetSize())[1];
-  Double_t xs[4] = {xs0, xs0, -xs0, -xs0};
-  Double_t ys[4] = {ys0, -ys0, ys0, -ys0};
-  //cout<<"before rotation: "<<xs0<<" "<<ys0<<endl;
-  Int_t smin = 1e9;
-  Int_t smax = 1e-9;
-  for (UInt_t i = 0; i < 4; ++i)
+  Double_t xs0 = fWedge->GetR1() * cos (fWedge->GetDPhi()/2) - rorigin;
+  Double_t ys0 = fWedge->GetR1() * sin (fWedge->GetDPhi()/2);
+#define OTHERWAY
+#ifdef OTHERWAY
+  if (GetSAngle() < TMath::Pi()/2)
+    ys0 = -ys0;
+#else
+  if (GetSAngle() > TMath::Pi()/2)
+    ys0 = -ys0;
+#endif
+
+  PlaneToStrip (xs0, ys0);
+#ifdef OTHERWAY
+  if (GetSAngle() < TMath::Pi()/2)
+    fNStrips = int ((fSBeg + xs0) / GetSPitch());
+  else
+    fNStrips = int ((-xs0 + fSBeg) / GetSPitch());
+#else
+  if (GetSAngle() > TMath::Pi()/2)
+    fNStrips = int ((fSBeg - xs0) / GetSPitch());
+  else
+    fNStrips = int ((xs0 + fSBeg) / GetSPitch());
+#endif
+
+  // Make table of strip divisions
+
+  // Get affected strips (the ones containing the segment endpoints)
+  Int_t ds[2];
+  Double_t xds[2];
+  Double_t yds[2];
+  for (UInt_t i = 0; i < 2; ++i)
     {
-      PlaneToStrip (xs[i], ys[i]);
-      Int_t s = (Int_t) (xs[i] / GetSPitch());
-      if (s < smin) smin = s;
-      if (s > smax) smax = s;
+      xds[i] = DivSegment.at(2*i+0);
+      yds[i] = DivSegment.at(2*i+1);
+      PlaneToStrip (xds[i], yds[i]);      
+      ds[i] = GetStripInRange (xds[i]);
     }
-  fNStrips = smax - smin + 1;
-  //cout<<"total number of strips: "<<fNStrips<<endl;
-  fSBeg = -fNStrips * fSPitch * 0.5;
-  //cout<<"after rotation: "<<xs[0]<<" "<<xs[1]<<" "<<xs[2]<<" "<<xs[3]<<endl;
-  //cout<<"after rotation: "<<ys[0]<<" "<<ys[1]<<" "<<ys[2]<<" "<<ys[3]<<endl;
-  
+  if (ds[0] > ds[1])
+    {
+      swap (ds[0], ds[1]);
+      swap (xds[0], xds[1]);
+      swap (yds[0], yds[1]);
+    }
+
+  if (ds[1] > ds[0])
+    {
+      // cout << "Division segment in strip frame is (" << xds[0] << ", " << yds[0]
+      // 	   << ") to (" << xds[1] << ", " << yds[1] << ")" << endl;
+      // cout << "Division strips are " << ds[0] << " to " << ds[1] << endl;
+
+      fNDiv = ds[1] - ds[0] + 1;
+      fSDiv0 = ds[0];
+      Double_t ms = (yds[1] - yds[0]) / (xds[1] - xds[0]);
+      fYDiv = new Double_t[fNDiv];
+      for (UInt_t i = 0; i < fNDiv; ++i)
+	{
+	  fYDiv[i] =  yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]);
+	  // cout << "Strip " << i+fSDiv0 
+	  //      << " center at " << GetStripCenter (i+fSDiv0) 
+	  //      << " divides at " << fYDiv[i]
+	  //      << endl;
+	}
+      // Print();
+
+    }
+  else
+    {
+      fNDiv = 0;
+      fSDiv0 = 0;
+    }
+
   return kOK;
 }
 
@@ -208,7 +269,7 @@ TSolGEMPlane::StripToLab (Double_t& x, Double_t& y) const
 Double_t TSolGEMPlane::StripNumtoStrip( Int_t strip )
 {
     // Gives x coordinate in strip frame of a wire
-    return (strip - GetStrip(0.,0.))*GetSPitch();
+  return (GetStripCenter (strip));
 }
 
 
@@ -226,11 +287,31 @@ Double_t TSolGEMPlane::StripNumtoProj( Int_t s ){
 }
 
 Double_t 
-TSolGEMPlane::GetStripLowerEdge (UInt_t is) const {return (fSBeg + is * GetSPitch());}
+TSolGEMPlane::GetStripLowerEdge (UInt_t is) const 
+{
+  if (GetSAngle() > TMath::Pi()/2)
+    return fSBeg - (fNStrips - is) * GetSPitch();
+  else
+    return -fSBeg + is * GetSPitch();
+}
 
 Double_t 
 TSolGEMPlane::GetStripUpperEdge (UInt_t is) const {return GetStripLowerEdge (is) + GetSPitch();}
 
+Double_t 
+TSolGEMPlane::GetStripCenter (UInt_t is) const {return GetStripLowerEdge (is) + 0.5 * GetSPitch();}
+
+Bool_t
+TSolGEMPlane::IsDivided (UInt_t is) const 
+{
+  return (is >= fSDiv0 && is < fSDiv0+fNDiv);
+}
+
+Double_t 
+TSolGEMPlane::GetYDiv (UInt_t is) const 
+{
+  return IsDivided (is) ? fYDiv[is-fSDiv0] : 1e9;
+}
 
 Int_t
 TSolGEMPlane::GetStripUnchecked( Double_t x ) const
@@ -238,7 +319,10 @@ TSolGEMPlane::GetStripUnchecked( Double_t x ) const
   // Get strip number for given x-coordinate in strip frame,
   // no questions asked. Caller must check return value
 
-  return (Int_t) ((x - fSBeg) / GetSPitch());
+  if (GetSAngle() > TMath::Pi()/2)
+    return  (fNStrips - 1) - int ((fSBeg - x) / GetSPitch());
+  else
+    return int ((x + fSBeg) / GetSPitch());
 }
 
 Int_t
@@ -258,6 +342,10 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
 {
   // Strip number corresponding to coordinates x, y in 
   // strip frame, or -1 if outside (2-d) bounds
+  
+  // Double_t xw = x;
+  // Double_t yw = yc;
+  // StripToPlane (xw, yw);
 
   Double_t xc = x;
   StripToLab (xc, yc);
@@ -266,8 +354,20 @@ TSolGEMPlane::GetStrip (Double_t x, Double_t yc) const
     return -1;
 
   Int_t s = GetStripUnchecked(x);
+  // cout << GetName()
+  //      << " " << s << " " << x << " " << GetNStrips() 
+  //      << " " << xc << " " << yc
+  //      << " " << xw << " " << yw << endl;
+  //      assert (!(TString(GetName()) == "gem92y"));
+
   assert( s >= 0 && s < GetNStrips() ); // by construction in ReadGeometry()
   return s;
+}
+
+Int_t 
+TSolGEMPlane::GetDivision (UInt_t is, Double_t y) const
+{
+  return IsDivided (is) ? (y > fYDiv[is-fSDiv0] ? 1 : 0) : 0;  
 }
 
 void 
@@ -276,7 +376,7 @@ TSolGEMPlane::Print() const
   cout << "I'm a GEM plane named " << GetName() << endl;
 
   TVector3 o (GetOrigin());
-  cout << "  Origin: " << o(0) << " " << o(1) << " " << o(2)
+  cout << "  Origin: " <<  setprecision(4) << o(0) << " " << o(1) << " " << o(2)
        << " (rho,theta,phi)=(" << o.Mag() << "," << o.Theta()*TMath::RadToDeg()
        << "," << o.Phi()*TMath::RadToDeg() << ")"
        << endl;
@@ -294,11 +394,39 @@ TSolGEMPlane::Print() const
        << " dphi: " << fWedge->GetDPhi()*TMath::RadToDeg()
        << endl;
 
+  cout << "  Wedge size: +-" << (fWedge->GetSize())[0] 
+       << ", +-" << (fWedge->GetSize())[1] << endl;
+
   cout << "  " << GetNStrips() << " strips"
        << ", angle " << GetSAngle()*TMath::RadToDeg()
-       << ", start " << fSBeg << " " << 0.5*(GetStripLowerEdge(0)+GetStripUpperEdge(0))
+       << ", start " << GetStripCenter(0)
+       << ", end " << GetStripCenter(GetNStrips()-1)
        << ", pitch " << GetSPitch()
        << endl;
+
+  Int_t nd = GetNDividedStrips();
+  Int_t sd0 = GetFirstDividedStrip();
+  if (nd > 0)
+    cout << "  " << nd << " divided strips"
+	 << ", from " << sd0 
+	 << " at " << GetYDiv (sd0)
+	 << " to " << sd0 + nd - 1
+	 << " at " << GetYDiv (sd0 + nd - 1)
+	 << endl;
+
+  Double_t xxx[4] = { -(fWedge->GetSize())[0],  (fWedge->GetSize())[0],  (fWedge->GetSize())[0],  -(fWedge->GetSize())[0] };
+  Double_t yyy[4] = { -(fWedge->GetSize())[1],  -(fWedge->GetSize())[1],  (fWedge->GetSize())[1],  (fWedge->GetSize())[1] };
+  Double_t xxxs[4];
+  Double_t yyys[4];
+  for (UInt_t ixxx = 0; ixxx < 4; ++ixxx)
+    {
+      xxxs[ixxx] = xxx[ixxx];
+      yyys[ixxx] = yyy[ixxx];
+      PlaneToStrip (xxxs[ixxx], yyys[ixxx]);
+      cout << "Plane vertex " << xxx[ixxx] << " " << yyy[ixxx] 
+	   << " -> Strip vertex " << xxxs[ixxx] << " " << yyys[ixxx] 
+	   << endl;
+    }
 }
 
 void
@@ -306,8 +434,15 @@ TSolGEMPlane::SetRotations()
 {
   // Set rotation angle trig functions
   //cout<<"strip angles: "<<GetSAngle()<<" "<<GetAngle()<<endl;
+#ifdef OTHERWAY
+  fCWS = cos (GetSAngle());
+  fCLS = cos (-GetAngle()+GetSAngle());
+  fSWS = sin (GetSAngle());
+  fSLS = sin (-GetAngle()+GetSAngle());
+#else
   fCWS = cos (-GetSAngle());
   fCLS = cos (-GetAngle()-GetSAngle());
   fSWS = sin (-GetSAngle());
   fSLS = sin (-GetAngle()-GetSAngle());
+#endif
 }

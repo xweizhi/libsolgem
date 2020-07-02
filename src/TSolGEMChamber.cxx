@@ -4,6 +4,7 @@
 
 #include "TSolGEMChamber.h"
 #include "TSolGEMPlane.h"
+#include "TSolPolygon.h"
 #include "THaEvData.h"
 #include "THaApparatus.h"
 #include "TMath.h"
@@ -105,17 +106,27 @@ TSolGEMChamber::ReadGeometry (FILE* file, const TDatime& date,
             {"bound",       HVbound,          kDoubleV, 0, 1},
             { 0 }
             };
+
+	    // HVbound is x1, y1, x2, y2, ... xn, yn n >= 3
+	    //   vertex coordinates for a polygon
             
             ostringstream tmp_prefix(fPrefix, ios_base::ate);
             tmp_prefix<<"HV"<<i+1<<".";
             string HV_prefix = tmp_prefix.str();
             err = LoadDB (file, date, HVRequest, HV_prefix.c_str());
-            if (err == kOK){
-                assert(HVbound->size() == 4 && HVbound->at(1) >= HVbound->at(0) && 
-                       HVbound->at(3) >= HVbound->at(2));
-                
-                fHVSectorOff.push_back(HVSector(HVbound->at(0), HVbound->at(1), HVbound->at(2), HVbound->at(3)));
-            }
+            if (err == kOK)
+	      {
+		assert (HVbound->size() > 5 || HVbound->size()%2 == 0);
+		std::vector<Double_t> polyx;
+		std::vector<Double_t> polyy;
+		UInt_t ncorner = HVbound->size() / 2;
+		for (UInt_t icorner = 0; icorner < ncorner; ++icorner)
+		  {
+		    polyx.push_back (HVbound->at(icorner*2)); 
+		    polyy.push_back (HVbound->at(icorner*2+1));
+		  }
+		fHVSectorOff.push_back (TSolPolygon (ncorner, polyx, polyy));
+	      }
             
             delete HVbound;
         }catch(...) {
@@ -188,6 +199,15 @@ TSolGEMChamber::Print (const Bool_t printplanes)
        << " dphi: " << fWedge->GetDPhi()*TMath::RadToDeg()
        << endl;
 
+  cout << "  Frame width: " << fFrameWidth << endl;
+
+  if (fHVSectorOff.size() > 0)
+    {
+      cout << "  HV dead areas: " << endl;
+      for (std::vector<TSolPolygon>::const_iterator ip = fHVSectorOff.begin(); ip != fHVSectorOff.end(); ++ip)
+	ip->Print();
+    }
+
   if (printplanes)
     for (UInt_t i = 0; i < GetNPlanes(); ++i)
       {
@@ -198,7 +218,7 @@ TSolGEMChamber::Print (const Bool_t printplanes)
 //__________________________________________________________________________________
 Bool_t TSolGEMChamber::IsInDeadArea(Double_t& x, Double_t& y)
 {
-    //fitst rotate into tracker frame
+  // GEM frame check is done in lab coordinate frame, rotated to start at phi = 0
     fVector3.SetXYZ(x, y, 0);
     fVector3.RotateZ(-1.*fWedge->GetAngle());
     
@@ -207,10 +227,13 @@ Bool_t TSolGEMChamber::IsInDeadArea(Double_t& x, Double_t& y)
     if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
     a *= -1.;
     if (fabs(a*fVector3.X() + fVector3.Y())/sqrt(1.+a*a) < fFrameWidth) return true;
-    
-    for (UInt_t i=0; i<fHVSectorOff.size(); i++){
-        if (fHVSectorOff[i].Contains(fVector3.X(), fVector3.Y())) return true;
-    }
-    
+
+    // Dead area check is done in plane coordinate frame
+    Double_t xw = x;
+    Double_t yw = y;
+    LabToPlane (xw, yw);
+    for (UInt_t i=0; i<fHVSectorOff.size(); i++)
+      if (fHVSectorOff[i].Contains(xw, yw)) 
+	return true;
     return false;
 }
