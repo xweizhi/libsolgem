@@ -21,7 +21,7 @@ TSolGEMPlane::TSolGEMPlane()
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
-  fYDiv = NULL;
+  //fYDiv.clear();
   return;
 }
 
@@ -31,7 +31,7 @@ TSolGEMPlane::TSolGEMPlane( const char *name, const char *desc,
 {
   //  fClusters = new TClonesArray("TSolGEMCluster", 100);  
   fWedge = new TSolWedge;
-  fYDiv = NULL;
+  //fYDiv.clear();
   return;
 }
 
@@ -39,7 +39,7 @@ TSolGEMPlane::~TSolGEMPlane()
 {
   //  delete fClusters;
   delete fWedge;
-  delete[] fYDiv;
+  //delete[] fYDiv;
 }
 
 Int_t 
@@ -143,11 +143,12 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
   Double_t rorigin = sqrt (fOrigin[0]*fOrigin[0]+fOrigin[1]*fOrigin[1]);
   fSBeg = rorigin * sin (fWedge->GetDPhi()/2);
 
+
   // Get numbers of strips
 
   Double_t xs0 = fWedge->GetR1() * cos (fWedge->GetDPhi()/2) - rorigin;
   Double_t ys0 = fWedge->GetR1() * sin (fWedge->GetDPhi()/2);
-#define OTHERWAY
+//#define OTHERWAY
 #ifdef OTHERWAY
   if (GetSAngle() < TMath::Pi()/2)
     ys0 = -ys0;
@@ -198,24 +199,28 @@ TSolGEMPlane::ReadGeometry (FILE* file, const TDatime& date,
       fNDiv = ds[1] - ds[0] + 1;
       fSDiv0 = ds[0];
       Double_t ms = (yds[1] - yds[0]) / (xds[1] - xds[0]);
-      fYDiv = new Double_t[fNDiv];
+      UInt_t stripSave = 1e9;
       for (UInt_t i = 0; i < fNDiv; ++i)
 	{
-	  fYDiv[i] =  yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]);
-	  // cout << "Strip " << i+fSDiv0 
-	  //      << " center at " << GetStripCenter (i+fSDiv0) 
-	  //      << " divides at " << fYDiv[i]
-	  //      << endl;
+	    double xtmp = GetStripCenter (i+fSDiv0);
+	    double ytmp = yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]);
+	    StripToLab(xtmp, ytmp);
+	    
+	    if (fWedge->Contains(xtmp, ytmp)){
+	        fYDiv.push_back( yds[0] + ms * (GetStripCenter (i+fSDiv0) - xds[0]));
+	        if (i+fSDiv0 < stripSave) stripSave = i + fSDiv0;
+	    }
 	}
-      // Print();
-
+       //Print();
+        fNDiv = fYDiv.size();
+        fSDiv0 = stripSave;
     }
   else
     {
       fNDiv = 0;
       fSDiv0 = 0;
     }
-
+  Print();
   return kOK;
 }
 
@@ -376,7 +381,7 @@ TSolGEMPlane::Print() const
   cout << "I'm a GEM plane named " << GetName() << endl;
 
   TVector3 o (GetOrigin());
-  cout << "  Origin: " <<  setprecision(4) << o(0) << " " << o(1) << " " << o(2)
+  cout << "  Origin: " << o(0) << " " << o(1) << " " << o(2)
        << " (rho,theta,phi)=(" << o.Mag() << "," << o.Theta()*TMath::RadToDeg()
        << "," << o.Phi()*TMath::RadToDeg() << ")"
        << endl;
