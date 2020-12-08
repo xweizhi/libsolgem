@@ -680,10 +680,12 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
     union FloatIntUnion {
 	     Float_t f;
 	     Int_t   i;
-      } datx, daty, date;
+      } datx, daty, date, datt;
       datx.f = static_cast<Float_t>(simEvent->fECHitData[i].fXPos);
       daty.f = static_cast<Float_t>(simEvent->fECHitData[i].fYPos);
       date.f = static_cast<Float_t>(simEvent->fECHitData[i].fEdep);
+      datt.f = static_cast<Float_t>(simEvent->fECHitData[i].fPID);
+ 
     if (simEvent->fECHitData[i].fPlane == kLAEC){ //LAEC
       //position
       StripToROC( kLAEC, manager->GetNSector(), kPosition, i, crate, slot, chan ); //slot 0
@@ -692,7 +694,7 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 	    }
 	    //energy deposition
 	    StripToROC( kLAEC, manager->GetNSector(), kEnergy, i, crate, slot, chan );  //slot 1
-	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,date.i) == SD_ERR ){
+	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,datt.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
     }
@@ -704,7 +706,7 @@ Int_t TSolSimDecoder::DoLoadEvent(const Int_t* evbuffer )
 	    }
 	    //energy deposition
 	    StripToROC( kFAEC, manager->GetNSector(), kEnergy, i, crate, slot, chan ); //slot 3
-	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,date.i) == SD_ERR ){
+	    if( crateslot[idx(crate,slot)]->loadData("adc",chan,date.i,datt.i) == SD_ERR ){
 	      return HED_ERR;
 	    }
     }else{

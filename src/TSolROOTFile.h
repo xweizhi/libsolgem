@@ -51,6 +51,8 @@ class TSolROOTFile {
   hitdata *GetHitData(Int_t i) const { return fHitData[i]; }
   gendata *GetGenData(Int_t i) const { return fGenData[i]; }
   ECdata  *GetECData(Int_t i)  const { return fECData[i];  }
+  Double_t GetGenVz(Int_t i);
+  Double_t GetGenTheta(Int_t i);
   TSolGEMData *GetGEMData();
   void GetGEMData(TSolGEMData* gd);
 

@@ -412,6 +412,10 @@ void TSolROOTFile::GetGEMData(TSolGEMData* gd)
     for( i = 0; i < GetNData(); i++ ){
       h = GetHitData(i);
 
+      UInt_t tmpChamberID = CalcHitChamber(h->GetDetID()) - 1;
+      int    tmpTrackerID = tmpChamberID / fManager->GetNSector();
+      if ( tmpTrackerID < 0 || tmpTrackerID >= fManager->GetNTracker() ) continue;
+
 
       //detector id as defined in GEMC2 should be
       //$id=1000000+$n*100000+$sec*1000+$i where n is the plane #, sec is the
@@ -584,6 +588,16 @@ UInt_t TSolROOTFile::CalcHitChamber(int detid)
   assert(digi.at(0) == 1 && "GEM detector id shoud be like 1xxxxxx");
   
   return (digi.at(1)-1)*fManager->GetNSector()+digi.at(2)*10+digi.at(3);
+}
+//_______________________________________________________________________
+Double_t TSolROOTFile::GetGenVz(Int_t i)
+{
+    return (fGenData[i]->GetV()).Z()*1e-3;
+}
+//_______________________________________________________________________
+Double_t TSolROOTFile::GetGenTheta(Int_t i)
+{
+    return (fGenData[i]->GetP()).Theta()/TMath::Pi()*180.;
 }
 //_______________________________________________________________________
 void TSolROOTFile::ClearVectors()

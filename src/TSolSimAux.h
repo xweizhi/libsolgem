@@ -26,6 +26,11 @@ namespace TSolSimAux
               Double_t A,
               Int_t mode
            );
+  Double_t VMMPulseShape(
+              Double_t t,
+              Double_t A,
+              Double_t tau0 // peaking time
+           );
   Double_t Gaus2D(Double_t *x, Double_t *par);
   Double_t MultiGaus2D(Double_t *x, Double_t *par);
   Double_t SimpleCircle(Double_t *x, Double_t *par);

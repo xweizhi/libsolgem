@@ -272,6 +272,8 @@ TSolSimGEMDigitization::Initialize(const TSolSpec& spect)
 
   fDADC.resize(fEleSamplingPoints);
   fFilledStrips = true;
+  hADC = new TH1F("hADC","adc spectrum for one strip; adc;",300, 0, 300);
+
   //fTrnd.SetSeed(1);
 }
 
@@ -309,6 +311,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
           { "gatewidth",                 &fGateWidth,                 kDouble },
           { "gatewidth_post",            &fGateWidthPost,             kDouble },
           { "chip_mode",                 &fChipMode,                  kInt    },
+          { "vmm_inte_threshold",        &fVMMInteThreshold,          kDouble },
           { "pulseshapetau0",            &fPulseShapeTau0,            kDouble },
           { "pulseshapetau1",            &fPulseShapeTau1,            kDouble },
           { "zrout",                     &fRoutZ,                     kDouble },
@@ -344,7 +347,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
         throw;
   }    
 
-  if( fEleSamplingPoints < 0 || fEleSamplingPoints > 10 )
+  if( fChipMode!=3 && (fEleSamplingPoints < 0 || fEleSamplingPoints > 10 ) )
     fEleSamplingPoints = 10;
   if( fADCbits < 1 || fADCbits > MAX_ADCBITS ) {
     Error("ReadDatabase", "Invalid parameter adcbits = %d", fADCbits );
@@ -479,7 +482,7 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
 	event_time[itime] = fTrnd.Uniform(fGateWidth + fGateWidthPost)
 	  - fGateWidth - trigger_jitter;
 
-      } else {
+      }else {
 	    // Signal events occur at t = 0, smeared only by the trigger jitter
 	    event_time[itime] = -trigger_jitter;
         fJitterMeasure = apvJitter;
@@ -488,7 +491,6 @@ TSolSimGEMDigitization::AdditiveDigitize (const TSolGEMData& gdata, const TSolSp
     }
     // Time of the leading edge of this hit's avalance relative to the trigger
     Double_t time_zero = event_time[itime] - fTriggerOffset[iplane] + gdata.GetHitTime(ih) + fRTime0*1e9;
-
     if (fRNIon > 0) {
       dh = AvaModel (igem, spect, vv1, vv2, time_zero);
     }
@@ -967,17 +969,20 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 
                       Double_t pulse = 0.;
 
-                    if (fChipMode == 0){
+                      if (fChipMode == 0){
                             pulse = TSolSimAux::PulseShape (fEleSamplingPeriod * b - t0,
                                                                         us,
                                                                         fPulseShapeTau0,
                                                                         fPulseShapeTau1 );
-                        }
-                        else{
-                        //test for SAMPA
-                            pulse = TSolSimAux::SAMPAPulseShape (fEleSamplingPeriod * b - t0, us, fChipMode);
-                        }
-                        
+                      }
+                      else if (fChipMode == 1 || fChipMode == 2){
+                      //test for SAMPA
+                          pulse = TSolSimAux::SAMPAPulseShape (fEleSamplingPeriod * b - t0, us, fChipMode);
+                      }
+                      else{
+                           // test for VMM3
+                           pulse = TSolSimAux::VMMPulseShape (fEleSamplingPeriod *b - t0, us, fPulseShapeTau0);
+                      }  
 
 		      //nx is larger than the size of the strips that
 		      //are actually being hit, however, this way of
@@ -992,10 +997,15 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 		      //if( fPulseNoiseSigma > 0. && pulse > 0. )
 		      //    pulse += GetPedNoise(phase, amp, b);
 
-		      Short_t dadc = TSolSimAux::ADCConvert( pulse,
-							     fADCoffset,
-							     fADCgain,
-							     fADCbits );
+                      Int_t dadc;
+                      if( fChipMode == 3 ) {
+                        dadc = static_cast<Int_t>(pulse);
+                      } else {
+                        dadc = TSolSimAux::ADCConvert( pulse,
+                                fADCoffset,
+                                fADCgain,
+                                fADCbits );
+                      }
 
 		      fDADC[b] = dadc;
 		      if (dadc) hasSignal = true;
@@ -1067,6 +1077,7 @@ TSolSimGEMDigitization::Print() const
   cout << "    Gate width: " << fGateWidth << endl;
   cout << "    Post gate width: "<<fGateWidthPost<<endl;
   cout << "    Readout chip type: "<<fChipMode<<endl;
+  cout << "    VMM integration threshold: "<<fVMMInteThreshold<<endl;
 
   cout << "  GEM pedestal noise parameters:" << endl;
   cout << "    Pulse Noise period: " << fPulseNoisePeriod << endl;
@@ -1305,9 +1316,9 @@ TSolSimGEMDigitization::SetTreeHit (const UInt_t ih,
     // the secondaries, though!)
     Double_t rot;
     if( clust.fSource == 0 ) {
-      rot = -TMath::TwoPi()*fSignalSector/manager->GetNSector();
-      clust.fSector -= fSignalSector;
-      if( clust.fSector < 0 )
+        rot = -TMath::TwoPi()*fSignalSector/manager->GetNSector();
+        clust.fSector -= fSignalSector;
+        if( clust.fSector < 0 )
 	clust.fSector += manager->GetNSector();
     }
     else {
@@ -1350,8 +1361,10 @@ TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
     
     for (UInt_t ip = 0; ip < GetNPlanes (ich); ++ip) {
       strip.fProj = (Short_t) ip;
+      
       strip.fNsamp = TMath::Min((UShort_t)MC_MAXSAMP,
-				(UShort_t)GetNSamples(ich, ip));
+			                    (UShort_t)GetNSamples(ich, ip));
+      
       UInt_t nover = GetNOverThr(ich, ip);
       for (UInt_t iover = 0; iover < nover; iover++) {
 	Short_t idx = GetIndexOverThr(ich, ip, iover);
@@ -1362,19 +1375,60 @@ TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
     Double_t phase = fTrnd.Uniform(0., fPulseNoisePeriod);
     Double_t amp = fPulseNoiseAmpConst + fTrnd.Gaus(0., fPulseNoiseAmpSigma);
 
-    //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"substrip: "<<idx<<endl;
-	for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
-	  //strip.fADC[ss] = GetADC(ich, ip, idx, ss);
-	  //cout<<strip.fADC[ss]<<" ";
-	  
-	  //check satuation here in the final step, after accumulating all signals
-	  strip.fADC[ss] = TSolSimAux::CheckSaturation( GetADC(ich, ip, idx, ss) , fADCbits );
-	  
-	  if( fPulseNoiseSigma > 0.)
-        strip.fADC[ss] += GetPedNoise(phase, amp, ss);
+
+    if(fChipMode == 3) {
+          Float_t timejetter = fTrnd.Uniform(0, 7); // time resolution 
+          //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"channel: "<<idx<<endl;
+          hADC->Reset();
+          for (UInt_t ss = 0; ss < GetNSamples(ich, ip); ++ss) {
+                hADC->SetBinContent(ss+1,GetADC(ich, ip, idx, ss));
+          }
+          Float_t fThreshold = fVMMInteThreshold; 
+          Short_t firstBinOverThreshold = hADC->FindFirstBinAbove(fThreshold);
+          Short_t lastBinOverThreshold = hADC->FindLastBinAbove(fThreshold);
+          //cout<<"fist bin over threshold "<<fThreshold<<" :"<<firstBinOverThreshold<<endl; 
+          Short_t timeoverthreshold1 = -999;
+          Short_t timeoverthreshold2 = -999;
+          if(firstBinOverThreshold < 1 || firstBinOverThreshold > 300 ) continue;
+          if(lastBinOverThreshold < 1  || lastBinOverThreshold > 300 ) continue;
+          timeoverthreshold1 = static_cast<Short_t> (hADC->GetXaxis()->GetBinCenter(firstBinOverThreshold));
+          timeoverthreshold2 = static_cast<Short_t> (hADC->GetXaxis()->GetBinCenter(lastBinOverThreshold));
+          //if(timeoverthreshold2>0 && timeoverthreshold2<4) {
+          //  cout<<"tot1 = "<<timeoverthreshold1<<", tot2 = "<<timeoverthreshold2<<endl; 
+          //  for (UInt_t ss = 0; ss < strip.fNsamp; ++ss) {
+          //    cout<<"ss = "<<ss<<", ADC =  "<<GetADC(ich, ip, idx, ss)<<endl; 
+          //  }
+          //}
+          Float_t ADCIntegralTemp = hADC->Integral(firstBinOverThreshold, firstBinOverThreshold+19);
+          Short_t ADCIntegral20ns = TSolSimAux::ADCConvert( ADCIntegralTemp, fADCoffset, fADCgain, fADCbits );
+
+          //cout<<"timeoverthreshold: "<<timeoverthreshold<<endl; 
+          //cout<<"ADCIntegral20ns: "<<ADCIntegralTemp<<"->"<<ADCIntegral20ns; 
+          //cout<<", tot1 = "<<timeoverthreshold1<<", tot2 = "<<timeoverthreshold2<<endl;
+
+          if( fPulseNoiseSigma > 0.) {
+                ADCIntegral20ns += fTrnd.Gaus(0., fPulseNoiseSigma);
+          }
+
+          strip.fADC[0] = TSolSimAux::CheckSaturation( ADCIntegral20ns , fADCbits );
+          strip.fADC[1] = timeoverthreshold1 + timejetter;
+          strip.fADC[2] = timeoverthreshold2 + timejetter;
+
     }
-    //cout<<endl;
-    
+    else{
+        //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"substrip: "<<idx<<endl;
+	    for (UInt_t ss = 0; ss < strip.fNsamp; ++ss){
+	      //strip.fADC[ss] = GetADC(ich, ip, idx, ss);
+	      //cout<<strip.fADC[ss]<<" ";
+	      
+	      //check satuation here in the final step, after accumulating all signals
+	      strip.fADC[ss] = TSolSimAux::CheckSaturation( GetADC(ich, ip, idx, ss) , fADCbits );
+	      //strip.fADC[ss] = GetADC(ich, ip, idx, ss);
+	      if( fPulseNoiseSigma > 0.)
+            strip.fADC[ss] += GetPedNoise(phase, amp, ss);
+        }
+        //cout<<endl;
+    }
 	strip.fSigType = GetType(ich, ip, idx);
 	strip.fCharge  = GetCharge(ich, ip, idx);
 	strip.fTime1   = GetTime(ich, ip, idx);

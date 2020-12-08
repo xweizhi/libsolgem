@@ -112,6 +112,25 @@ Double_t TSolSimAux::SAMPAPulseShape(Double_t t, Double_t A, Int_t mode)
     return ( v>0. ) ? v : 0.;
 }
 
+Double_t TSolSimAux::VMMPulseShape(Double_t t, Double_t A, Double_t tau0) {
+  if (t<0) return 0;
+  Double_t PeakingTime = tau0;
+  Double_t a = (PeakingTime*(10^-9))/1.5;
+  Double_t pole0 = 1.263/a;  // real pole
+  Double_t Re_pole1 = 1.149/a;
+  Double_t Im_pole1 = -0.786/a; //complex pole
+  Double_t K0 = 1.584;
+  Double_t Re_K1 = -0.792;
+  Double_t Im_K1 = -0.115;
+  Double_t pole1_square = Re_pole1*Re_pole1 + Im_pole1*Im_pole1;
+  Double_t K1_abs = TMath::Sqrt(Re_K1*Re_K1 + Im_K1*Im_K1);
+  Double_t argK1 = TMath::ATan2(Im_K1, Re_K1);
+  t*=(10^-9);
+  Double_t st = A * TMath::Power(a,3)*pole0*pole1_square*((K0*TMath::Exp(-t*pole0))+(2.*K1_abs*TMath::Exp(-t*Re_pole1)*cos(-t*Im_pole1+argK1)));
+  return (st>0.) ? st : 0.;
+
+}
+
 // par[0] = norm
 // par[1] = x_mean
 // par[2] = x_sigma

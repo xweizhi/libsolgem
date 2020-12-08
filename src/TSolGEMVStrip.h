@@ -43,7 +43,7 @@ class TSolGEMVStrip {
   void AddStripAt(Short_t ist, Short_t n) {fVStrips.at(n)->fIst=ist;};
   void AddSubstripAt(Short_t iss, Short_t n) {fVStrips.at(n)->fIss=iss;};
   void AddChargeAt(Double_t val, Short_t n) {fVStrips.at(n)->fCharge=val;}
-  void AddSampleAt(Short_t val, Short_t sample, Short_t n) {fVStrips.at(n)->fADC.at(sample)=val;}
+  void AddSampleAt(Int_t val, Short_t sample, Short_t n) {fVStrips.at(n)->fADC.at(sample)=val;}
 
   void SetTime(Double_t val) {fTime = val;};
   void SetHitCharge(Float_t val) { fHitCharge = val; }; // total charge of the avalanche
@@ -52,7 +52,7 @@ class TSolGEMVStrip {
   Short_t GetSize() const { return fSize; };
   Short_t GetStrip(Short_t n) const { return fVStrips.at(n)->fIst; };
   Short_t GetSubstrip(Short_t n) const { return fVStrips.at(n)->fIss; };
-  Short_t GetADC(Short_t n, Short_t sample) const { return fVStrips.at(n)->fADC.at(sample); }
+  Int_t GetADC(Short_t n, Short_t sample) const { return fVStrips.at(n)->fADC.at(sample); }
   Double_t GetCharge(Short_t n) const { return fVStrips.at(n)->fCharge; }
   Float_t GetTime() const { return fTime; };
   Double_t GetHitCharge() const { return fHitCharge; };

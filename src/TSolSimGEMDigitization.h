@@ -6,7 +6,7 @@
 #include "TRandom3.h"
 #include "TVector3.h"
 #include "TArrayI.h"
-
+#include "TH1F.h"
 #include "THaAnalysisObject.h"
 
 #include <vector>
@@ -201,7 +201,8 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fGateWidthPost;         
                                 
   Int_t    fChipMode;           //0 for APV25, 1 for SAMPA with 160ns shapping time, 2 for SAMPA
-                                //with 80ns shapping time
+                                //with 80ns shapping time, 3 for VMM
+  Double_t fVMMInteThreshold;   //integration threshold for VMM chip, only used if fChipMode is 3
 
   //parameter for GEM pedestal noise
   Double_t fPulseNoiseSigma;  // additional sigma term of the pedestal noise
@@ -251,7 +252,9 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fRTime0;
 
   std::vector<Double_t> fSumA;   // Charge deposit in each bin, to be integrated
-  std::vector<Short_t>  fDADC;
+  std::vector<Int_t>  fDADC;
+
+  TH1F* hADC;
 
   // Tree
 
