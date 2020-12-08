@@ -6,7 +6,7 @@ ratedig.gasdriftvelocity = 5.5e7 # mm/s
 ratedig.avalanchefiducialband = 20.0 # n sigma
 ratedig.avalanchechargestatistics = 1 # 0 Furry, 1 Gaussian
 ratedig.ava_model = 2 #0 HeavySide, 1 Gaussian, 2 Cauchy-Lorentz
-ratedig.ava_gain = 36.0
+ratedig.ava_gain = 54 #36.0
 ratedig.gainmean = 8000.0 #4000 for HeavySide
 ratedig.gain0 = 20.0
 ratedig.avalateraluncertainty = 0. #mm
@@ -22,6 +22,8 @@ ratedig.adcoffset = 0.
 ratedig.adcgain = 1.
 ratedig.adcbits = 12
 ratedig.gatewidth = 200.
+ratedig.gatewidth_post = 75.
+ratedig.chip_mode = 0 #0 for APV25, 1 for SAMPA with 160ns s-time, 2 for SAMPA with 80ns s-time
 
 # GEM pedestal noise
 ratedig.pulsenoisesigma = 15.
