@@ -34,10 +34,10 @@ private:
   struct DigSubstrip
   {
     DigSubstrip (UShort_t nsample): fType(0), fTotADC(0), fMaxADC(0), fCharge(0), fTime(0) {fStripADC.assign (nsample, 0); fStripClusters.clear();}
-    std::vector<Int_t> fStripADC;
+    std::vector<Double_t> fStripADC;
     Short_t fType;
-    Int_t   fTotADC;
-    Int_t   fMaxADC;
+    Double_t   fTotADC;
+    Double_t   fMaxADC;
     Float_t fCharge;
     Float_t fTime;
     std::vector<Short_t> fStripClusters; // Clusters associated with each strip
@@ -67,10 +67,10 @@ public:
 		 Short_t type, Short_t clusterID );
 
   Short_t  GetType (Int_t n) const {return fDigPlane.at(n)->fType;}
-  Int_t    GetTotADC (Int_t n) const {return fDigPlane.at(n)->fTotADC;}
+  Double_t GetTotADC (Int_t n) const {return fDigPlane.at(n)->fTotADC;}
   Float_t  GetTime (Int_t n) const {return fDigPlane.at(n)->fTime;}
   Float_t  GetCharge (Int_t n) const {return fDigPlane.at(n)->fCharge;}
-  Int_t    GetADC (Int_t n, Int_t ks) const  {return fDigPlane.at(n)->fStripADC.at(ks);}
+  Double_t GetADC (Int_t n, Int_t ks) const  {return fDigPlane.at(n)->fStripADC.at(ks);}
   UShort_t GetNSamples() const {return fNSamples;}
   UShort_t GetNSubstrips() const {return fNSubstrips;}
 
@@ -83,8 +83,6 @@ public:
 
   const TSolGEMPlane* GetPlane() const { return fPlane; }
 };
-
-
 
 class TSolSimGEMDigitization: public THaAnalysisObject
 {
@@ -135,7 +133,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Int_t   GetTotADC (UInt_t ich, UInt_t ip, Int_t n) const {return fDP[ich][ip]->GetTotADC (n);}
   Float_t GetTime (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetTime (n);}
   Float_t GetCharge (UInt_t ich, UInt_t ip, UInt_t n) const {return fDP[ich][ip]->GetCharge (n);}
-  Int_t   GetADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetADC (n, ks);}
+  Double_t   GetADC (UInt_t ich, UInt_t ip, Int_t n, Int_t ks) const {return fDP[ich][ip]->GetADC (n, ks);}
   UInt_t   GetNChambers() const {return fNChambers;};
   UInt_t   GetNPlanes (const UInt_t i) const {return fNPlanes[i];}
   UShort_t GetNSamples (UInt_t ich, UInt_t ip) const {return fDP[ich][ip]->GetNSamples();}
@@ -172,6 +170,10 @@ class TSolSimGEMDigitization: public THaAnalysisObject
 			     const Double_t time_off);
 
   Double_t GetPedNoise(Double_t& phase, Double_t& amp, UInt_t& isample);
+  void     FindFirstMaximum(Short_t bins, Double_t thres, Double_t& maxBin, Double_t& maxADC);
+  Int_t    FindFirstBinAbove(Double_t thres, Double_t min, Double_t max);
+  Int_t    FindLastBinAbove(Double_t thres, Double_t min, Double_t max);
+  bool     IsMaximaExistBefore(Double_t thres, Int_t bin, Double_t time);
 
   // Gas parameters
   Double_t fGasWion;               // eV
@@ -203,6 +205,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Int_t    fChipMode;           //0 for APV25, 1 for SAMPA with 160ns shapping time, 2 for SAMPA
                                 //with 80ns shapping time, 3 for VMM
   Double_t fVMMInteThreshold;   //integration threshold for VMM chip, only used if fChipMode is 3
+  Int_t    fVMMInteTime;
 
   //parameter for GEM pedestal noise
   Double_t fPulseNoiseSigma;  // additional sigma term of the pedestal noise
@@ -252,7 +255,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   Double_t fRTime0;
 
   std::vector<Double_t> fSumA;   // Charge deposit in each bin, to be integrated
-  std::vector<Int_t>  fDADC;
+  std::vector<Double_t>  fDADC;
 
   TH1F* hADC;
 
@@ -263,6 +266,7 @@ class TSolSimGEMDigitization: public THaAnalysisObject
   TSolSimEvent* fEvent;   // Output event structure, written to tree
 
   Bool_t fFilledStrips;   // True if no data changed since last SetTreeStrips
+
 
   void MakePrefix() { THaAnalysisObject::MakePrefix(0); }
   void DeleteObjects();

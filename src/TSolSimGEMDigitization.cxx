@@ -119,9 +119,9 @@ TSolDigitizedPlane::Cumulate (const TSolGEMVStrip *vv,
             dpp->fCharge += vv->GetCharge(j);
             bool was_below = !( dpp->/*fTotADC*/fMaxADC > fThreshold );
             for( UInt_t k=0; k<fNSamples; k++ ) {
-	            Int_t nnn = vv->GetADC(j,k);
+	            Double_t nnn = vv->GetADC(j,k);
 	            assert( nnn >= 0 );
-	            if( nnn == 0 ) continue;
+	            if( nnn < 1 ) continue;
 		    dpp->fStripADC.at(k) += nnn;
 		    dpp->fTotADC += nnn;
 		    if (dpp->fStripADC.at(k) > dpp->fMaxADC)
@@ -272,8 +272,9 @@ TSolSimGEMDigitization::Initialize(const TSolSpec& spect)
 
   fDADC.resize(fEleSamplingPoints);
   fFilledStrips = true;
+  if (fVMMInteTime > 280) fVMMInteTime = 280;
   hADC = new TH1F("hADC","adc spectrum for one strip; adc;",300, 0, 300);
-
+  //fSpectrum = new TSpectrum(10, 1);
   //fTrnd.SetSeed(1);
 }
 
@@ -312,6 +313,7 @@ TSolSimGEMDigitization::ReadDatabase (const TDatime& date)
           { "gatewidth_post",            &fGateWidthPost,             kDouble },
           { "chip_mode",                 &fChipMode,                  kInt    },
           { "vmm_inte_threshold",        &fVMMInteThreshold,          kDouble },
+          { "vmm_inte_time",             &fVMMInteTime,               kInt    },
           { "pulseshapetau0",            &fPulseShapeTau0,            kDouble },
           { "pulseshapetau1",            &fPulseShapeTau1,            kDouble },
           { "zrout",                     &fRoutZ,                     kDouble },
@@ -997,9 +999,9 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
 		      //if( fPulseNoiseSigma > 0. && pulse > 0. )
 		      //    pulse += GetPedNoise(phase, amp, b);
 
-                      Int_t dadc;
+                      Double_t dadc;
                       if( fChipMode == 3 ) {
-                        dadc = static_cast<Int_t>(pulse);
+                        dadc = pulse;
                       } else {
                         dadc = TSolSimAux::ADCConvert( pulse,
                                 fADCoffset,
@@ -1008,7 +1010,7 @@ TSolSimGEMDigitization::AvaModel(const Int_t ic,
                       }
 
 		      fDADC[b] = dadc;
-		      if (dadc) hasSignal = true;
+		      if (dadc >= 1) hasSignal = true;
 		    }
 
 		    if (hasSignal) { // store only substrip with signal
@@ -1380,17 +1382,54 @@ TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
           Float_t timejetter = fTrnd.Uniform(0, 7); // time resolution 
           //cout<<"chamber: "<<ich<<" plane: "<<ip<<" "<<"channel: "<<idx<<endl;
           hADC->Reset();
+          Double_t maximumBin = 1e9;
+          Double_t maximumADC = -1.; 
+          Float_t fThreshold = fVMMInteThreshold;
+          
           for (UInt_t ss = 0; ss < GetNSamples(ich, ip); ++ss) {
-                hADC->SetBinContent(ss+1,GetADC(ich, ip, idx, ss));
+                Double_t thisadc = GetADC(ich, ip, idx, ss);
+                hADC->SetBinContent(ss+1,thisadc);
           }
-          Float_t fThreshold = fVMMInteThreshold; 
-          Short_t firstBinOverThreshold = hADC->FindFirstBinAbove(fThreshold);
-          Short_t lastBinOverThreshold = hADC->FindLastBinAbove(fThreshold);
+          
+          Short_t firstBinOverThreshold = FindFirstBinAbove(fThreshold, 200, 300);
+          Short_t lastBinOverThreshold =  FindLastBinAbove(fThreshold, 200, 300);
           //cout<<"fist bin over threshold "<<fThreshold<<" :"<<firstBinOverThreshold<<endl; 
           Short_t timeoverthreshold1 = -999;
           Short_t timeoverthreshold2 = -999;
-          if(firstBinOverThreshold < 1 || firstBinOverThreshold > 300 ) continue;
-          if(lastBinOverThreshold < 1  || lastBinOverThreshold > 300 ) continue;
+          if(firstBinOverThreshold < 200 || firstBinOverThreshold > 300 ) continue;
+          if(lastBinOverThreshold < 200  || lastBinOverThreshold > 300 ) continue;
+
+          Bool_t pass = false;
+          Double_t adcbefore  = hADC->GetBinContent(firstBinOverThreshold-1);
+          Double_t adccurrent = hADC->GetBinContent(firstBinOverThreshold);
+          Double_t adcafter   = hADC->GetBinContent(firstBinOverThreshold+1);
+          if (firstBinOverThreshold == 1){
+              if (adcafter > adccurrent) pass = true;
+          }
+          else{
+              if (adccurrent > adcbefore && adccurrent < adcafter) pass = true;
+          }
+          if (!pass) continue;
+          
+          /*Int_t nfound = fSpectrum->Search(hADC, fThreshold, "nobackground,goff");
+          if (nfound <= 0) continue;
+          Float_t* xPeaks = fSpectrum->GetPositionX();
+          
+          for (Int_t ii=0; ii<nfound; ii++){
+              if (hADC->GetBinContent(hADC->FindBin(xPeaks[ii])) < fThreshold) continue;
+              if (maximumBin > xPeaks[ii]) maximumBin = xPeaks[ii];
+          }
+          if (maximumBin > 300) continue;
+          
+          maximumADC = hADC->GetBinContent(hADC->FindBin(maximumBin));
+          */
+          
+          FindFirstMaximum(firstBinOverThreshold, fThreshold, maximumBin, maximumADC);
+          if (IsMaximaExistBefore(fThreshold, hADC->FindBin(maximumBin), 43.)) continue; //checking if there is a deadtime
+          Int_t tempTime = (maximumBin/6);
+          tempTime*= 6;
+          maximumBin = tempTime;         
+ 
           timeoverthreshold1 = static_cast<Short_t> (hADC->GetXaxis()->GetBinCenter(firstBinOverThreshold));
           timeoverthreshold2 = static_cast<Short_t> (hADC->GetXaxis()->GetBinCenter(lastBinOverThreshold));
           //if(timeoverthreshold2>0 && timeoverthreshold2<4) {
@@ -1399,7 +1438,8 @@ TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
           //    cout<<"ss = "<<ss<<", ADC =  "<<GetADC(ich, ip, idx, ss)<<endl; 
           //  }
           //}
-          Float_t ADCIntegralTemp = hADC->Integral(firstBinOverThreshold, firstBinOverThreshold+19);
+          Int_t endBin = firstBinOverThreshold+19;
+          Float_t ADCIntegralTemp = maximumADC;//hADC->Integral(firstBinOverThreshold, endBin);
           Short_t ADCIntegral20ns = TSolSimAux::ADCConvert( ADCIntegralTemp, fADCoffset, fADCgain, fADCbits );
 
           //cout<<"timeoverthreshold: "<<timeoverthreshold<<endl; 
@@ -1411,8 +1451,9 @@ TSolSimGEMDigitization::SetTreeStrips(const TSolSpec& spect)
           }
 
           strip.fADC[0] = TSolSimAux::CheckSaturation( ADCIntegral20ns , fADCbits );
-          strip.fADC[1] = timeoverthreshold1 + timejetter;
-          strip.fADC[2] = timeoverthreshold2 + timejetter;
+          strip.fADC[1] = maximumBin;
+          strip.fADC[2] = timeoverthreshold1 + timejetter;
+          strip.fADC[3] = timeoverthreshold2 + timejetter;
 
     }
     else{
@@ -1479,3 +1520,57 @@ TSolSimGEMDigitization::CloseTree () const
   if (fOFile) fOFile->Close();
 }
 
+void TSolSimGEMDigitization::FindFirstMaximum(Short_t bins, Double_t thres, 
+                                              Double_t& maxBin, Double_t& maxADC)
+{
+    maxBin = 1e9;
+    maxADC = -1;
+    if (bins == 0) return;
+    for (int i= bins; i<= hADC->GetNbinsX(); i++){
+        if (hADC->GetBinContent(i) > hADC->GetBinContent(i-1) && 
+            hADC->GetBinContent(i) > hADC->GetBinContent(i+1) &&
+            hADC->GetBinContent(i) > thres){
+            maxBin = hADC->GetBinCenter(i);
+            maxADC = hADC->GetBinContent(i);
+            break;
+        }
+       
+    }
+}
+
+Int_t TSolSimGEMDigitization::FindFirstBinAbove(Double_t thres, Double_t min, Double_t max)
+{
+    Int_t minBin = hADC->FindBin(min);
+    Int_t maxBin = hADC->FindBin(max);
+    for (int i=minBin; i<=maxBin; i++){
+        if (hADC->GetBinContent(i) >= thres) return i;
+    }
+    return 0;
+}
+
+Int_t TSolSimGEMDigitization::FindLastBinAbove(Double_t thres, Double_t min, Double_t max)
+{
+    Int_t minBin = hADC->FindBin(min);
+    Int_t maxBin = hADC->FindBin(max);
+    for (int i=maxBin; i>=minBin; i--){
+        if (hADC->GetBinContent(i) >= thres) return i;
+    }
+    return 0;
+}
+
+bool TSolSimGEMDigitization::IsMaximaExistBefore(Double_t thres, Int_t bin, Double_t time)
+{
+    Double_t currenttime = hADC->GetBinCenter(bin);
+    Double_t earlytime = currenttime - time;
+    Int_t sbin = hADC->FindBin(earlytime);
+    if (sbin <= 2) sbin = 2;
+    
+    for (int i=sbin; i<bin; i++){
+        if (hADC->GetBinContent(i) > hADC->GetBinContent(i-1) && 
+            hADC->GetBinContent(i) > hADC->GetBinContent(i+1) &&
+            hADC->GetBinContent(i) > thres){
+            return true;
+        }
+    }
+    return false;
+}
